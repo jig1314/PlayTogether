@@ -1,0 +1,29 @@
+﻿@inherits LayoutComponentBase
+@inject IBootstrapCss BootstrapCss
+
+<div class="sidebar">
+    <NavMenu />
+</div>
+
+<div class="main">
+    <div class="top-row px-4 auth">
+        <LoginDisplay />
+        <a href="https://docs.microsoft.com/aspnet/" target="_blank">About</a>
+    </div>
+
+    <div class="content px-4">
+        @Body
+    </div>
+
+    @code
+    {
+        /// <summary> Implementing bootstrp for the Blazor Framework
+        /// See this link for more info: https://blazorstrap.io/
+        /// </summary>
+        /// <returns></returns>
+        protected override async Task OnInitializedAsync()
+        {
+            await BootstrapCss.SetBootstrapCss(Theme.Cosmo, "4.3.1");
+        }
+    }
+</div>
