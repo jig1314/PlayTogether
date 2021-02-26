@@ -1,19 +1,34 @@
 # Introduction 
-TODO: Give a short introduction of your project. Let this section explain the objectives or the motivation behind this project. 
+PlayTogether is a Progressive Web Application built with the Blazor Framework for builidng web application and uses a .NET Core Web API to commuincate with a SQL Database and external APIs. 
 
-# Getting Started
-TODO: Guide users through getting your code up and running on their own system. In this section you can talk about:
-1.	Installation process
-2.	Software dependencies
-3.	Latest releases
-4.	API references
+# Product Vision
+Our team’s near vision is to develop the most innovate software concept that will provide the ability for gamers to create and manage profiles based on personal and gaming information and to have access to other gamer’s profiles.
 
-# Build and Test
-TODO: Describe and show how to build your code and run the tests. 
+Our future vision is to connect gamers who want to play with other's that have similar preferences, playing styles and other common factors together. Our software will improve the gamers matchmaking market by exceeding gamers requirements of being able to have visibility of other gamer’s skills and using that information to organize the most competitive gaming team possible.
+
+# Backlog Information
+
+## Backlog URL 
+https://dev.azure.com/SWE6733-Team3/PlayTogether/_backlogs/backlog/PlayTogether%20Team/Backlog%20items/
+
+## Backlog Ordering Rationale
+Our backlog is ordered according to the expected workflow of the gamers that will be utilizing the PlayTogether app. For example, backlog items related to creating and managing the user's profile would be ordered first followed by the baclog items related to searching and communicating with other users.
+
+## Definition of Ready for a Product Backlog Item:
+* Short, concise title
+* User story opening sentence/description
+* User story is well-structured defines a single feature/action
+* Set acceptance criteria
+* Estimated in story points by developer(s)
+* Dependencies identified
+* Given a priority
+* Approved by a product owner
+* Assigned to sprint
+* Additional details (if applicable)
 
 # Contributors
 * Jonathan Gamble (Team Lead) - Scrum Master/Developer
 * Shakera Dean - Product Owner
-* Terrence Shannon - Developer
 * Miche Isaac - Product Owner
+* Terrence Shannon - Product Owner/Developer
 * Wyatt Landers - Developer
