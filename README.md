@@ -6,6 +6,10 @@ Our team’s near vision is to develop the most innovate software concept that w
 
 Our future vision is to connect gamers who want to play with other's that have similar preferences, playing styles and other common factors together. Our software will improve the gamers matchmaking market by exceeding gamers requirements of being able to have visibility of other gamer’s skills and using that information to organize the most competitive gaming team possible.
 
+# Git Repository structure
+The production code for the PlayTogether is stored on the main branch in a public Azure DevOps Repository.
+https://dev.azure.com/SWE6733-Team3/_git/PlayTogether
+
 # Backlog Information
 
 ## Backlog URL 
