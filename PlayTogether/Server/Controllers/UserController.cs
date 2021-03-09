@@ -6,14 +6,14 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using PlayTogether.Server.Data;
 using PlayTogether.Server.Models;
+using PlayTogether.Shared.DTOs;
 using PlayTogether.Shared.Models;
-using PlayTogether.Shared.ViewModels;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace PlayTogether.Server.Areas
+namespace PlayTogether.Server.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
@@ -85,10 +85,39 @@ namespace PlayTogether.Server.Areas
                 if (result.Succeeded)
                 {
                     await _signInManager.SignInAsync(user, isPersistent: false);
-                    return StatusCode(StatusCodes.Status201Created);
+                    var code = await _userManager.GenerateEmailConfirmationTokenAsync(user);
+                    var confirmEmailResult = await _userManager.ConfirmEmailAsync(user, code);
+                    
+                    if (confirmEmailResult.Succeeded)
+                    {
+                        return StatusCode(StatusCodes.Status201Created);
+                    }
+
+                    throw new Exception("User registration succeeded but failed to confirm the email!");
                 }
 
                 throw new Exception("User registration failed!");
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, ex.Message);
+            }
+        }
+
+        [HttpPost("login")]
+        [AllowAnonymous]
+        public async Task<ActionResult> Login(LoginDto login)
+        {
+            try
+            {
+                var result = await _signInManager.PasswordSignInAsync(login.UserName, login.Password, login.RememberMe, lockoutOnFailure: false);
+
+                if (result.Succeeded)
+                {
+                    return StatusCode(StatusCodes.Status202Accepted);
+                }
+
+                throw new Exception("Login failed!");
             }
             catch (Exception ex)
             {

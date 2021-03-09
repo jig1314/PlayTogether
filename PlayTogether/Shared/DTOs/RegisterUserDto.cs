@@ -3,7 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 
-namespace PlayTogether.Shared.ViewModels
+namespace PlayTogether.Shared.DTOs
 {
     public class RegisterUserDto
     {

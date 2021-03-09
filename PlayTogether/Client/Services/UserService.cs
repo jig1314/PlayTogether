@@ -1,5 +1,5 @@
-﻿using PlayTogether.Shared.Models;
-using PlayTogether.Shared.ViewModels;
+﻿using PlayTogether.Shared.DTOs;
+using PlayTogether.Shared.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -23,6 +23,12 @@ namespace PlayTogether.Client.Services
 
         public async Task<List<Gender>> GetGenders() =>
             await httpClient.GetFromJsonAsync<List<Gender>>($"api/user/genders");
+
+        public async Task Login(LoginDto loginDto)
+        {
+            var response = await httpClient.PostAsJsonAsync("api/user/login", loginDto);
+            response.EnsureSuccessStatusCode();
+        }
 
         public async Task RegisterNewUser(RegisterUserDto registerUserDto)
         {

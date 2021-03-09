@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using PlayTogether.Client.ViewModels;
 using PlayTogether.Shared.Models;
 using PlayTogether.Client.Services;
-using PlayTogether.Shared.ViewModels;
+using PlayTogether.Shared.DTOs;
 
 namespace PlayTogether.Client.Pages
 {

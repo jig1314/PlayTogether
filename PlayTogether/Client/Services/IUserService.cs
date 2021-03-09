@@ -1,5 +1,5 @@
-﻿using PlayTogether.Shared.Models;
-using PlayTogether.Shared.ViewModels;
+﻿using PlayTogether.Shared.DTOs;
+using PlayTogether.Shared.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -12,5 +12,6 @@ namespace PlayTogether.Client.Services
         Task<List<Gender>> GetGenders();
         Task<List<Country>> GetCountries();
         Task RegisterNewUser(RegisterUserDto registerUserDto);
+        Task Login(LoginDto loginDto);
     }
 }
