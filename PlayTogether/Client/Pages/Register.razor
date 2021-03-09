@@ -1,7 +1,6 @@
 ﻿@page "/register/"
 @page "/register/{returnUrl}"
 @inherits RegisterBase
-@inject IJSRuntime JS
 
 <BSContainer>
     <BSRow>
@@ -44,7 +43,7 @@
                     </BSFormGroup>
                     <BSFormGroup>
                         <BSLabel For="@RegisterViewModel.GenderId">Gender</BSLabel>
-                        <BSInput InputType="InputType.Select" @bind-Value="@RegisterViewModel.GenderId" ValidateOnInput="true" >
+                        <BSInput InputType="InputType.Select" @bind-Value="@RegisterViewModel.GenderId" ValidateOnChange="true" >
                             <option value="">Please select a Gender...</option>
                             @if (Genders != null)
                             {
@@ -58,7 +57,7 @@
                     </BSFormGroup>
                     <BSFormGroup>
                         <BSLabel For="@RegisterViewModel.CountryOfResidenceId">Country of Residence</BSLabel>
-                        <BSInput InputType="InputType.Select" @bind-Value="@RegisterViewModel.CountryOfResidenceId" ValidateOnInput="true" >
+                        <BSInput InputType="InputType.Select" @bind-Value="@RegisterViewModel.CountryOfResidenceId" ValidateOnChange="true" >
                             <option value="">Select a Country...</option>
                             @if (Countries != null)
                             {
