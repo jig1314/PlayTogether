@@ -16,6 +16,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using PlayTogether.Server.Data;
 using PlayTogether.Server.Models;
+using PlayTogether.Shared.Models;
 
 namespace PlayTogether.Server.Areas.Identity.Pages.Account
 {
@@ -104,8 +105,6 @@ namespace PlayTogether.Server.Areas.Identity.Pages.Account
         {
             ReturnUrl = returnUrl;
             ExternalLogins = (await _signInManager.GetExternalAuthenticationSchemesAsync()).ToList();
-            Genders = await _context.Genders.ToListAsync();
-            Countries = await _context.Countries.ToListAsync();
         }
 
         public async Task<IActionResult> OnPostAsync(string returnUrl = null)

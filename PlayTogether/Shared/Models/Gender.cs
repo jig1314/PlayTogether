@@ -4,7 +4,7 @@ using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace PlayTogether.Server.Models
+namespace PlayTogether.Shared.Models
 {
     public class Gender
     {
