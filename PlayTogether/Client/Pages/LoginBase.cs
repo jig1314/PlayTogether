@@ -34,7 +34,7 @@ namespace PlayTogether.Client.Pages
 
         protected void GoToForgetYourPasswordPage()
         {
-            NavigationManager.NavigateTo("authentication/ForgotPassword");
+            NavigationManager.NavigateTo("resetPassword");
         }
 
         protected async Task Login()

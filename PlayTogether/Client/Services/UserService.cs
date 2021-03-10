@@ -35,5 +35,11 @@ namespace PlayTogether.Client.Services
             var response = await httpClient.PostAsJsonAsync("api/user/register", registerUserDto);
             response.EnsureSuccessStatusCode();
         }
+
+        public async Task ResetPassword(ResetPasswordDto resetPasswordDto)
+        {
+            var response = await httpClient.PostAsJsonAsync("api/user/resetPassword", resetPasswordDto);
+            response.EnsureSuccessStatusCode();
+        }
     }
 }

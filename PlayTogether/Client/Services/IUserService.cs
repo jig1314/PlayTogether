@@ -13,5 +13,6 @@ namespace PlayTogether.Client.Services
         Task<List<Country>> GetCountries();
         Task RegisterNewUser(RegisterUserDto registerUserDto);
         Task Login(LoginDto loginDto);
+        Task ResetPassword(ResetPasswordDto resetPasswordDto);
     }
 }

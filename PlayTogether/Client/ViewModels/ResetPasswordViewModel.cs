@@ -6,9 +6,10 @@ using System.Threading.Tasks;
 
 namespace PlayTogether.Client.ViewModels
 {
-    public class LoginViewModel
+    public class ResetPasswordViewModel
     {
         [Required]
+        [DataType(DataType.Text)]
         [Display(Name = "Username")]
         [RegularExpression("^(?=[a-zA-Z0-9._]{6,20}$)(?!.*[_.]{2})[^_.].*[^_.]$", ErrorMessage = "Please enter a valid username.")]
         public string UserName { get; set; }
@@ -19,7 +20,9 @@ namespace PlayTogether.Client.ViewModels
         [Display(Name = "Password")]
         public string Password { get; set; }
 
-        [Display(Name = "Remember me?")]
-        public bool RememberMe { get; set; }
+        [DataType(DataType.Password)]
+        [Display(Name = "Confirm password")]
+        [Compare("Password", ErrorMessage = "The password and confirmation password do not match.")]
+        public string ConfirmPassword { get; set; }
     }
 }

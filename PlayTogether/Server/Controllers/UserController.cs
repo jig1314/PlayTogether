@@ -124,5 +124,28 @@ namespace PlayTogether.Server.Controllers
                 return StatusCode(StatusCodes.Status500InternalServerError, ex.Message);
             }
         }
+
+        [HttpPost("resetPassword")]
+        [AllowAnonymous]
+        public async Task<ActionResult> ResetPassword(ResetPasswordDto resetPasswordDto)
+        {
+            try
+            {
+                var user = await _userManager.FindByNameAsync(resetPasswordDto.UserName);
+                var code = await _userManager.GeneratePasswordResetTokenAsync(user);
+                var result = await _userManager.ResetPasswordAsync(user, code, resetPasswordDto.Password);
+
+                if (result.Succeeded)
+                {
+                    return StatusCode(StatusCodes.Status202Accepted);
+                }
+
+                throw new Exception("Password Reset failed!");
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, ex.Message);
+            }
+        }
     }
 }
