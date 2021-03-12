@@ -18,11 +18,14 @@ namespace PlayTogether.Server.Data
             IOptions<OperationalStoreOptions> operationalStoreOptions) : base(options, operationalStoreOptions)
         {
         }
+
         public DbSet<ApplicationUserDetails> ApplicationUserDetails { get; set; }
 
         public DbSet<Country> Countries { get; set; }
 
         public DbSet<Gender> Genders { get; set; }
+
+        public DbSet<GamingPlatform> GamingPlatforms { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
