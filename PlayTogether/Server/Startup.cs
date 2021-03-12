@@ -14,6 +14,7 @@ using System.Linq;
 using PlayTogether.Server.Data;
 using PlayTogether.Server.Models;
 using BlazorStrap;
+using PlayTogether.Server.Repositories;
 
 namespace PlayTogether.Server
 {
@@ -33,6 +34,8 @@ namespace PlayTogether.Server
             services.AddDbContext<ApplicationDbContext>(options =>
                 options.UseSqlServer(
                     Configuration.GetConnectionString("DefaultConnection")));
+
+            services.AddScoped<IVideoGameRepository, VideoGameRepository>();
 
             services.AddDefaultIdentity<ApplicationUser>(options => options.SignIn.RequireConfirmedAccount = true)
                 .AddEntityFrameworkStores<ApplicationDbContext>();

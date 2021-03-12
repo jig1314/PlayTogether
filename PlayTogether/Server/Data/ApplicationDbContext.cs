@@ -27,6 +27,8 @@ namespace PlayTogether.Server.Data
 
         public DbSet<GamingPlatform> GamingPlatforms { get; set; }
 
+        public DbSet<AppSetting> AppSettings { get; set; }
+
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
