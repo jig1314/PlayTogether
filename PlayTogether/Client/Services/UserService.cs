@@ -38,5 +38,14 @@ namespace PlayTogether.Client.Services
             var response = await httpClient.PutAsJsonAsync("api/user/changePassword", changePasswordDto);
             response.EnsureSuccessStatusCode();
         }
+
+        public async Task<List<GamingPlatformDto>> GetGamingPlatforms() =>
+            await httpClient.GetFromJsonAsync<List<GamingPlatformDto>>($"api/gamingPlatforms/userGamingPlatforms");
+
+        public async Task UpdateUserGamingPlatforms(List<GamingPlatformDto> gamingPlatformDtos)
+        {
+            var response = await httpClient.PutAsJsonAsync("api/gamingPlatforms/updateUserGamingPlatforms", gamingPlatformDtos);
+            response.EnsureSuccessStatusCode();
+        }
     }
 }
