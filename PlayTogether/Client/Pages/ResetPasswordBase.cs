@@ -12,7 +12,7 @@ namespace PlayTogether.Client.Pages
     public class ResetPasswordBase : ComponentBase
     {
         [Inject]
-        public IUserService UserService { get; set; }
+        public IUnauthorizedUserService UserService { get; set; }
 
         [Inject]
         public NavigationManager NavigationManager { get; set; }

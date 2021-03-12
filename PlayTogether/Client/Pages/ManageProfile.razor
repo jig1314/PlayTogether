@@ -1,0 +1,61 @@
+﻿@page "/manageProfile/{pageId}"
+
+<div>
+    <div class="row">
+        <div class="col-md-3">
+            <BSNav IsList="true" IsVertical="true" IsPills="true">
+                <BSNavItem>
+                    <BSNavLink IsActive="@IsNavActive("myAccount")" Href="manageProfile/myAccount">My Account</BSNavLink>
+                </BSNavItem>
+                <BSNavItem>
+                    <BSNavLink IsActive="@IsNavActive("changePassword")" Href="manageProfile/changePassword">Change Password</BSNavLink>
+                </BSNavItem>
+            </BSNav>
+        </div>
+        <div class="col-md-9">
+            @ChildContent
+        </div>
+    </div>
+</div>
+
+@code {
+
+    private string _pageId;
+
+    [Parameter]
+    public string PageId
+    {
+        get
+        {
+            return _pageId;
+        }
+        set
+        {
+            _pageId = value;
+            UpdatePage();
+        }
+    }
+
+    public RenderFragment ChildContent { get; set; }
+
+    void UpdatePage()
+    {
+        switch (PageId)
+        {
+            case "myAccount":
+                ChildContent = @<MyAccount />;
+                break;
+            case "changePassword":
+                ChildContent = @<ChangePassword />;
+                break;
+            default:
+                break;
+        }
+    }
+
+    bool IsNavActive(string nav)
+    {
+        return PageId == nav;
+    }
+
+}

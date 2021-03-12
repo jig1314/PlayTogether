@@ -7,13 +7,12 @@ using System.Threading.Tasks;
 
 namespace PlayTogether.Client.Services
 {
-    public interface IUserService
+    public interface IUnauthorizedUserService
     {
         Task<List<Gender>> GetGenders();
         Task<List<Country>> GetCountries();
-
-        Task<UserAccountDto> GetUserAccountInfo();
-        Task UpdateUserAccountInfo(UserAccountDto userAccountDto);
-        Task UpdatePassword(ChangePasswordDto changePasswordDto);
+        Task RegisterNewUser(RegisterUserDto registerUserDto);
+        Task Login(LoginDto loginDto);
+        Task ResetPassword(ResetPasswordDto resetPasswordDto);
     }
 }

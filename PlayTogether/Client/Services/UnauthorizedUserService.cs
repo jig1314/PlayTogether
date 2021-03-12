@@ -9,11 +9,11 @@ using System.Threading.Tasks;
 
 namespace PlayTogether.Client.Services
 {
-    public class UserService : IUserService
+    public class UnauthorizedUserService : IUnauthorizedUserService
     {
         private readonly HttpClient httpClient;
 
-        public UserService(HttpClient httpClient)
+        public UnauthorizedUserService(HttpClient httpClient)
         {
             this.httpClient = httpClient;
         }
@@ -27,15 +27,21 @@ namespace PlayTogether.Client.Services
         public async Task<UserAccountDto> GetUserAccountInfo() =>
             await httpClient.GetFromJsonAsync<UserAccountDto>($"api/user/accountInfo");
 
-        public async Task UpdateUserAccountInfo(UserAccountDto userAccountDto)
+        public async Task Login(LoginDto loginDto)
         {
-            var response = await httpClient.PutAsJsonAsync("api/user/updateAccountInfo", userAccountDto);
+            var response = await httpClient.PostAsJsonAsync("api/user/login", loginDto);
             response.EnsureSuccessStatusCode();
         }
 
-        public async Task UpdatePassword(ChangePasswordDto changePasswordDto)
+        public async Task RegisterNewUser(RegisterUserDto registerUserDto)
         {
-            var response = await httpClient.PutAsJsonAsync("api/user/changePassword", changePasswordDto);
+            var response = await httpClient.PostAsJsonAsync("api/user/register", registerUserDto);
+            response.EnsureSuccessStatusCode();
+        }
+
+        public async Task ResetPassword(ResetPasswordDto resetPasswordDto)
+        {
+            var response = await httpClient.PostAsJsonAsync("api/user/resetPassword", resetPasswordDto);
             response.EnsureSuccessStatusCode();
         }
     }

@@ -11,6 +11,7 @@ using PlayTogether.Shared.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Claims;
 using System.Threading.Tasks;
 
 namespace PlayTogether.Server.Controllers
@@ -30,6 +31,43 @@ namespace PlayTogether.Server.Controllers
             _userManager = userManager;
             _signInManager = signInManager;
             _context = context;
+        }
+
+        private string GetUserId()
+        {
+            return HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier);
+        }
+
+        [HttpGet("accountInfo")]
+        public async Task<ActionResult<UserAccountDto>> GetAccountInformation()
+        {
+            try
+            {
+                if (!HttpContext.User.Identity.IsAuthenticated)
+                {
+                    return StatusCode(StatusCodes.Status401Unauthorized, "Error retrieving user account information");
+                }
+
+                var idUser = GetUserId();
+                var user = await _context.Users.Where(d => d.Id == idUser).Include(user => user.ApplicationUserDetails).FirstOrDefaultAsync();
+                var userAccountDto = new UserAccountDto()
+                {
+                    UserName = user.UserName,
+                    FirstName = user.ApplicationUserDetails.FirstName,
+                    LastName = user.ApplicationUserDetails.LastName,
+                    Email = user.Email,
+                    DateOfBirth = user.ApplicationUserDetails.DateOfBirth,
+                    CountryOfResidenceId = user.ApplicationUserDetails.CountryOfResidenceId,
+                    GenderId = user.ApplicationUserDetails.GenderId,
+                    PhoneNumber = user.PhoneNumber
+                };
+
+                return Ok(userAccountDto);
+            }
+            catch (Exception)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, "Error retrieving user account information");
+            }
         }
 
         [HttpGet("genders")]
@@ -134,6 +172,76 @@ namespace PlayTogether.Server.Controllers
                 var user = await _userManager.FindByNameAsync(resetPasswordDto.UserName);
                 var code = await _userManager.GeneratePasswordResetTokenAsync(user);
                 var result = await _userManager.ResetPasswordAsync(user, code, resetPasswordDto.Password);
+
+                if (result.Succeeded)
+                {
+                    return StatusCode(StatusCodes.Status202Accepted);
+                }
+
+                throw new Exception("Password Reset failed!");
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, ex.Message);
+            }
+        }
+
+        [HttpPut("updateAccountInfo")]
+        public async Task<ActionResult<UserAccountDto>> UpdateUserAccountInformation(UserAccountDto userAccountDto)
+        {
+            try
+            {
+                if (!HttpContext.User.Identity.IsAuthenticated)
+                {
+                    return StatusCode(StatusCodes.Status401Unauthorized, "Error updating user account information");
+                }
+
+                var idUser = GetUserId();
+                var user = await _userManager.FindByIdAsync(idUser);
+
+                if (user.Email != userAccountDto.Email)
+                {
+                    var emailToken = await _userManager.GenerateChangeEmailTokenAsync(user, userAccountDto.Email);
+                    await _userManager.ChangeEmailAsync(user, userAccountDto.Email, emailToken);
+                }
+
+                if (user.PhoneNumber != userAccountDto.PhoneNumber)
+                {
+                    var phoneNumberToken = await _userManager.GenerateChangePhoneNumberTokenAsync(user, userAccountDto.PhoneNumber);
+                    await _userManager.ChangePhoneNumberAsync(user, userAccountDto.PhoneNumber, phoneNumberToken);
+                }
+
+                var applicationUserDetails = await _context.ApplicationUserDetails.FirstOrDefaultAsync(detail => detail.ApplicationUserId == idUser);
+                applicationUserDetails.FirstName = userAccountDto.FirstName;
+                applicationUserDetails.LastName = userAccountDto.LastName;
+                applicationUserDetails.DateOfBirth = userAccountDto.DateOfBirth;
+                applicationUserDetails.CountryOfResidenceId = userAccountDto.CountryOfResidenceId;
+                applicationUserDetails.GenderId = userAccountDto.GenderId;
+
+                _context.Entry(applicationUserDetails).State = EntityState.Modified;
+                await _context.SaveChangesAsync();
+
+                return StatusCode(StatusCodes.Status202Accepted);
+            }
+            catch (Exception)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, "Error retrieving user account information");
+            }
+        }
+
+        [HttpPut("changePassword")]
+        public async Task<ActionResult> ChangePassword(ChangePasswordDto changePasswordDto)
+        {
+            try
+            {
+                if (!HttpContext.User.Identity.IsAuthenticated)
+                {
+                    return StatusCode(StatusCodes.Status401Unauthorized, "Error updating user account information");
+                }
+
+                var idUser = GetUserId();
+                var user = await _userManager.FindByIdAsync(idUser);
+                var result = await _userManager.ChangePasswordAsync(user, changePasswordDto.OldPassword, changePasswordDto.NewPassword);
 
                 if (result.Succeeded)
                 {
