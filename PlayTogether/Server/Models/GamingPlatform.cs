@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Text;
 
-namespace PlayTogether.Shared.Models
+namespace PlayTogether.Server.Models
 {
     public class GamingPlatform
     {
@@ -18,5 +18,7 @@ namespace PlayTogether.Shared.Models
         public string Slug { get; set; }
 
         public string LogoURL { get; set; }
+
+        public List<ApplicationUser_GamingPlatform> Users { get; set; }
     }
 }

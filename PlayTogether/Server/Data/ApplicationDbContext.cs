@@ -59,6 +59,22 @@ namespace PlayTogether.Server.Data
                 .HasForeignKey<ApplicationUserDetails>(detail => detail.GenderId)
                 .HasConstraintName("ForeignKey_User_Gender")
                 .OnDelete(DeleteBehavior.NoAction);
+
+            modelBuilder.Entity<ApplicationUser_GamingPlatform>()
+                .HasKey(mapping => new { mapping.ApplicationUserId, mapping.GamingPlatformId })
+                .HasName("PrimaryKey_ApplicationUserId_GamingPlatformId");
+
+            modelBuilder.Entity<ApplicationUser_GamingPlatform>()
+                .HasOne(mapping => mapping.ApplicationUser)
+                .WithMany(user => user.GamingPlatforms)
+                .HasForeignKey(mapping => mapping.ApplicationUserId)
+                .HasConstraintName("ForeignKey_User_GamingPlatform_ApplicationUserId");
+
+            modelBuilder.Entity<ApplicationUser_GamingPlatform>()
+                .HasOne(mapping => mapping.GamingPlatform)
+                .WithMany(platform => platform.Users)
+                .HasForeignKey(mapping => mapping.GamingPlatformId)
+                .HasConstraintName("ForeignKey_User_GamingPlatform_GamingPlatformId");
         }
 
     }
