@@ -15,5 +15,9 @@ namespace PlayTogether.Client.Services
         Task<UserAccountDto> GetUserAccountInfo();
         Task UpdateUserAccountInfo(UserAccountDto userAccountDto);
         Task UpdatePassword(ChangePasswordDto changePasswordDto);
+        Task<List<GamingPlatformDto>> GetGamingPlatforms();
+        Task<List<GamingPlatformDto>> GetUserGamingPlatforms();
+        Task AddUserGamingPlatform(GamingPlatformDto gamingPlatform);
+        Task RemoveUserGamingPlatform(GamingPlatformDto gamingPlatform);
     }
 }

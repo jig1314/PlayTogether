@@ -29,7 +29,7 @@ namespace PlayTogether.Server.Data
 
         public DbSet<AppSetting> AppSettings { get; set; }
 
-        public DbSet<ApplicationUser_GamingPlatform> UserGamingPlatforms { get; set; }
+        public DbSet<ApplicationUser_GamingPlatform> ApplicationUser_GamingPlatform { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {

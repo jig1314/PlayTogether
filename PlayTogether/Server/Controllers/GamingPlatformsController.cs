@@ -28,8 +28,30 @@ namespace PlayTogether.Server.Controllers
             return HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier);
         }
 
-        [HttpGet("userGamingPlatforms")]
+        [HttpGet("gamingPlatforms")]
         public async Task<ActionResult<IEnumerable<GamingPlatformDto>>> GetGamingPlatforms()
+        {
+            try
+            {
+                var gamingPlatforms = await _context.GamingPlatforms.ToListAsync();
+                var gamingPlatformDtos = gamingPlatforms.Select(platform => new GamingPlatformDto()
+                {
+                    Id = platform.Id,
+                    Abbreviation = platform.Abbreviation,
+                    Name = platform.Name,
+                    LogoURL = platform.LogoURL
+                });
+
+                return Ok(gamingPlatformDtos);
+            }
+            catch (Exception)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, "Error retreiving gaming platforms");
+            }
+        }
+
+        [HttpGet("userGamingPlatforms")]
+        public async Task<ActionResult<IEnumerable<GamingPlatformDto>>> GetUserGamingPlatforms()
         {
             try
             {
@@ -39,7 +61,7 @@ namespace PlayTogether.Server.Controllers
                 }
                 
                 var idUser = GetUserId();
-                var userGamingPlatforms = await _context.UserGamingPlatforms.Where(mapping => mapping.ApplicationUserId == idUser).Include(mapping => mapping.GamingPlatform).ToListAsync();
+                var userGamingPlatforms = await _context.ApplicationUser_GamingPlatform.Where(mapping => mapping.ApplicationUserId == idUser).Include(mapping => mapping.GamingPlatform).ToListAsync();
                 var gamingPlatformDtos = userGamingPlatforms.Select(mapping => mapping.GamingPlatform).Select(platform => new GamingPlatformDto()
                 {
                     Id = platform.Id,
@@ -56,6 +78,59 @@ namespace PlayTogether.Server.Controllers
             }
         }
 
+        [HttpPost("addUserGamingPlatform")]
+        public async Task<IActionResult> AddUserGamingPlatform(GamingPlatformDto gamingPlatform)
+        {
+            try
+            {
+                if (!HttpContext.User.Identity.IsAuthenticated)
+                {
+                    return StatusCode(StatusCodes.Status401Unauthorized, "Error updating gaming platforms for the user");
+                }
+
+                var idUser = GetUserId();
+
+                _context.ApplicationUser_GamingPlatform.Add(new ApplicationUser_GamingPlatform()
+                {
+                    GamingPlatformId = gamingPlatform.Id,
+                    ApplicationUserId = idUser
+                });
+
+                await _context.SaveChangesAsync();
+
+                return StatusCode(StatusCodes.Status202Accepted);
+            }
+            catch (Exception)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, "Error updating gaming platforms for the user");
+            }
+        }
+
+        [HttpDelete("deleteUserGamingPlatform/{id}")]
+        public async Task<IActionResult> RemoveUserGamingPlatform(int id)
+        {
+            try
+            {
+                if (!HttpContext.User.Identity.IsAuthenticated)
+                {
+                    return StatusCode(StatusCodes.Status401Unauthorized, "Error updating gaming platforms for the user");
+                }
+
+                var idUser = GetUserId();
+
+                var userGamingPlatform = await _context.ApplicationUser_GamingPlatform.Where(mapping => mapping.ApplicationUserId == idUser && mapping.GamingPlatformId == id).FirstOrDefaultAsync();
+                _context.ApplicationUser_GamingPlatform.Remove(userGamingPlatform);
+
+                await _context.SaveChangesAsync();
+
+                return StatusCode(StatusCodes.Status202Accepted);
+            }
+            catch (Exception)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, "Error updating gaming platforms for the user");
+            }
+        }
+
         [HttpPut("updateUserGamingPlatforms")]
         public async Task<IActionResult> PutGamingPlatforms(List<GamingPlatformDto> gamingPlatforms)
         {
@@ -67,13 +142,13 @@ namespace PlayTogether.Server.Controllers
                 }
 
                 var idUser = GetUserId();
-                var userGamingPlatforms = await _context.UserGamingPlatforms.Where(mapping => mapping.ApplicationUserId == idUser).Include(mapping => mapping.GamingPlatform).ToListAsync();
+                var userGamingPlatforms = await _context.ApplicationUser_GamingPlatform.Where(mapping => mapping.ApplicationUserId == idUser).Include(mapping => mapping.GamingPlatform).ToListAsync();
 
                 var userGamingPlatformsToDelete = userGamingPlatforms.Where(mapping => !gamingPlatforms.Select(platform => platform.Id).Contains(mapping.GamingPlatformId));
                 var userGamingPlatformsToInsert = gamingPlatforms.Where(platform => !userGamingPlatforms.Select(mapping => mapping.GamingPlatformId).Contains(platform.Id));
 
-                _context.UserGamingPlatforms.RemoveRange(userGamingPlatformsToDelete);
-                _context.UserGamingPlatforms.AddRange(userGamingPlatformsToInsert.Select(platform => new ApplicationUser_GamingPlatform()
+                _context.ApplicationUser_GamingPlatform.RemoveRange(userGamingPlatformsToDelete);
+                _context.ApplicationUser_GamingPlatform.AddRange(userGamingPlatformsToInsert.Select(platform => new ApplicationUser_GamingPlatform()
                 {
                     GamingPlatformId = platform.Id,
                     ApplicationUserId = idUser
