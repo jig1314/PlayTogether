@@ -31,6 +31,10 @@ namespace PlayTogether.Server.Data
 
         public DbSet<ApplicationUser_GamingPlatform> ApplicationUser_GamingPlatform { get; set; }
 
+        public DbSet<GameGenre> GameGenres { get; set; }
+
+        public DbSet<ApplicationUser_GameGenre> ApplicationUser_GameGenres { get; set; }
+
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
@@ -77,6 +81,23 @@ namespace PlayTogether.Server.Data
                 .WithMany(platform => platform.Users)
                 .HasForeignKey(mapping => mapping.GamingPlatformId)
                 .HasConstraintName("ForeignKey_User_GamingPlatform_GamingPlatformId");
+
+            modelBuilder.Entity<ApplicationUser_GameGenre>()
+                .HasKey(mapping => new { mapping.ApplicationUserId, mapping.GameGenreId })
+                .HasName("PrimaryKey_ApplicationUserId_GameGenreId");
+
+            modelBuilder.Entity<ApplicationUser_GameGenre>()
+                .HasOne(mapping => mapping.ApplicationUser)
+                .WithMany(user => user.GameGenres)
+                .HasForeignKey(mapping => mapping.ApplicationUserId)
+                .HasConstraintName("ForeignKey_User_GameGenre_ApplicationUserId");
+
+            modelBuilder.Entity<ApplicationUser_GameGenre>()
+                .HasOne(mapping => mapping.GameGenre)
+                .WithMany(platform => platform.Users)
+                .HasForeignKey(mapping => mapping.GameGenreId)
+                .HasConstraintName("ForeignKey_User_GamingPlatform_GameGenreId");
+
         }
 
     }
