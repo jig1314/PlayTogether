@@ -11,7 +11,5 @@ namespace PlayTogether.Server.Models
         public ApplicationUserDetails ApplicationUserDetails { get; set; }
 
         public List<ApplicationUser_GamingPlatform> GamingPlatforms { get; set; }
-
-        public List<ApplicationUser_GameGenre> GameGenres { get; set; }
     }
 }

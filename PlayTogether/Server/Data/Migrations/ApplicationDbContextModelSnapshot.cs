@@ -354,22 +354,6 @@ namespace PlayTogether.Server.Data.Migrations
                     b.ToTable("ApplicationUserDetails");
                 });
 
-            modelBuilder.Entity("PlayTogether.Server.Models.ApplicationUser_GameGenre", b =>
-                {
-                    b.Property<string>("ApplicationUserId")
-                        .HasColumnType("nvarchar(450)");
-
-                    b.Property<int>("GameGenreId")
-                        .HasColumnType("int");
-
-                    b.HasKey("ApplicationUserId", "GameGenreId")
-                        .HasName("PrimaryKey_ApplicationUserId_GameGenreId");
-
-                    b.HasIndex("GameGenreId");
-
-                    b.ToTable("ApplicationUser_GameGenres");
-                });
-
             modelBuilder.Entity("PlayTogether.Server.Models.ApplicationUser_GamingPlatform", b =>
                 {
                     b.Property<string>("ApplicationUserId")
@@ -384,25 +368,6 @@ namespace PlayTogether.Server.Data.Migrations
                     b.HasIndex("GamingPlatformId");
 
                     b.ToTable("ApplicationUser_GamingPlatform");
-                });
-
-            modelBuilder.Entity("PlayTogether.Server.Models.GameGenre", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Slug")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("GameGenres");
                 });
 
             modelBuilder.Entity("PlayTogether.Server.Models.GamingPlatform", b =>
@@ -538,23 +503,6 @@ namespace PlayTogether.Server.Data.Migrations
                         .HasForeignKey("PlayTogether.Server.Models.ApplicationUserDetails", "GenderId")
                         .HasConstraintName("ForeignKey_User_Gender")
                         .OnDelete(DeleteBehavior.NoAction)
-                        .IsRequired();
-                });
-
-            modelBuilder.Entity("PlayTogether.Server.Models.ApplicationUser_GameGenre", b =>
-                {
-                    b.HasOne("PlayTogether.Server.Models.ApplicationUser", "ApplicationUser")
-                        .WithMany("GameGenres")
-                        .HasForeignKey("ApplicationUserId")
-                        .HasConstraintName("ForeignKey_User_GameGenre_ApplicationUserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("PlayTogether.Server.Models.GameGenre", "GameGenre")
-                        .WithMany("Users")
-                        .HasForeignKey("GameGenreId")
-                        .HasConstraintName("ForeignKey_User_GamingPlatform_GameGenreId")
-                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });
 
