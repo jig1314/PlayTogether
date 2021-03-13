@@ -1,11 +1,13 @@
-﻿using System;
+﻿using PlayTogether.Server.Models;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
 namespace PlayTogether.Server.Repositories
 {
-    public class IVideoGameRepository
+    public interface IVideoGameRepository
     {
+        Task<List<GameGenre>> GetGameGenresAsync();
     }
 }
