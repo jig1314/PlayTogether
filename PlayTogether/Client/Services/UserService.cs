@@ -45,12 +45,6 @@ namespace PlayTogether.Client.Services
         public async Task<List<GamingPlatformDto>> GetUserGamingPlatforms() =>
             await httpClient.GetFromJsonAsync<List<GamingPlatformDto>>($"api/gamingPlatforms/userGamingPlatforms");
 
-        public async Task UpdateUserGamingPlatforms(List<GamingPlatformDto> gamingPlatformDtos)
-        {
-            var response = await httpClient.PutAsJsonAsync("api/gamingPlatforms/updateUserGamingPlatforms", gamingPlatformDtos);
-            response.EnsureSuccessStatusCode();
-        }
-
         public async Task AddUserGamingPlatform(GamingPlatformDto gamingPlatform)
         {
             var response = await httpClient.PostAsJsonAsync("api/gamingPlatforms/addUserGamingPlatform", gamingPlatform);
@@ -60,6 +54,18 @@ namespace PlayTogether.Client.Services
         public async Task RemoveUserGamingPlatform(GamingPlatformDto gamingPlatform)
         {
             var response = await httpClient.DeleteAsync($"api/gamingPlatforms/deleteUserGamingPlatform/{gamingPlatform.Id}");
+            response.EnsureSuccessStatusCode();
+        }
+
+        public async Task<List<GameGenreDto>> GetGameGenres() =>
+            await httpClient.GetFromJsonAsync<List<GameGenreDto>>($"api/gameGenres/gameGenres");
+
+        public async Task<List<GameGenreDto>> GetUserGameGenres() =>
+            await httpClient.GetFromJsonAsync<List<GameGenreDto>>($"api/gameGenres/userGameGenres");
+
+        public async Task UpdateUserGameGenres(List<int> gameGenreIds)
+        {
+            var response = await httpClient.PutAsJsonAsync("api/gameGenres/updateGameGenres", gameGenreIds);
             response.EnsureSuccessStatusCode();
         }
     }
