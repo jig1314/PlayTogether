@@ -69,14 +69,12 @@ namespace PlayTogether.Server.Data.Migrations
             migrationBuilder.CreateIndex(
                 name: "IX_ApplicationUserDetails_CountryOfResidenceId",
                 table: "ApplicationUserDetails",
-                column: "CountryOfResidenceId",
-                unique: true);
+                column: "CountryOfResidenceId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_ApplicationUserDetails_GenderId",
                 table: "ApplicationUserDetails",
-                column: "GenderId",
-                unique: true);
+                column: "GenderId");
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)
