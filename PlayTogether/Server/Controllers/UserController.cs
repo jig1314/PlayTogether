@@ -70,20 +70,22 @@ namespace PlayTogether.Server.Controllers
             {
                 var user = new ApplicationUser { UserName = registerUserDto.UserName, Email = registerUserDto.Email };
                 var result = await _userManager.CreateAsync(user, registerUserDto.Password);
-                var userDetails = new ApplicationUserDetails()
-                {
-                    ApplicationUserId = user.Id,
-                    FirstName = registerUserDto.FirstName,
-                    LastName = registerUserDto.LastName,
-                    DateOfBirth = registerUserDto.DateOfBirth,
-                    CountryOfResidenceId = registerUserDto.CountryOfResidenceId,
-                    GenderId = registerUserDto.GenderId
-                };
-                _context.ApplicationUserDetails.Add(userDetails);
-                await _context.SaveChangesAsync();
 
                 if (result.Succeeded)
                 {
+                    var userDetails = new ApplicationUserDetails()
+                    {
+                        ApplicationUserId = user.Id,
+                        FirstName = registerUserDto.FirstName,
+                        LastName = registerUserDto.LastName,
+                        DateOfBirth = registerUserDto.DateOfBirth,
+                        CountryOfResidenceId = registerUserDto.CountryOfResidenceId,
+                        GenderId = registerUserDto.GenderId
+                    };
+
+                    _context.ApplicationUserDetails.Add(userDetails);
+                    await _context.SaveChangesAsync();
+
                     await _signInManager.SignInAsync(user, isPersistent: false);
                     var code = await _userManager.GenerateEmailConfirmationTokenAsync(user);
                     var confirmEmailResult = await _userManager.ConfirmEmailAsync(user, code);
@@ -93,14 +95,14 @@ namespace PlayTogether.Server.Controllers
                         return StatusCode(StatusCodes.Status201Created);
                     }
 
-                    throw new Exception("User registration succeeded but failed to confirm the email!");
+                    throw new Exception(string.Join(System.Environment.NewLine, confirmEmailResult.Errors.Select(error => error.Description)));
                 }
 
-                throw new Exception("User registration failed!");
+                throw new Exception(string.Join(System.Environment.NewLine, result.Errors.Select(error => error.Description)));
             }
             catch (Exception ex)
             {
-                return StatusCode(StatusCodes.Status500InternalServerError, ex.Message);
+                return StatusCode(StatusCodes.Status500InternalServerError, (ex.InnerException != null) ? ex.InnerException.Message : ex.Message);
             }
         }
 
@@ -132,6 +134,10 @@ namespace PlayTogether.Server.Controllers
             try
             {
                 var user = await _userManager.FindByNameAsync(resetPasswordDto.UserName);
+
+                if (user == null)
+                    throw new Exception("Username could not be found!");
+
                 var code = await _userManager.GeneratePasswordResetTokenAsync(user);
                 var result = await _userManager.ResetPasswordAsync(user, code, resetPasswordDto.Password);
 
@@ -140,11 +146,11 @@ namespace PlayTogether.Server.Controllers
                     return StatusCode(StatusCodes.Status202Accepted);
                 }
 
-                throw new Exception("Password Reset failed!");
+                throw new Exception(string.Join(System.Environment.NewLine, result.Errors.Select(error => error.Description)));
             }
             catch (Exception ex)
             {
-                return StatusCode(StatusCodes.Status500InternalServerError, ex.Message);
+                return StatusCode(StatusCodes.Status500InternalServerError, (ex.InnerException != null) ? ex.InnerException.Message : ex.Message);
             }
         }
     }

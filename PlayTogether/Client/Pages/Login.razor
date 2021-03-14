@@ -2,11 +2,21 @@
 @page "/login/{returnUrl}"
 @inherits LoginBase
 
+
+
 <BSContainer>
     <BSRow>
         <div class="panel panel-primary">
             <div class="panel-body">
                 <BSForm Model="@LoginViewModel" OnValidSubmit="Login" ValidateOnInit="false">
+                    @if (!string.IsNullOrWhiteSpace(ErrorMessage))
+                    {
+                        <BSFormGroup>
+                            <BSAlert Color="Color.Danger">
+                                @ErrorMessage
+                            </BSAlert>
+                        </BSFormGroup>
+                    }
                     <BSFormGroup>
                         <h2>Log In</h2>
                     </BSFormGroup>

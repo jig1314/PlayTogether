@@ -7,6 +7,14 @@
         <div class="panel panel-primary">
             <div class="panel-body">
                 <BSForm Model="@RegisterViewModel" OnValidSubmit="RegisterUser" ValidateOnInit="false">
+                    @if (!string.IsNullOrWhiteSpace(ErrorMessage))
+                    {
+                        <BSFormGroup>
+                            <BSAlert Color="Color.Danger">
+                                @ErrorMessage
+                            </BSAlert>
+                        </BSFormGroup>
+                    }
                     <BSFormGroup>
                         <h2>Create Account</h2>
                     </BSFormGroup>
@@ -43,7 +51,7 @@
                     </BSFormGroup>
                     <BSFormGroup>
                         <BSLabel For="@RegisterViewModel.GenderId">Gender</BSLabel>
-                        <BSInput InputType="InputType.Select" @bind-Value="@RegisterViewModel.GenderId" ValidateOnChange="true" >
+                        <BSInput InputType="InputType.Select" @bind-Value="@RegisterViewModel.GenderId" ValidateOnChange="true">
                             <option value="">Please select a Gender...</option>
                             @if (Genders != null)
                             {
@@ -57,7 +65,7 @@
                     </BSFormGroup>
                     <BSFormGroup>
                         <BSLabel For="@RegisterViewModel.CountryOfResidenceId">Country of Residence</BSLabel>
-                        <BSInput InputType="InputType.Select" @bind-Value="@RegisterViewModel.CountryOfResidenceId" ValidateOnChange="true" >
+                        <BSInput InputType="InputType.Select" @bind-Value="@RegisterViewModel.CountryOfResidenceId" ValidateOnChange="true">
                             <option value="">Select a Country...</option>
                             @if (Countries != null)
                             {

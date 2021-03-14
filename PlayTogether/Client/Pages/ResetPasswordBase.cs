@@ -19,6 +19,7 @@ namespace PlayTogether.Client.Pages
 
         public ResetPasswordViewModel ResetPasswordViewModel { get; set; }
 
+        public string ErrorMessage { get; set; }
 
         protected override async Task OnInitializedAsync()
         {
@@ -33,8 +34,17 @@ namespace PlayTogether.Client.Pages
                 Password = ResetPasswordViewModel.Password
             };
 
-            await UserService.ResetPassword(resetPasswordDto);
-            NavigationManager.NavigateTo("login");
+            ErrorMessage = null;
+
+            try
+            {
+                await UserService.ResetPassword(resetPasswordDto);
+                NavigationManager.NavigateTo("login");
+            }
+            catch (Exception ex)
+            {
+                ErrorMessage = $"{ex.Message}";
+            }
         }
     }
 }
