@@ -129,9 +129,7 @@ namespace PlayTogether.Server.Controllers
                     var confirmEmailResult = await _userManager.ConfirmEmailAsync(user, code);
                     
                     if (confirmEmailResult.Succeeded)
-                    {
                         return StatusCode(StatusCodes.Status201Created);
-                    }
 
                     throw new Exception(string.Join(System.Environment.NewLine, confirmEmailResult.Errors.Select(error => error.Description)));
                 }
@@ -153,9 +151,7 @@ namespace PlayTogether.Server.Controllers
                 var result = await _signInManager.PasswordSignInAsync(login.UserName, login.Password, login.RememberMe, lockoutOnFailure: false);
 
                 if (result.Succeeded)
-                {
                     return StatusCode(StatusCodes.Status202Accepted);
-                }
 
                 throw new Exception("Login failed!");
             }
@@ -180,9 +176,7 @@ namespace PlayTogether.Server.Controllers
                 var result = await _userManager.ResetPasswordAsync(user, code, resetPasswordDto.Password);
 
                 if (result.Succeeded)
-                {
                     return StatusCode(StatusCodes.Status202Accepted);
-                }
 
                 throw new Exception(string.Join(System.Environment.NewLine, result.Errors.Select(error => error.Description)));
             }
@@ -208,13 +202,19 @@ namespace PlayTogether.Server.Controllers
                 if (user.Email != userAccountDto.Email)
                 {
                     var emailToken = await _userManager.GenerateChangeEmailTokenAsync(user, userAccountDto.Email);
-                    await _userManager.ChangeEmailAsync(user, userAccountDto.Email, emailToken);
+                    var changeEmailResult = await _userManager.ChangeEmailAsync(user, userAccountDto.Email, emailToken);
+
+                    if (!changeEmailResult.Succeeded)
+                        throw new Exception(string.Join(System.Environment.NewLine, changeEmailResult.Errors.Select(error => error.Description)));
                 }
 
                 if (user.PhoneNumber != userAccountDto.PhoneNumber)
                 {
                     var phoneNumberToken = await _userManager.GenerateChangePhoneNumberTokenAsync(user, userAccountDto.PhoneNumber);
-                    await _userManager.ChangePhoneNumberAsync(user, userAccountDto.PhoneNumber, phoneNumberToken);
+                    var changePhoneNumberResult = await _userManager.ChangePhoneNumberAsync(user, userAccountDto.PhoneNumber, phoneNumberToken);
+
+                    if (!changePhoneNumberResult.Succeeded)
+                        throw new Exception(string.Join(System.Environment.NewLine, changePhoneNumberResult.Errors.Select(error => error.Description)));
                 }
 
                 var applicationUserDetails = await _context.ApplicationUserDetails.FirstOrDefaultAsync(detail => detail.ApplicationUserId == idUser);
@@ -229,9 +229,9 @@ namespace PlayTogether.Server.Controllers
 
                 return StatusCode(StatusCodes.Status202Accepted);
             }
-            catch (Exception)
+            catch (Exception ex)
             {
-                return StatusCode(StatusCodes.Status500InternalServerError, "Error retrieving user account information");
+                return StatusCode(StatusCodes.Status500InternalServerError, (ex.InnerException != null) ? ex.InnerException.Message : ex.Message);
             }
         }
 
@@ -250,15 +250,14 @@ namespace PlayTogether.Server.Controllers
                 var result = await _userManager.ChangePasswordAsync(user, changePasswordDto.OldPassword, changePasswordDto.NewPassword);
 
                 if (result.Succeeded)
-                {
                     return StatusCode(StatusCodes.Status202Accepted);
-                }
 
-                throw new Exception("Password Reset failed!");
+                throw new Exception(string.Join(System.Environment.NewLine, result.Errors.Select(error => error.Description)));
+
             }
             catch (Exception ex)
             {
-                return StatusCode(StatusCodes.Status500InternalServerError, ex.Message);
+                return StatusCode(StatusCodes.Status500InternalServerError, (ex.InnerException != null) ? ex.InnerException.Message : ex.Message);
             }
         }
     }

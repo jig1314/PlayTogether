@@ -25,6 +25,8 @@ namespace PlayTogether.Client.Pages
 
         public ChangePasswordViewModel ChangePasswordViewModel { get; set; }
 
+        public string ErrorMessage { get; set; }
+
         protected override async Task OnInitializedAsync()
         {
             AuthenticationState = await AuthenticationStateTask;
@@ -47,8 +49,17 @@ namespace PlayTogether.Client.Pages
                 NewPassword = ChangePasswordViewModel.NewPassword
             };
 
-            await UserService.UpdatePassword(changePasswordDto);
-            NavigationManager.NavigateTo("manageProfile/myAccount");
+            ErrorMessage = null;
+
+            try
+            {
+                await UserService.UpdatePassword(changePasswordDto);
+                NavigationManager.NavigateTo("manageProfile/myAccount");
+            }
+            catch (Exception ex)
+            {
+                ErrorMessage = $"{ex.Message}";
+            }
         }
     }
 }

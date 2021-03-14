@@ -7,6 +7,14 @@
     <BSRow>
         <BSCol Class="col-md-6">
             <BSForm Model="@MyAccountViewModel" OnValidSubmit="UpdateAccount" ValidateOnInit="false">
+                @if (!string.IsNullOrWhiteSpace(ErrorMessage))
+                {
+                    <BSFormGroup>
+                        <BSAlert Color="Color.Danger">
+                            @ErrorMessage
+                        </BSAlert>
+                    </BSFormGroup>
+                }
                 <BSFormGroup>
                     <h2>My Account</h2>
                     <hr />
@@ -36,12 +44,12 @@
                     <BSInput InputType="InputType.Select" @bind-Value="@MyAccountViewModel.GenderId" ValidateOnChange="true">
                         <option value="0">Please select a Gender..</option>
                         @if (Genders != null)
-                        {
-                            @foreach (var gender in Genders)
                             {
+                            @foreach (var gender in Genders)
+                                {
                                 <option value="@gender.Id">@gender.Value</option>
+                                }
                             }
-                        }
                     </BSInput>
                     <BSFormFeedback For="@(() => MyAccountViewModel.GenderId)" />
                 </BSFormGroup>
@@ -50,12 +58,12 @@
                     <BSInput InputType="InputType.Select" @bind-Value="@MyAccountViewModel.CountryOfResidenceId" ValidateOnChange="true">
                         <option value="0">Select a Country...</option>
                         @if (Countries != null)
-                        {
-                            @foreach (var country in Countries)
                             {
+                            @foreach (var country in Countries)
+                                {
                                 <option value="@country.Id">@country.Name</option>
+                                }
                             }
-                        }
                     </BSInput>
                     <BSFormFeedback For="@(() => MyAccountViewModel.CountryOfResidenceId)" />
                 </BSFormGroup>
