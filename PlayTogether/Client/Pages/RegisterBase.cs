@@ -27,6 +27,8 @@ namespace PlayTogether.Client.Pages
 
         public RegisterViewModel RegisterViewModel { get; set; }
 
+        public string ErrorMessage { get; set; }
+
         protected override async Task OnInitializedAsync()
         {
             RegisterViewModel = new RegisterViewModel();
@@ -48,9 +50,17 @@ namespace PlayTogether.Client.Pages
                 DateOfBirth = RegisterViewModel.DateOfBirth.Value
             };
 
-            await UserService.RegisterNewUser(registerUserDto);
-            NavigationManager.NavigateTo("authentication/login");
+            ErrorMessage = null;
 
+            try
+            {
+                await UserService.RegisterNewUser(registerUserDto);
+                NavigationManager.NavigateTo("authentication/login");
+            }
+            catch (Exception ex)
+            {
+                ErrorMessage = $"{ex.Message}";
+            }
         }
     }
 }
