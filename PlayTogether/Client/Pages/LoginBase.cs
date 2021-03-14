@@ -22,6 +22,8 @@ namespace PlayTogether.Client.Pages
 
         public LoginViewModel LoginViewModel { get; set; }
 
+        public string ErrorMessage { get; set; }
+
         protected override async Task OnInitializedAsync()
         {
             LoginViewModel = new LoginViewModel();
@@ -46,8 +48,17 @@ namespace PlayTogether.Client.Pages
                 RememberMe = LoginViewModel.RememberMe
             };
 
-            await UserService.Login(loginDto);
-            NavigationManager.NavigateTo("authentication/login");
+            ErrorMessage = null;
+
+            try
+            {
+                await UserService.Login(loginDto);
+                NavigationManager.NavigateTo("authentication/login");
+            }
+            catch (Exception ex)
+            {
+                ErrorMessage = $"{ex.Message}";
+            }
         }
     }
 }

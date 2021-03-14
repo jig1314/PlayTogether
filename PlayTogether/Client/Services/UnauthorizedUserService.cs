@@ -29,20 +29,56 @@ namespace PlayTogether.Client.Services
 
         public async Task Login(LoginDto loginDto)
         {
-            var response = await httpClient.PostAsJsonAsync("api/user/login", loginDto);
-            response.EnsureSuccessStatusCode();
+            try
+            {
+                var response = await httpClient.PostAsJsonAsync("api/user/login", loginDto);
+                response.EnsureSuccessStatusCode();
+                var content = await response.Content.ReadAsStringAsync();
+                if (!response.IsSuccessStatusCode)
+                {
+                    throw new ApplicationException(content);
+                }
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
         }
 
         public async Task RegisterNewUser(RegisterUserDto registerUserDto)
         {
-            var response = await httpClient.PostAsJsonAsync("api/user/register", registerUserDto);
-            response.EnsureSuccessStatusCode();
+            try
+            {
+                var response = await httpClient.PostAsJsonAsync("api/user/register", registerUserDto);
+                response.EnsureSuccessStatusCode();
+                var content = await response.Content.ReadAsStringAsync();
+                if (!response.IsSuccessStatusCode)
+                {
+                    throw new ApplicationException(content);
+                }
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
         }
 
         public async Task ResetPassword(ResetPasswordDto resetPasswordDto)
         {
-            var response = await httpClient.PostAsJsonAsync("api/user/resetPassword", resetPasswordDto);
-            response.EnsureSuccessStatusCode();
+            try
+            {
+                var response = await httpClient.PostAsJsonAsync("api/user/resetPassword", resetPasswordDto);
+                response.EnsureSuccessStatusCode();
+                var content = await response.Content.ReadAsStringAsync();
+                if (!response.IsSuccessStatusCode)
+                {
+                    throw new ApplicationException(content);
+                }
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
         }
     }
 }
