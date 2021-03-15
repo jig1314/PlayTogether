@@ -4,6 +4,7 @@ using PlayTogether.Client.Services;
 using PlayTogether.Client.ViewModels;
 using PlayTogether.Shared.DTOs;
 using PlayTogether.Shared.Models;
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
@@ -27,6 +28,8 @@ namespace PlayTogether.Client.Pages
         public List<Gender> Genders { get; set; }
 
         public List<Country> Countries { get; set; }
+
+        public string ErrorMessage { get; set; }
 
         protected override async Task OnInitializedAsync()
         {
@@ -70,8 +73,17 @@ namespace PlayTogether.Client.Pages
                 PhoneNumber = MyAccountViewModel.PhoneNumber
             };
 
-            await UserService.UpdateUserAccountInfo(userAccountDto);
-            NavigationManager.NavigateTo("manageProfile/myAccount");
+            ErrorMessage = null;
+
+            try
+            {
+                await UserService.UpdateUserAccountInfo(userAccountDto);
+                NavigationManager.NavigateTo("manageProfile/myAccount");
+            }
+            catch (Exception ex)
+            {
+                ErrorMessage = $"{ex.Message}";
+            }
         }
     }
 }

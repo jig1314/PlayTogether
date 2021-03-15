@@ -32,7 +32,6 @@ namespace PlayTogether.Client.Services
             try
             {
                 var response = await httpClient.PostAsJsonAsync("api/user/login", loginDto);
-                response.EnsureSuccessStatusCode();
                 var content = await response.Content.ReadAsStringAsync();
                 if (!response.IsSuccessStatusCode)
                 {
@@ -50,7 +49,6 @@ namespace PlayTogether.Client.Services
             try
             {
                 var response = await httpClient.PostAsJsonAsync("api/user/register", registerUserDto);
-                response.EnsureSuccessStatusCode();
                 var content = await response.Content.ReadAsStringAsync();
                 if (!response.IsSuccessStatusCode)
                 {
@@ -68,7 +66,6 @@ namespace PlayTogether.Client.Services
             try
             {
                 var response = await httpClient.PostAsJsonAsync("api/user/resetPassword", resetPasswordDto);
-                response.EnsureSuccessStatusCode();
                 var content = await response.Content.ReadAsStringAsync();
                 if (!response.IsSuccessStatusCode)
                 {
