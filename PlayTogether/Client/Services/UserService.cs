@@ -29,14 +29,36 @@ namespace PlayTogether.Client.Services
 
         public async Task UpdateUserAccountInfo(UserAccountDto userAccountDto)
         {
-            var response = await httpClient.PutAsJsonAsync("api/user/updateAccountInfo", userAccountDto);
-            response.EnsureSuccessStatusCode();
+            try
+            {
+                var response = await httpClient.PutAsJsonAsync("api/user/updateAccountInfo", userAccountDto);
+                var content = await response.Content.ReadAsStringAsync();
+                if (!response.IsSuccessStatusCode)
+                {
+                    throw new ApplicationException(content);
+                }
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
         }
 
         public async Task UpdatePassword(ChangePasswordDto changePasswordDto)
         {
-            var response = await httpClient.PutAsJsonAsync("api/user/changePassword", changePasswordDto);
-            response.EnsureSuccessStatusCode();
+            try
+            {
+                var response = await httpClient.PutAsJsonAsync("api/user/changePassword", changePasswordDto);
+                var content = await response.Content.ReadAsStringAsync();
+                if (!response.IsSuccessStatusCode)
+                {
+                    throw new ApplicationException(content);
+                }
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
         }
 
         public async Task<List<GamingPlatformDto>> GetGamingPlatforms() =>
