@@ -32,7 +32,6 @@ namespace PlayTogether.Client.Services
             try
             {
                 var response = await httpClient.PutAsJsonAsync("api/user/updateAccountInfo", userAccountDto);
-                response.EnsureSuccessStatusCode();
                 var content = await response.Content.ReadAsStringAsync();
                 if (!response.IsSuccessStatusCode)
                 {
@@ -50,7 +49,6 @@ namespace PlayTogether.Client.Services
             try
             {
                 var response = await httpClient.PutAsJsonAsync("api/user/changePassword", changePasswordDto);
-                response.EnsureSuccessStatusCode();
                 var content = await response.Content.ReadAsStringAsync();
                 if (!response.IsSuccessStatusCode)
                 {

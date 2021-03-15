@@ -193,7 +193,7 @@ namespace PlayTogether.Server.Controllers
             {
                 if (!HttpContext.User.Identity.IsAuthenticated)
                 {
-                    return StatusCode(StatusCodes.Status401Unauthorized, "Error updating user account information");
+                    return StatusCode(StatusCodes.Status401Unauthorized, "You are not authorized to update account information!");
                 }
 
                 var idUser = GetUserId();
@@ -242,7 +242,7 @@ namespace PlayTogether.Server.Controllers
             {
                 if (!HttpContext.User.Identity.IsAuthenticated)
                 {
-                    return StatusCode(StatusCodes.Status401Unauthorized, "Error updating user account information");
+                    return StatusCode(StatusCodes.Status401Unauthorized, "You are not authorized to change a password!");
                 }
 
                 var idUser = GetUserId();
