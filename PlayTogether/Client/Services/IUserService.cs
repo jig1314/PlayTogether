@@ -19,5 +19,8 @@ namespace PlayTogether.Client.Services
         Task<List<GamingPlatformDto>> GetUserGamingPlatforms();
         Task AddUserGamingPlatform(GamingPlatformDto gamingPlatform);
         Task RemoveUserGamingPlatform(GamingPlatformDto gamingPlatform);
+        Task<List<GameGenreDto>> GetGameGenres();
+        Task<List<GameGenreDto>> GetUserGameGenres();
+        Task UpdateUserGameGenres(List<int> gameGenreIds);
     }
 }

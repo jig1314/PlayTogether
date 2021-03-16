@@ -131,37 +131,5 @@ namespace PlayTogether.Server.Controllers
             }
         }
 
-        [HttpPut("updateUserGamingPlatforms")]
-        public async Task<IActionResult> PutGamingPlatforms(List<GamingPlatformDto> gamingPlatforms)
-        {
-            try
-            {
-                if (!HttpContext.User.Identity.IsAuthenticated)
-                {
-                    return StatusCode(StatusCodes.Status401Unauthorized, "Error updating gaming platforms for the user");
-                }
-
-                var idUser = GetUserId();
-                var userGamingPlatforms = await _context.ApplicationUser_GamingPlatform.Where(mapping => mapping.ApplicationUserId == idUser).Include(mapping => mapping.GamingPlatform).ToListAsync();
-
-                var userGamingPlatformsToDelete = userGamingPlatforms.Where(mapping => !gamingPlatforms.Select(platform => platform.Id).Contains(mapping.GamingPlatformId));
-                var userGamingPlatformsToInsert = gamingPlatforms.Where(platform => !userGamingPlatforms.Select(mapping => mapping.GamingPlatformId).Contains(platform.Id));
-
-                _context.ApplicationUser_GamingPlatform.RemoveRange(userGamingPlatformsToDelete);
-                _context.ApplicationUser_GamingPlatform.AddRange(userGamingPlatformsToInsert.Select(platform => new ApplicationUser_GamingPlatform()
-                {
-                    GamingPlatformId = platform.Id,
-                    ApplicationUserId = idUser
-                }));
-
-                await _context.SaveChangesAsync();
-
-                return StatusCode(StatusCodes.Status202Accepted);
-            }
-            catch (Exception)
-            {
-                return StatusCode(StatusCodes.Status500InternalServerError, "Error updating gaming platforms for the user");
-            }
-        }
     }
 }
