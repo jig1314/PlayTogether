@@ -60,5 +60,29 @@ namespace PlayTogether.Client.Services
                 throw ex;
             }
         }
+
+        public async Task<List<GamingPlatformDto>> GetGamingPlatforms() =>
+            await httpClient.GetFromJsonAsync<List<GamingPlatformDto>>($"api/gamingPlatforms/gamingPlatforms");
+
+        public async Task<List<GamingPlatformDto>> GetUserGamingPlatforms() =>
+            await httpClient.GetFromJsonAsync<List<GamingPlatformDto>>($"api/gamingPlatforms/userGamingPlatforms");
+
+        public async Task UpdateUserGamingPlatforms(List<GamingPlatformDto> gamingPlatformDtos)
+        {
+            var response = await httpClient.PutAsJsonAsync("api/gamingPlatforms/updateUserGamingPlatforms", gamingPlatformDtos);
+            response.EnsureSuccessStatusCode();
+        }
+
+        public async Task AddUserGamingPlatform(GamingPlatformDto gamingPlatform)
+        {
+            var response = await httpClient.PostAsJsonAsync("api/gamingPlatforms/addUserGamingPlatform", gamingPlatform);
+            response.EnsureSuccessStatusCode();
+        }
+
+        public async Task RemoveUserGamingPlatform(GamingPlatformDto gamingPlatform)
+        {
+            var response = await httpClient.DeleteAsync($"api/gamingPlatforms/deleteUserGamingPlatform/{gamingPlatform.Id}");
+            response.EnsureSuccessStatusCode();
+        }
     }
 }

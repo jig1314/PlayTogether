@@ -10,6 +10,10 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using BlazorStrap;
 using PlayTogether.Client.Services;
+using Blazorise;
+using Blazorise.Bootstrap;
+using Blazorise.Providers;
+using Blazorise.Icons.FontAwesome;
 
 namespace PlayTogether.Client
 {
@@ -34,6 +38,11 @@ namespace PlayTogether.Client
             builder.Services.AddApiAuthorization();
 
             builder.Services.AddBootstrapCss();
+
+            builder.Services
+              .AddBlazorise()
+              .AddBootstrapProviders()
+              .AddFontAwesomeIcons();
 
             await builder.Build().RunAsync();
         }

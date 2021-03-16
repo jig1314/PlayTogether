@@ -3,15 +3,17 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using PlayTogether.Server.Data;
 
 namespace PlayTogether.Server.Data.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20210312162409_AddAppSettingSchema")]
+    partial class AddAppSettingSchema
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -354,23 +356,27 @@ namespace PlayTogether.Server.Data.Migrations
                     b.ToTable("ApplicationUserDetails");
                 });
 
-            modelBuilder.Entity("PlayTogether.Server.Models.ApplicationUser_GamingPlatform", b =>
+            modelBuilder.Entity("PlayTogether.Shared.Models.Country", b =>
                 {
-                    b.Property<string>("ApplicationUserId")
-                        .HasColumnType("nvarchar(450)");
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
-                    b.Property<int>("GamingPlatformId")
-                        .HasColumnType("int");
+                    b.Property<string>("Code")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
-                    b.HasKey("ApplicationUserId", "GamingPlatformId")
-                        .HasName("PrimaryKey_ApplicationUserId_GamingPlatformId");
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
-                    b.HasIndex("GamingPlatformId");
+                    b.HasKey("Id");
 
-                    b.ToTable("ApplicationUser_GamingPlatform");
+                    b.ToTable("Countries");
                 });
 
-            modelBuilder.Entity("PlayTogether.Server.Models.GamingPlatform", b =>
+            modelBuilder.Entity("PlayTogether.Shared.Models.GamingPlatform", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -393,26 +399,6 @@ namespace PlayTogether.Server.Data.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("GamingPlatforms");
-                });
-
-            modelBuilder.Entity("PlayTogether.Shared.Models.Country", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
-
-                    b.Property<string>("Code")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("Countries");
                 });
 
             modelBuilder.Entity("PlayTogether.Shared.Models.Gender", b =>
@@ -503,23 +489,6 @@ namespace PlayTogether.Server.Data.Migrations
                         .HasForeignKey("PlayTogether.Server.Models.ApplicationUserDetails", "GenderId")
                         .HasConstraintName("ForeignKey_User_Gender")
                         .OnDelete(DeleteBehavior.NoAction)
-                        .IsRequired();
-                });
-
-            modelBuilder.Entity("PlayTogether.Server.Models.ApplicationUser_GamingPlatform", b =>
-                {
-                    b.HasOne("PlayTogether.Server.Models.ApplicationUser", "ApplicationUser")
-                        .WithMany("GamingPlatforms")
-                        .HasForeignKey("ApplicationUserId")
-                        .HasConstraintName("ForeignKey_User_GamingPlatform_ApplicationUserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("PlayTogether.Server.Models.GamingPlatform", "GamingPlatform")
-                        .WithMany("Users")
-                        .HasForeignKey("GamingPlatformId")
-                        .HasConstraintName("ForeignKey_User_GamingPlatform_GamingPlatformId")
-                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });
 #pragma warning restore 612, 618
