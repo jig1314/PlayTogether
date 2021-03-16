@@ -1,0 +1,108 @@
+﻿@page "/login/"
+@page "/login/{returnUrl}"
+@inherits LoginBase
+
+
+
+<BSContainer>
+    <BSRow>
+        <div class="panel panel-primary">
+            <div class="panel-body">
+                <BSForm Model="@LoginViewModel" OnValidSubmit="Login" ValidateOnInit="false">
+                    @if (!string.IsNullOrWhiteSpace(ErrorMessage))
+                    {
+                        <BSFormGroup>
+                            <BSAlert Color="Color.Danger">
+                                @ErrorMessage
+                            </BSAlert>
+                        </BSFormGroup>
+                    }
+                    <BSFormGroup>
+                        <h2>Log In</h2>
+                    </BSFormGroup>
+                    <DataAnnotationsValidator />
+                    <BSFormGroup>
+                        <BSLabel For="@LoginViewModel.UserName">Username</BSLabel>
+                        <BSInput InputType="InputType.Text" @bind-Value="@LoginViewModel.UserName" ValidateOnInput="true" />
+                        <BSFormFeedback For="@(() => LoginViewModel.UserName)" />
+                    </BSFormGroup>
+                    <BSFormGroup>
+                        <BSLabel For="@LoginViewModel.Password">Password</BSLabel>
+                        <BSInput InputType="InputType.Password" @bind-Value="@LoginViewModel.Password" ValidateOnInput="true" />
+                        <BSFormFeedback For="@(() => LoginViewModel.Password)" />
+                    </BSFormGroup>
+                    <BSFormGroup>
+                        <BSButton Id="forgetPasswordButton" Color="Color.Link" OnClick="GoToForgetYourPasswordPage">Forgot your password?</BSButton>
+                    </BSFormGroup>
+                    <BSRow>
+                        <BSCol Class="col-xs-12 col-sm-6">
+                            <BSFormGroup IsCheck="true" Id="rememberMeGroup">
+                                <BSInput InputType="InputType.Checkbox" @bind-Value="@LoginViewModel.RememberMe" />
+                                <BSLabel IsCheck="true" For="@LoginViewModel.RememberMe">Remember me?</BSLabel>
+                            </BSFormGroup>
+                        </BSCol>
+                        <BSCol Class="col-xs-12 col-sm-6">
+                            <BSButton ButtonType="ButtonType.Submit" Class="btn btn-info btn-block btn-primary">Log in</BSButton>
+                        </BSCol>
+                    </BSRow>
+                    <hr />
+                    <BSFormGroup>
+                        <BSButton ButtonType="ButtonType.Button" Class="btn btn-info btn-block btn-primary" OnClick="GoToRegisterPage">Register as a new user</BSButton>
+                    </BSFormGroup>
+                </BSForm>
+            </div>
+        </div>
+    </BSRow>
+</BSContainer>
+
+<style>
+
+    form {
+        margin: 0px 10px;
+    }
+
+    h2 {
+        margin-top: 2px;
+        margin-bottom: 2px;
+        text-align: center;
+    }
+
+    #rememberMeGroup {
+        margin-top: .5rem;
+    }
+
+    #forgetPasswordButton {
+        padding: unset
+    }
+
+    .panel-primary {
+        width: 100%;
+    }
+
+    .checkbox{
+        height: 100%;
+    }
+
+    .container {
+        max-width: 450px;
+    }
+
+    .divider {
+        text-align: center;
+        margin-top: 20px;
+        margin-bottom: 5px;
+    }
+
+        .divider hr {
+            margin: 7px 0px;
+            width: 35%;
+        }
+
+    .left {
+        float: left;
+    }
+
+    .right {
+        float: right;
+    }
+</style>

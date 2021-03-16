@@ -1,0 +1,86 @@
+﻿@inherits MyAccountBase
+@using BlazorStrap.Extensions.FluentValidation
+@using PlayTogether.Client.ViewModels
+
+@if (MyAccountViewModel != null && Genders != null && Countries != null)
+{
+    <BSRow>
+        <BSCol Class="col-md-6">
+            <BSForm Model="@MyAccountViewModel" OnValidSubmit="UpdateAccount" ValidateOnInit="false">
+                @if (!string.IsNullOrWhiteSpace(ErrorMessage))
+                {
+                    <BSFormGroup>
+                        <BSAlert Color="Color.Danger">
+                            @ErrorMessage
+                        </BSAlert>
+                    </BSFormGroup>
+                }
+                <BSFormGroup>
+                    <h2>My Account</h2>
+                    <hr />
+                </BSFormGroup>
+                <FluentValidator TValidator="MyAccountValidator" />
+                <BSFormGroup>
+                    <BSLabel For="@MyAccountViewModel.UserName">Username</BSLabel>
+                    <BSInput InputType="InputType.Text" IsReadonly="true" @bind-Value="@MyAccountViewModel.UserName" />
+                </BSFormGroup>
+                <BSFormGroup>
+                    <BSLabel For="@MyAccountViewModel.FirstName">First Name</BSLabel>
+                    <BSInput InputType="InputType.Text" @bind-Value="@MyAccountViewModel.FirstName" ValidateOnChange="true" />
+                    <BSFormFeedback For="@(() => MyAccountViewModel.FirstName)" />
+                </BSFormGroup>
+                <BSFormGroup>
+                    <BSLabel For="@MyAccountViewModel.LastName">Last Name</BSLabel>
+                    <BSInput InputType="InputType.Text" @bind-Value="@MyAccountViewModel.LastName" ValidateOnChange="true" />
+                    <BSFormFeedback For="@(() => MyAccountViewModel.LastName)" />
+                </BSFormGroup>
+                <BSFormGroup>
+                    <BSLabel For="@MyAccountViewModel.Email">Email Address</BSLabel>
+                    <BSInput InputType="InputType.Email" @bind-Value="@MyAccountViewModel.Email" ValidateOnChange="true" />
+                    <BSFormFeedback For="@(() => MyAccountViewModel.Email)" />
+                </BSFormGroup>
+                <BSFormGroup>
+                    <BSLabel For="@MyAccountViewModel.GenderId">Gender</BSLabel>
+                    <BSInput InputType="InputType.Select" @bind-Value="@MyAccountViewModel.GenderId" ValidateOnChange="true">
+                        <option value="0">Please select a Gender..</option>
+                        @if (Genders != null)
+                            {
+                            @foreach (var gender in Genders)
+                                {
+                                <option value="@gender.Id">@gender.Value</option>
+                                }
+                            }
+                    </BSInput>
+                    <BSFormFeedback For="@(() => MyAccountViewModel.GenderId)" />
+                </BSFormGroup>
+                <BSFormGroup>
+                    <BSLabel For="@MyAccountViewModel.CountryOfResidenceId">Country of Residence</BSLabel>
+                    <BSInput InputType="InputType.Select" @bind-Value="@MyAccountViewModel.CountryOfResidenceId" ValidateOnChange="true">
+                        <option value="0">Select a Country...</option>
+                        @if (Countries != null)
+                            {
+                            @foreach (var country in Countries)
+                                {
+                                <option value="@country.Id">@country.Name</option>
+                                }
+                            }
+                    </BSInput>
+                    <BSFormFeedback For="@(() => MyAccountViewModel.CountryOfResidenceId)" />
+                </BSFormGroup>
+                <BSFormGroup>
+                    <BSLabel For="@MyAccountViewModel.DateOfBirth">Date of Birth</BSLabel>
+                    <BSInput InputType="InputType.Date" @bind-Value="@MyAccountViewModel.DateOfBirth" ValidateOnChange="true" />
+                    <BSFormFeedback For="@(() => MyAccountViewModel.DateOfBirth)" />
+                </BSFormGroup>
+                <BSFormGroup>
+                    <BSLabel For="@MyAccountViewModel.PhoneNumber">Phone Number</BSLabel>
+                    <BSInput InputType="InputType.Tel" @bind-Value="@MyAccountViewModel.PhoneNumber" ValidateOnChange="true" />
+                    <BSFormFeedback For="@(() => MyAccountViewModel.PhoneNumber)" />
+                </BSFormGroup>
+                <BSFormGroup>
+                    <BSButton ButtonType="ButtonType.Submit" Class="btn btn-info btn-block btn-primary">Update Account</BSButton>
+                </BSFormGroup>
+            </BSForm>
+        </BSCol>
+    </BSRow>
+}
