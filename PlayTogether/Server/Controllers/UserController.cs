@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using PlayTogether.Server.Data;
@@ -12,6 +13,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Security.Claims;
+using System.Text;
 using System.Threading.Tasks;
 
 namespace PlayTogether.Server.Controllers
@@ -107,7 +109,9 @@ namespace PlayTogether.Server.Controllers
             try
             {
                 var user = new ApplicationUser { UserName = registerUserDto.UserName, Email = registerUserDto.Email };
-                var result = await _userManager.CreateAsync(user, registerUserDto.Password);
+                var password = Encoding.UTF8.GetString(WebEncoders.Base64UrlDecode(registerUserDto.Password));
+
+                var result = await _userManager.CreateAsync(user, password);
 
                 if (result.Succeeded)
                 {
@@ -148,7 +152,8 @@ namespace PlayTogether.Server.Controllers
         {
             try
             {
-                var result = await _signInManager.PasswordSignInAsync(login.UserName, login.Password, login.RememberMe, lockoutOnFailure: false);
+                var password = Encoding.UTF8.GetString(WebEncoders.Base64UrlDecode(login.Password));
+                var result = await _signInManager.PasswordSignInAsync(login.UserName, password, login.RememberMe, lockoutOnFailure: false);
 
                 if (result.Succeeded)
                     return StatusCode(StatusCodes.Status202Accepted);
@@ -172,8 +177,10 @@ namespace PlayTogether.Server.Controllers
                 if (user == null)
                     throw new Exception("Username could not be found!");
 
+                var password = Encoding.UTF8.GetString(WebEncoders.Base64UrlDecode(resetPasswordDto.Password));
                 var code = await _userManager.GeneratePasswordResetTokenAsync(user);
-                var result = await _userManager.ResetPasswordAsync(user, code, resetPasswordDto.Password);
+
+                var result = await _userManager.ResetPasswordAsync(user, code, password);
 
                 if (result.Succeeded)
                     return StatusCode(StatusCodes.Status202Accepted);
@@ -247,7 +254,11 @@ namespace PlayTogether.Server.Controllers
 
                 var idUser = GetUserId();
                 var user = await _userManager.FindByIdAsync(idUser);
-                var result = await _userManager.ChangePasswordAsync(user, changePasswordDto.OldPassword, changePasswordDto.NewPassword);
+
+                var oldPassword = Encoding.UTF8.GetString(WebEncoders.Base64UrlDecode(changePasswordDto.OldPassword));
+                var newPassword = Encoding.UTF8.GetString(WebEncoders.Base64UrlDecode(changePasswordDto.NewPassword));
+
+                var result = await _userManager.ChangePasswordAsync(user, oldPassword, newPassword);
 
                 if (result.Succeeded)
                     return StatusCode(StatusCodes.Status202Accepted);

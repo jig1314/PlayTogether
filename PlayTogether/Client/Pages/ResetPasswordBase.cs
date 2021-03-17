@@ -1,10 +1,12 @@
 ﻿using Microsoft.AspNetCore.Components;
+using Microsoft.AspNetCore.WebUtilities;
 using PlayTogether.Client.Services;
 using PlayTogether.Client.ViewModels;
 using PlayTogether.Shared.DTOs;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 using System.Threading.Tasks;
 
 namespace PlayTogether.Client.Pages
@@ -31,7 +33,7 @@ namespace PlayTogether.Client.Pages
             var resetPasswordDto = new ResetPasswordDto()
             {
                 UserName = ResetPasswordViewModel.UserName,
-                Password = ResetPasswordViewModel.Password
+                Password = WebEncoders.Base64UrlEncode(Encoding.UTF8.GetBytes(ResetPasswordViewModel.Password))
             };
 
             ErrorMessage = null;

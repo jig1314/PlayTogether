@@ -7,6 +7,8 @@ using PlayTogether.Client.ViewModels;
 using PlayTogether.Shared.Models;
 using PlayTogether.Client.Services;
 using PlayTogether.Shared.DTOs;
+using System.Text;
+using Microsoft.AspNetCore.WebUtilities;
 
 namespace PlayTogether.Client.Pages
 {
@@ -44,7 +46,7 @@ namespace PlayTogether.Client.Pages
                 LastName = RegisterViewModel.LastName,
                 Email = RegisterViewModel.Email,
                 UserName = RegisterViewModel.UserName,
-                Password = RegisterViewModel.Password,
+                Password = WebEncoders.Base64UrlEncode(Encoding.UTF8.GetBytes(RegisterViewModel.Password)),
                 GenderId = RegisterViewModel.GenderId.Value,
                 CountryOfResidenceId = RegisterViewModel.CountryOfResidenceId.Value,
                 DateOfBirth = RegisterViewModel.DateOfBirth.Value

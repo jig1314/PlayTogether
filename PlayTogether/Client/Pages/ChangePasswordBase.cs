@@ -1,11 +1,13 @@
 ﻿using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Authorization;
+using Microsoft.AspNetCore.WebUtilities;
 using PlayTogether.Client.Services;
 using PlayTogether.Client.ViewModels;
 using PlayTogether.Shared.DTOs;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 using System.Threading.Tasks;
 
 namespace PlayTogether.Client.Pages
@@ -45,8 +47,8 @@ namespace PlayTogether.Client.Pages
         {
             var changePasswordDto = new ChangePasswordDto()
             {
-                OldPassword = ChangePasswordViewModel.OldPassword,
-                NewPassword = ChangePasswordViewModel.NewPassword
+                OldPassword = WebEncoders.Base64UrlEncode(Encoding.UTF8.GetBytes(ChangePasswordViewModel.OldPassword)),
+                NewPassword = WebEncoders.Base64UrlEncode(Encoding.UTF8.GetBytes(ChangePasswordViewModel.NewPassword))
             };
 
             ErrorMessage = null;
