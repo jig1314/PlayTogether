@@ -31,6 +31,8 @@ namespace PlayTogether.Client.Pages
 
         public string ErrorMessage { get; set; }
 
+        public bool SubmittingData { get; set; } = false;
+
         protected override async Task OnInitializedAsync()
         {
             AuthenticationState = await AuthenticationStateTask;
@@ -41,22 +43,27 @@ namespace PlayTogether.Client.Pages
             }
             else
             {
-                Genders = await UserService.GetGenders();
-                Countries = await UserService.GetCountries();
-
-                var userAccountDto = await UserService.GetUserAccountInfo();
-                MyAccountViewModel = new MyAccountViewModel()
-                {
-                    UserName = userAccountDto.UserName,
-                    FirstName = userAccountDto.FirstName,
-                    LastName = userAccountDto.LastName,
-                    Email = userAccountDto.Email,
-                    DateOfBirth = userAccountDto.DateOfBirth,
-                    CountryOfResidenceId = userAccountDto.CountryOfResidenceId,
-                    GenderId = userAccountDto.GenderId,
-                    PhoneNumber = userAccountDto.PhoneNumber
-                };
+                await RefreshData();
             }
+        }
+
+        private async Task RefreshData()
+        {
+            Genders = await UserService.GetGenders();
+            Countries = await UserService.GetCountries();
+
+            var userAccountDto = await UserService.GetUserAccountInfo();
+            MyAccountViewModel = new MyAccountViewModel()
+            {
+                UserName = userAccountDto.UserName,
+                FirstName = userAccountDto.FirstName,
+                LastName = userAccountDto.LastName,
+                Email = userAccountDto.Email,
+                DateOfBirth = userAccountDto.DateOfBirth,
+                CountryOfResidenceId = userAccountDto.CountryOfResidenceId,
+                GenderId = userAccountDto.GenderId,
+                PhoneNumber = userAccountDto.PhoneNumber
+            };
         }
 
         protected async Task UpdateAccount()
@@ -77,13 +84,16 @@ namespace PlayTogether.Client.Pages
 
             try
             {
+                SubmittingData = true;
                 await UserService.UpdateUserAccountInfo(userAccountDto);
-                NavigationManager.NavigateTo("manageProfile/myAccount");
+                await RefreshData();
             }
             catch (Exception ex)
             {
                 ErrorMessage = $"{ex.Message}";
             }
+
+            SubmittingData = false;
         }
     }
 }

@@ -1,10 +1,12 @@
 ﻿using Microsoft.AspNetCore.Components;
+using Microsoft.AspNetCore.WebUtilities;
 using PlayTogether.Client.Services;
 using PlayTogether.Client.ViewModels;
 using PlayTogether.Shared.DTOs;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 using System.Threading.Tasks;
 
 namespace PlayTogether.Client.Pages
@@ -44,7 +46,7 @@ namespace PlayTogether.Client.Pages
             var loginDto = new LoginDto()
             {
                 UserName = LoginViewModel.UserName,
-                Password = LoginViewModel.Password,
+                Password = WebEncoders.Base64UrlEncode(Encoding.UTF8.GetBytes(LoginViewModel.Password)),
                 RememberMe = LoginViewModel.RememberMe
             };
 

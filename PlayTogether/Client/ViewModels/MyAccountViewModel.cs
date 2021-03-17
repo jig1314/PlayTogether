@@ -88,7 +88,12 @@ namespace PlayTogether.Client.ViewModels
 
         private bool ValidDate(DateTime? date)
         {
-            return date.HasValue;
+            if (date.HasValue)
+            {
+                return DateTime.Now.Year - date.Value.Year < 150 && DateTime.Now.Date > date.Value.Date;
+            }
+
+            return false;
         }
     }
 }

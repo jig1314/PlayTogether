@@ -2,13 +2,11 @@
 @page "/login/{returnUrl}"
 @inherits LoginBase
 
-
-
 <BSContainer>
     <BSRow>
         <div class="panel panel-primary">
             <div class="panel-body">
-                <BSForm Model="@LoginViewModel" OnValidSubmit="Login" ValidateOnInit="false">
+                <BSForm Model="@LoginViewModel" OnValidSubmit="Login">
                     @if (!string.IsNullOrWhiteSpace(ErrorMessage))
                     {
                         <BSFormGroup>
@@ -23,12 +21,12 @@
                     <DataAnnotationsValidator />
                     <BSFormGroup>
                         <BSLabel For="@LoginViewModel.UserName">Username</BSLabel>
-                        <BSInput InputType="InputType.Text" @bind-Value="@LoginViewModel.UserName" ValidateOnInput="true" />
+                        <BSInput InputType="InputType.Text" @bind-Value="@LoginViewModel.UserName"/>
                         <BSFormFeedback For="@(() => LoginViewModel.UserName)" />
                     </BSFormGroup>
                     <BSFormGroup>
                         <BSLabel For="@LoginViewModel.Password">Password</BSLabel>
-                        <BSInput InputType="InputType.Password" @bind-Value="@LoginViewModel.Password" ValidateOnInput="true" />
+                        <BSInput InputType="InputType.Password" @bind-Value="@LoginViewModel.Password"/>
                         <BSFormFeedback For="@(() => LoginViewModel.Password)" />
                     </BSFormGroup>
                     <BSFormGroup>
