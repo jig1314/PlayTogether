@@ -9,6 +9,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PlayTogether.Client", "Play
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PlayTogether.Shared", "PlayTogether\Shared\PlayTogether.Shared.csproj", "{4A6E1DD2-02D7-403D-87A4-D04FADC10347}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PlayTogether.Tests", "PlayTogether\Tests\PlayTogether.Tests.csproj", "{0699CC4B-1500-4017-8BB5-B4D4C2B2E84A}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -27,6 +29,10 @@ Global
 		{4A6E1DD2-02D7-403D-87A4-D04FADC10347}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{4A6E1DD2-02D7-403D-87A4-D04FADC10347}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{4A6E1DD2-02D7-403D-87A4-D04FADC10347}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0699CC4B-1500-4017-8BB5-B4D4C2B2E84A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0699CC4B-1500-4017-8BB5-B4D4C2B2E84A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0699CC4B-1500-4017-8BB5-B4D4C2B2E84A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0699CC4B-1500-4017-8BB5-B4D4C2B2E84A}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
