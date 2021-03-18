@@ -29,7 +29,7 @@ namespace PlayTogether.Tests.Steps
         [Given(@"I access the application")]
         public void WhenIAccessTheApplication()
         {
-            webDriver.Navigate().GoToUrl("https://localhost:44368/");
+            webDriver.Navigate().GoToUrl(Environment.GetEnvironmentVariable("PlayTogetherUrl"));
         }
 
         [When(@"I click register link")]
