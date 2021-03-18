@@ -76,11 +76,11 @@ namespace PlayTogether.Tests.Features
         
         [NUnit.Framework.TestAttribute()]
         [NUnit.Framework.DescriptionAttribute("New user creating a profile")]
-        [NUnit.Framework.CategoryAttribute("basic")]
+        [NUnit.Framework.CategoryAttribute("BDD")]
         public virtual void NewUserCreatingAProfile()
         {
             string[] tagsOfScenario = new string[] {
-                    "basic"};
+                    "BDD"};
             System.Collections.Specialized.OrderedDictionary argumentsOfScenario = new System.Collections.Specialized.OrderedDictionary();
             TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("New user creating a profile", null, tagsOfScenario, argumentsOfScenario, this._featureTags);
 #line 5

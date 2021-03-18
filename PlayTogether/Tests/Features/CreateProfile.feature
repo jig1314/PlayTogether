@@ -1,7 +1,7 @@
 ﻿Feature: Create Profile
 	As an user, I want to have the ability to create a profile so that I can access the application's features.
 
-@basic
+@BDD
 Scenario: New user creating a profile
 	Given I access the application
 	When I click register link
