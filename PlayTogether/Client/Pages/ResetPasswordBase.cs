@@ -23,7 +23,7 @@ namespace PlayTogether.Client.Pages
 
         public string ErrorMessage { get; set; }
 
-        protected override async Task OnInitializedAsync()
+        protected override void OnInitialized()
         {
             ResetPasswordViewModel = new ResetPasswordViewModel();
         }

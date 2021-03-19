@@ -15,6 +15,7 @@ using PlayTogether.Server.Data;
 using PlayTogether.Server.Models;
 using BlazorStrap;
 using PlayTogether.Server.Repositories;
+using System;
 
 namespace PlayTogether.Server
 {
@@ -32,8 +33,9 @@ namespace PlayTogether.Server
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddDbContext<ApplicationDbContext>(options =>
-                options.UseSqlServer(
-                    Configuration.GetConnectionString("DefaultConnection")));
+                options.UseSqlServer(Environment.GetEnvironmentVariable("PlayTogetherConnectionString")));
+
+            services.AddDatabaseDeveloperPageExceptionFilter();
 
             services.AddScoped<IVideoGameRepository, VideoGameRepository>();
 
@@ -57,7 +59,7 @@ namespace PlayTogether.Server
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
-                app.UseDatabaseErrorPage();
+                app.UseMigrationsEndPoint();
                 app.UseWebAssemblyDebugging();
             }
             else

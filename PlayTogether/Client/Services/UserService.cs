@@ -38,9 +38,9 @@ namespace PlayTogether.Client.Services
                     throw new ApplicationException(content);
                 }
             }
-            catch (Exception ex)
+            catch (Exception)
             {
-                throw ex;
+                throw;
             }
         }
 
@@ -55,9 +55,9 @@ namespace PlayTogether.Client.Services
                     throw new ApplicationException(content);
                 }
             }
-            catch (Exception ex)
+            catch (Exception)
             {
-                throw ex;
+                throw;
             }
         }
 
