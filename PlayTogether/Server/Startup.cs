@@ -33,7 +33,7 @@ namespace PlayTogether.Server
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddDbContext<ApplicationDbContext>(options =>
-                options.UseSqlServer(Environment.GetEnvironmentVariable("PlayTogetherConnectionString")));
+                options.UseSqlServer(Environment.GetEnvironmentVariable("DefaultConnection")));
 
             services.AddDatabaseDeveloperPageExceptionFilter();
 
