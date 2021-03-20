@@ -8,6 +8,7 @@ using TechTalk.SpecFlow;
 using TechTalk.SpecFlow.Assist;
 using PlayTogether.Tests.Pages;
 using NUnit.Framework;
+using RestSharp;
 
 namespace PlayTogether.Tests.Steps
 {
@@ -18,6 +19,8 @@ namespace PlayTogether.Tests.Steps
         private readonly IWebDriver webDriver;
         private readonly CreateProfilePage createProfilePage;
 
+        private string PlayTogetherBaseUrl;
+
         public CreateProfileSteps()
         {
             webDriver = new ChromeDriver();
@@ -26,10 +29,16 @@ namespace PlayTogether.Tests.Steps
             createProfilePage = new CreateProfilePage(webDriver);
         }
 
+        [BeforeScenario]
+        public void SetBaseUrl()
+        {
+            PlayTogetherBaseUrl = Environment.GetEnvironmentVariable("PlayTogetherUrl");
+        }
+
         [Given(@"I access the application")]
         public void WhenIAccessTheApplication()
         {
-            webDriver.Navigate().GoToUrl(Environment.GetEnvironmentVariable("PlayTogetherUrl"));
+            webDriver.Navigate().GoToUrl(PlayTogetherBaseUrl);
         }
 
         [When(@"I click register link")]
@@ -54,6 +63,10 @@ namespace PlayTogether.Tests.Steps
         [AfterScenario]
         public void Dispose()
         {
+            var client = new RestClient(PlayTogetherBaseUrl);
+            var request = new RestRequest("api/user/delete/testName", Method.DELETE);
+            client.Execute(request);
+
             webDriver.Dispose();
         }
     }
