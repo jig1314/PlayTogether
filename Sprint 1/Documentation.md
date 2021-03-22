@@ -18,9 +18,15 @@ TBD
 The developers worked together to develop the initial unit test suite.  
 Video: https://youtu.be/v346PBahVUY
 
-## BDD Test Case
+## BDD Test Cases
 A BDD test was developed for Work Item/Test Case 38 which tests the Create Profile user story. The Test has been automated, integrated into the CI/CD pipeline and successfully run against each environment.  
-More information at: https://dev.azure.com/SWE6733-Team3/PlayTogether/_workitems/edit/38/
+More information at: https://dev.azure.com/SWE6733-Team3/PlayTogether/_workitems/edit/38/  
+More tests will be developed in future iterations,
+
+## Unit tests
+The development team has developed unit tests centered around the vaidation functionality of the Razor Pages using FluentValidation and its testing functionality.  
+Unit Tests have been integrated into the CI/CD build pipeline and has successfully passed.  
+See example here: https://dev.azure.com/SWE6733-Team3/PlayTogether/_build/results?buildId=20&view=ms.vss-test-web.build-test-results-tab
 
 ## Sprint Review/Retrospective
 TBD
