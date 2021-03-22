@@ -3,6 +3,9 @@ PlayTogether is a Progressive Web Application built with the Blazor Framework fo
 
 # Environments
 
+## Production URL
+https://play-together.azurewebsites.net/
+
 ## Test URL
 https://playtogether-test.azurewebsites.net/
 
