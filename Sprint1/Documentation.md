@@ -27,5 +27,5 @@ TBD
 
 ## Working prototype
 During this sprint, the test and production environments were stood up and the CI/CD pipeline was developed to delivery updates to these environments.  
-Test: https://playtogether-test.azurewebsites.net/
+Test: https://playtogether-test.azurewebsites.net/  
 Production: TBD
