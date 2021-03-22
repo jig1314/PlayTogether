@@ -36,3 +36,6 @@ Our backlog is ordered according to the expected workflow of the gamers that wil
 * Miche Isaac - Product Owner
 * Terrence Shannon - Product Owner/Developer
 * Wyatt Landers - Developer
+
+# Sprint Information
+## Sprint 1
