@@ -1,4 +1,5 @@
 ﻿using FluentValidation;
+using FluentValidation.Validators;
 using PlayTogether.Shared.Models;
 using System;
 using System.Collections.Generic;
@@ -49,7 +50,7 @@ namespace PlayTogether.Client.ViewModels
             RuleFor(x => x.Email)
                 .NotEmpty()
                 .WithMessage("Please enter valid email address")
-                .EmailAddress()
+                .EmailAddress(EmailValidationMode.AspNetCoreCompatible)
                 .WithMessage("Please enter valid email address");
 
             RuleFor(x => x.UserName)
