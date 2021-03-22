@@ -1,6 +1,11 @@
 # Introduction 
 PlayTogether is a Progressive Web Application built with the Blazor Framework for builidng web application and uses a .NET Core Web API to commuincate with a SQL Database and external APIs. 
 
+# Environments
+
+## Test URL
+https://playtogether-test.azurewebsites.net/
+
 # Product Vision
 Our team’s near vision is to develop the most innovate software concept that will provide the ability for gamers to create and manage profiles based on personal and gaming information and to have access to other gamer’s profiles.
 
@@ -38,4 +43,6 @@ Our backlog is ordered according to the expected workflow of the gamers that wil
 * Wyatt Landers - Developer
 
 # Sprint Information
+
 ## Sprint 1
+All documentation about Sprint 1 can be found in the Sprint 1 folder in thie repo. The Documentation.md will provide additional information.
