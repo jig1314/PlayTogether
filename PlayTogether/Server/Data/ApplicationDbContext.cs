@@ -7,6 +7,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using PlayTogether.Shared.Models;
 
 namespace PlayTogether.Server.Data
 {
@@ -17,5 +18,87 @@ namespace PlayTogether.Server.Data
             IOptions<OperationalStoreOptions> operationalStoreOptions) : base(options, operationalStoreOptions)
         {
         }
+
+        public DbSet<ApplicationUserDetails> ApplicationUserDetails { get; set; }
+
+        public DbSet<Country> Countries { get; set; }
+
+        public DbSet<Gender> Genders { get; set; }
+
+        public DbSet<GamingPlatform> GamingPlatforms { get; set; }
+
+        public DbSet<AppSetting> AppSettings { get; set; }
+
+        public DbSet<ApplicationUser_GamingPlatform> ApplicationUser_GamingPlatform { get; set; }
+
+        public DbSet<GameGenre> GameGenres { get; set; }
+
+        public DbSet<ApplicationUser_GameGenre> ApplicationUser_GameGenres { get; set; }
+
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            base.OnModelCreating(modelBuilder);
+
+            modelBuilder.Entity<ApplicationUserDetails>()
+                .HasKey(detail => detail.ApplicationUserId)
+                .HasName("PrimaryKey_ApplicationUserId");
+
+            modelBuilder.Entity<ApplicationUserDetails>()
+                .HasOne(detail => detail.ApplicationUser)
+                .WithOne(user => user.ApplicationUserDetails)
+                .IsRequired()
+                .HasForeignKey<ApplicationUserDetails>(detail => detail.ApplicationUserId)
+                .HasConstraintName("ForeignKey_User_UserDetails");
+
+            modelBuilder.Entity<ApplicationUserDetails>()
+                .HasOne(detail => detail.CountryOfResidence)
+                .WithOne()
+                .IsRequired()
+                .HasForeignKey<ApplicationUserDetails>(detail => detail.CountryOfResidenceId)
+                .HasConstraintName("ForeignKey_User_Country")
+                .OnDelete(DeleteBehavior.NoAction);
+
+            modelBuilder.Entity<ApplicationUserDetails>()
+                .HasOne(detail => detail.Gender)
+                .WithOne()
+                .IsRequired()
+                .HasForeignKey<ApplicationUserDetails>(detail => detail.GenderId)
+                .HasConstraintName("ForeignKey_User_Gender")
+                .OnDelete(DeleteBehavior.NoAction);
+
+            modelBuilder.Entity<ApplicationUser_GamingPlatform>()
+                .HasKey(mapping => new { mapping.ApplicationUserId, mapping.GamingPlatformId })
+                .HasName("PrimaryKey_ApplicationUserId_GamingPlatformId");
+
+            modelBuilder.Entity<ApplicationUser_GamingPlatform>()
+                .HasOne(mapping => mapping.ApplicationUser)
+                .WithMany(user => user.GamingPlatforms)
+                .HasForeignKey(mapping => mapping.ApplicationUserId)
+                .HasConstraintName("ForeignKey_User_GamingPlatform_ApplicationUserId");
+
+            modelBuilder.Entity<ApplicationUser_GamingPlatform>()
+                .HasOne(mapping => mapping.GamingPlatform)
+                .WithMany(platform => platform.Users)
+                .HasForeignKey(mapping => mapping.GamingPlatformId)
+                .HasConstraintName("ForeignKey_User_GamingPlatform_GamingPlatformId");
+
+            modelBuilder.Entity<ApplicationUser_GameGenre>()
+                .HasKey(mapping => new { mapping.ApplicationUserId, mapping.GameGenreId })
+                .HasName("PrimaryKey_ApplicationUserId_GameGenreId");
+
+            modelBuilder.Entity<ApplicationUser_GameGenre>()
+                .HasOne(mapping => mapping.ApplicationUser)
+                .WithMany(user => user.GameGenres)
+                .HasForeignKey(mapping => mapping.ApplicationUserId)
+                .HasConstraintName("ForeignKey_User_GameGenre_ApplicationUserId");
+
+            modelBuilder.Entity<ApplicationUser_GameGenre>()
+                .HasOne(mapping => mapping.GameGenre)
+                .WithMany(platform => platform.Users)
+                .HasForeignKey(mapping => mapping.GameGenreId)
+                .HasConstraintName("ForeignKey_User_GamingPlatform_GameGenreId");
+
+        }
+
     }
 }

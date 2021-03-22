@@ -1,0 +1,107 @@
+﻿@page
+@model LoginModel
+
+@{
+    ViewData["Title"] = "Log in";
+}
+
+<div class="container">
+    <div class="row">
+        <div class="panel panel-primary">
+            <div class="panel-body">
+                <form id="account" method="post">
+                    <div class="form-group">
+                        <h2>Log In</h2>
+                    </div>
+                    <div asp-validation-summary="All" class="text-danger"></div>
+                    <div class="form-group">
+                        <label asp-for="Input.UserName"></label>
+                        <input asp-for="Input.UserName" class="form-control" />
+                        <span asp-validation-for="Input.UserName" class="text-danger"></span>
+                    </div>
+                    <div class="form-group">
+                        <label asp-for="Input.Password"></label>
+                        <input asp-for="Input.Password" class="form-control" />
+                        <span asp-validation-for="Input.Password" class="text-danger"></span>
+                    </div>
+                    <div class="form-group">
+                        <p>
+                            <a id="forgot-password" asp-page="./ForgotPassword">Forgot your password?</a>
+                        </p>
+                    </div>
+                    <div class="row">
+                        <div class="col-xs-12 col-sm-6">
+                            <div class="checkbox">
+                                <label id="rememberMeLabel" asp-for="Input.RememberMe">
+                                    <input asp-for="Input.RememberMe" />
+                                    @Html.DisplayNameFor(m => m.Input.RememberMe)
+                                </label>
+                            </div>
+                        </div>
+                        <div class="col-xs-12 col-sm-6">
+                            <button type="submit" class="btn btn-info btn-block btn-primary">Log in</button>
+                        </div>
+                    </div>
+                    <hr/>
+                    <div class="form-group">
+                        <p>
+                            <a asp-page="./Register" asp-route-returnUrl="@Model.ReturnUrl"><input class="btn btn-info btn-block btn-primary" value="Register as a new user"></a>
+                        </p>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}
+
+<style>
+
+    form {
+        margin: 0px 10px;
+    }
+
+    h2 {
+        margin-top: 2px;
+        margin-bottom: 2px;
+        text-align: center;
+    }
+
+    #rememberMeLabel{
+        margin-top: .5rem;
+    }
+
+    .panel-primary {
+        width: 100%;
+    }
+
+    .checkbox{
+        height: 100%;
+    }
+
+    .container {
+        max-width: 450px;
+    }
+
+    .divider {
+        text-align: center;
+        margin-top: 20px;
+        margin-bottom: 5px;
+    }
+
+        .divider hr {
+            margin: 7px 0px;
+            width: 35%;
+        }
+
+    .left {
+        float: left;
+    }
+
+    .right {
+        float: right;
+    }
+</style>
