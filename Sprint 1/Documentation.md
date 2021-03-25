@@ -12,7 +12,8 @@ https://dev.azure.com/SWE6733-Team3/PlayTogether/_sprints/taskboard/PlayTogether
 https://dev.azure.com/SWE6733-Team3/PlayTogether/_dashboards/dashboard/b8e2ecb6-bcc4-4b45-ac7b-6944d54fb5c4
 
 ## Daily Scrum Reports
-TBD
+Our team recorded our reports from our scrum meetings in an excel workbook. Each worksheet represents each meeting.  
+Link to scrum reports for this sprint: https://dev.azure.com/SWE6733-Team3/_git/PlayTogether?path=%2FSprint%201%2FScrum%20Reports%20(Sprint%201).xlsx&version=GBsprint1Documentation
 
 ## Sprint 1 Mob Programming Session
 The developers worked together to develop the initial unit test suite.  
