@@ -30,7 +30,11 @@ Unit Tests have been integrated into the CI/CD build pipeline and has successful
 See example here: https://dev.azure.com/SWE6733-Team3/PlayTogether/_build/results?buildId=20&view=ms.vss-test-web.build-test-results-tab
 
 ## Sprint Review/Retrospective
-TBD
+Our team recorded our sprint review in a Word document.  
+Here is the link to the document: https://dev.azure.com/SWE6733-Team3/_git/PlayTogether?path=%2FSprint%201%2FSprint%201%20Review.docx&version=GBsprint1Documentation  
+  
+Our team recorded our retrospective of Sprint 1 reports in an excel workbook.  
+Link to scrum reports for this sprint: https://dev.azure.com/SWE6733-Team3/_git/PlayTogether?path=%2FSprint%201%2FSprint%201%20Retrospective.xlsx&version=GBsprint1Documentation  
 
 ## Working prototype
 During this sprint, the test and production environments were stood up and the CI/CD pipeline was developed to delivery updates to these environments.  
