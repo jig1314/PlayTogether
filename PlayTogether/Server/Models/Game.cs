@@ -12,7 +12,7 @@ namespace PlayTogether.Server.Models
         public int Id { get; set; }
 
         [Required]
-        public int ApiId { get; set; }
+        public long ApiId { get; set; }
 
         [Required]
         public string Name { get; set; }
@@ -21,8 +21,6 @@ namespace PlayTogether.Server.Models
 
         [Required]
         public DateTime ReleaseDate { get; set; }
-
-        public int GameCoverId { get; set; }
 
         public GameCover GameCover { get; set; }
 

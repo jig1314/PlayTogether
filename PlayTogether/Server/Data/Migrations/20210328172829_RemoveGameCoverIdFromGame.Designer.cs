@@ -3,15 +3,17 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using PlayTogether.Server.Data;
 
 namespace PlayTogether.Server.Data.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20210328172829_RemoveGameCoverIdFromGame")]
+    partial class RemoveGameCoverIdFromGame
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -450,9 +452,6 @@ namespace PlayTogether.Server.Data.Migrations
 
             modelBuilder.Entity("PlayTogether.Server.Models.GameCover", b =>
                 {
-                    b.Property<int>("GameId")
-                        .HasColumnType("int");
-
                     b.Property<int>("Height")
                         .HasColumnType("int");
 
@@ -462,9 +461,6 @@ namespace PlayTogether.Server.Data.Migrations
 
                     b.Property<int>("Width")
                         .HasColumnType("int");
-
-                    b.HasKey("GameId")
-                        .HasName("PrimaryKey_GameId");
 
                     b.ToTable("GameCovers");
                 });
@@ -731,18 +727,6 @@ namespace PlayTogether.Server.Data.Migrations
                     b.Navigation("GamingPlatform");
                 });
 
-            modelBuilder.Entity("PlayTogether.Server.Models.GameCover", b =>
-                {
-                    b.HasOne("PlayTogether.Server.Models.Game", "Game")
-                        .WithOne("GameCover")
-                        .HasForeignKey("PlayTogether.Server.Models.GameCover", "GameId")
-                        .HasConstraintName("ForeignKey_GameCover_Game")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Game");
-                });
-
             modelBuilder.Entity("PlayTogether.Server.Models.GameGenre_Game", b =>
                 {
                     b.HasOne("PlayTogether.Server.Models.GameGenre", "GameGenre")
@@ -798,8 +782,6 @@ namespace PlayTogether.Server.Data.Migrations
 
             modelBuilder.Entity("PlayTogether.Server.Models.Game", b =>
                 {
-                    b.Navigation("GameCover");
-
                     b.Navigation("GameGenres");
 
                     b.Navigation("GamingPlatforms");

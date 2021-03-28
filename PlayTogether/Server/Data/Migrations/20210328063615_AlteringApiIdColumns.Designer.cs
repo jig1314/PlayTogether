@@ -3,15 +3,17 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using PlayTogether.Server.Data;
 
 namespace PlayTogether.Server.Data.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20210328063615_AlteringApiIdColumns")]
+    partial class AlteringApiIdColumns
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -433,6 +435,9 @@ namespace PlayTogether.Server.Data.Migrations
                     b.Property<long>("ApiId")
                         .HasColumnType("bigint");
 
+                    b.Property<int>("GameCoverId")
+                        .HasColumnType("int");
+
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -445,13 +450,18 @@ namespace PlayTogether.Server.Data.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("GameCoverId")
+                        .IsUnique();
+
                     b.ToTable("Games");
                 });
 
             modelBuilder.Entity("PlayTogether.Server.Models.GameCover", b =>
                 {
                     b.Property<int>("GameId")
-                        .HasColumnType("int");
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
                     b.Property<int>("Height")
                         .HasColumnType("int");
@@ -731,16 +741,16 @@ namespace PlayTogether.Server.Data.Migrations
                     b.Navigation("GamingPlatform");
                 });
 
-            modelBuilder.Entity("PlayTogether.Server.Models.GameCover", b =>
+            modelBuilder.Entity("PlayTogether.Server.Models.Game", b =>
                 {
-                    b.HasOne("PlayTogether.Server.Models.Game", "Game")
-                        .WithOne("GameCover")
-                        .HasForeignKey("PlayTogether.Server.Models.GameCover", "GameId")
-                        .HasConstraintName("ForeignKey_GameCover_Game")
+                    b.HasOne("PlayTogether.Server.Models.GameCover", "GameCover")
+                        .WithOne("Game")
+                        .HasForeignKey("PlayTogether.Server.Models.Game", "GameCoverId")
+                        .HasConstraintName("ForeignKey_Game_GameCover")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("Game");
+                    b.Navigation("GameCover");
                 });
 
             modelBuilder.Entity("PlayTogether.Server.Models.GameGenre_Game", b =>
@@ -798,13 +808,17 @@ namespace PlayTogether.Server.Data.Migrations
 
             modelBuilder.Entity("PlayTogether.Server.Models.Game", b =>
                 {
-                    b.Navigation("GameCover");
-
                     b.Navigation("GameGenres");
 
                     b.Navigation("GamingPlatforms");
 
                     b.Navigation("Users");
+                });
+
+            modelBuilder.Entity("PlayTogether.Server.Models.GameCover", b =>
+                {
+                    b.Navigation("Game")
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("PlayTogether.Server.Models.GameGenre", b =>

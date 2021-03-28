@@ -119,13 +119,6 @@ namespace PlayTogether.Server.Data
                 .HasForeignKey<GameCover>(detail => detail.GameId)
                 .HasConstraintName("ForeignKey_GameCover_Game");
 
-            modelBuilder.Entity<Game>()
-                .HasOne(game => game.GameCover)
-                .WithOne(cover => cover.Game)
-                .IsRequired()
-                .HasForeignKey<Game>(game => game.GameCoverId)
-                .HasConstraintName("ForeignKey_Game_GameCover");
-
             modelBuilder.Entity<ApplicationUser_Game>()
                 .HasKey(mapping => new { mapping.ApplicationUserId, mapping.GameId })
                 .HasName("PrimaryKey_ApplicationUserId_GameId");
