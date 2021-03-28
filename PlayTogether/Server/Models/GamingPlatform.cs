@@ -10,6 +10,9 @@ namespace PlayTogether.Server.Models
         [Key]
         public int Id { get; set; }
 
+        [Required]
+        public int ApiId { get; set; }
+
         public string Abbreviation { get; set; }
 
         [Required]
