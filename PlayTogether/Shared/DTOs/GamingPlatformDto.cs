@@ -8,7 +8,7 @@ namespace PlayTogether.Shared.DTOs
     {
         public int Id { get; set; }
 
-        public int ApiId { get; set; }
+        public long ApiId { get; set; }
 
         public string Abbreviation { get; set; }
 

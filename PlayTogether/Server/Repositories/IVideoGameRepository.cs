@@ -1,13 +1,14 @@
-﻿using PlayTogether.Server.Models;
-using System;
+﻿using IGDB.Models;
+using PlayTogether.Shared.DTOs;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 
 namespace PlayTogether.Server.Repositories
 {
     public interface IVideoGameRepository
     {
-        Task<List<GameGenre>> GetGameGenresAsync();
+        Task<IEnumerable<Game>> GetGamesAsync(GameSearchDto gameSearch);
+
+        Task<Game> GetGameAsync(long apiId);
     }
 }

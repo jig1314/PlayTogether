@@ -109,7 +109,7 @@ namespace PlayTogether.Server.Controllers
             }
             catch (Exception)
             {
-                return StatusCode(StatusCodes.Status500InternalServerError, "Error updating gaming } for the user");
+                return StatusCode(StatusCodes.Status500InternalServerError, "Error updating gaming genres for the user");
             }
         }
 

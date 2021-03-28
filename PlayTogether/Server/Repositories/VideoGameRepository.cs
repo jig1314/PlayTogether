@@ -1,14 +1,11 @@
 ﻿using IGDB;
 using IGDB.Models;
 using Microsoft.EntityFrameworkCore;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
 using PlayTogether.Server.Data;
-using PlayTogether.Server.Enums;
-using PlayTogether.Server.Models;
-using System;
+using PlayTogether.Shared.DTOs;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 using System.Threading.Tasks;
 
 namespace PlayTogether.Server.Repositories
@@ -30,19 +27,42 @@ namespace PlayTogether.Server.Repositories
             return (clientId, authorization);
         }
 
-        public async Task<List<GameGenre>> GetGameGenresAsync()
+        public async Task<IEnumerable<Game>> GetGamesAsync(GameSearchDto gameSearch)
         {
             var apiHeaders = await GetHeaders();
             var client = new IGDBClient(apiHeaders.clientId, apiHeaders.authorization);
-            var genres = await client.QueryAsync<Genre>(IGDBClient.Endpoints.Genres, query: "fields *; limit 200;");
 
-            var gameGenres = genres.Select(genre => new GameGenre()
+            var query = new StringBuilder(" fields *; limit 500; ");
+
+            if (!string.IsNullOrWhiteSpace(gameSearch.SearchCriteria))
             {
-                Name = genre.Name,
-                Slug = genre.Slug
-            }).ToList();
+                query.AppendFormat($" search \"{gameSearch.SearchCriteria}\"; ");
+            }
 
-            return gameGenres;
+            if (gameSearch.GameGenreApiIds?.Count > 0)
+            {
+                query.AppendFormat($" where genres = ({string.Join(',', gameSearch.GameGenreApiIds)}); ");
+            }
+
+            if (gameSearch.GamingPlatformApiIds?.Count > 0)
+            {
+                query.AppendFormat($" where platforms = ({string.Join(',', gameSearch.GamingPlatformApiIds)}); ");
+            }
+
+            var games = await client.QueryAsync<Game>(IGDBClient.Endpoints.Games, query: query.ToString());
+
+            return games;
+        }
+
+        public async Task<Game> GetGameAsync(long apiId)
+        {
+            var apiHeaders = await GetHeaders();
+            var client = new IGDBClient(apiHeaders.clientId, apiHeaders.authorization);
+
+            var query = $" fields *; limit 1; where id = {apiId}; ";
+
+            var results = await client.QueryAsync<Game>(IGDBClient.Endpoints.Games, query: query);
+            return results.ToList().FirstOrDefault();
         }
     }
 }
