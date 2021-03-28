@@ -24,7 +24,7 @@ namespace PlayTogether.Tests.Steps
         public CreateProfileSteps()
         {
             webDriver = new ChromeDriver();
-            webDriver.Manage().Timeouts().ImplicitWait = new TimeSpan(0, 0, 10);
+            webDriver.Manage().Timeouts().ImplicitWait = new TimeSpan(0, 0, 30);
 
             createProfilePage = new CreateProfilePage(webDriver);
         }
