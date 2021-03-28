@@ -6,13 +6,8 @@
 
 <AuthorizeView>
     <Authorized>
-<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< development
         <a href="manageProfile/myAccount">@context.User.Identity.Name!</a>
         <button id="logOutButton" class="nav-link btn btn-link" @onclick="BeginSignOut">Log out</button>
-========================================================================
-        <a href="manageProfile/myAccount">@context.User.Identity.Name</a>
-        <button class="nav-link btn btn-link" @onclick="BeginSignOut">Log out</button>
->>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> FrontEnd
     </Authorized>
     <NotAuthorized>
         <a id="registerLink" href="register">Register</a>
