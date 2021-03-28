@@ -35,6 +35,16 @@ namespace PlayTogether.Server.Data
 
         public DbSet<ApplicationUser_GameGenre> ApplicationUser_GameGenres { get; set; }
 
+        public DbSet<Game> Games { get; set; }
+
+        public DbSet<GameCover> GameCovers { get; set; }
+
+        public DbSet<GameGenre_Game> GameGenre_Games { get; set; }
+
+        public DbSet<GamingPlatform_Game> GamingPlatform_Games { get; set; }
+
+        public DbSet<ApplicationUser_Game> ApplicationUser_Games { get; set; }
+
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
@@ -98,7 +108,72 @@ namespace PlayTogether.Server.Data
                 .HasForeignKey(mapping => mapping.GameGenreId)
                 .HasConstraintName("ForeignKey_User_GamingPlatform_GameGenreId");
 
-        }
+            modelBuilder.Entity<GameCover>()
+                .HasKey(detail => detail.GameId)
+                .HasName("PrimaryKey_GameId");
 
+            modelBuilder.Entity<GameCover>()
+                .HasOne(cover => cover.Game)
+                .WithOne(game => game.GameCover)
+                .IsRequired()
+                .HasForeignKey<GameCover>(detail => detail.GameId)
+                .HasConstraintName("ForeignKey_GameCover_Game");
+
+            modelBuilder.Entity<Game>()
+                .HasOne(game => game.GameCover)
+                .WithOne(cover => cover.Game)
+                .IsRequired()
+                .HasForeignKey<Game>(game => game.GameCoverId)
+                .HasConstraintName("ForeignKey_Game_GameCover");
+
+            modelBuilder.Entity<ApplicationUser_Game>()
+                .HasKey(mapping => new { mapping.ApplicationUserId, mapping.GameId })
+                .HasName("PrimaryKey_ApplicationUserId_GameId");
+
+            modelBuilder.Entity<ApplicationUser_Game>()
+                .HasOne(mapping => mapping.ApplicationUser)
+                .WithMany(user => user.Games)
+                .HasForeignKey(mapping => mapping.ApplicationUserId)
+                .HasConstraintName("ForeignKey_User_Game_ApplicationUserId");
+
+            modelBuilder.Entity<ApplicationUser_Game>()
+                .HasOne(mapping => mapping.Game)
+                .WithMany(game => game.Users)
+                .HasForeignKey(mapping => mapping.GameId)
+                .HasConstraintName("ForeignKey_User_Game_GameId");
+
+            modelBuilder.Entity<GamingPlatform_Game>()
+                .HasKey(mapping => new { mapping.GamingPlatformId, mapping.GameId })
+                .HasName("PrimaryKey_GamingPlatformId_GameId");
+
+            modelBuilder.Entity<GamingPlatform_Game>()
+                .HasOne(mapping => mapping.GamingPlatform)
+                .WithMany(platform => platform.Games)
+                .HasForeignKey(mapping => mapping.GamingPlatformId)
+                .HasConstraintName("ForeignKey_GamingPlatform_Game_GamingPlatformId");
+
+            modelBuilder.Entity<GamingPlatform_Game>()
+                .HasOne(mapping => mapping.Game)
+                .WithMany(game => game.GamingPlatforms)
+                .HasForeignKey(mapping => mapping.GameId)
+                .HasConstraintName("ForeignKey_GamingPlatform_Game_GameId");
+
+            modelBuilder.Entity<GameGenre_Game>()
+                .HasKey(mapping => new { mapping.GameGenreId, mapping.GameId })
+                .HasName("PrimaryKey_GameGenreId_GameId");
+
+            modelBuilder.Entity<GameGenre_Game>()
+                .HasOne(mapping => mapping.GameGenre)
+                .WithMany(platform => platform.Games)
+                .HasForeignKey(mapping => mapping.GameGenreId)
+                .HasConstraintName("ForeignKey_GameGenre_Game_GameGenreId");
+
+            modelBuilder.Entity<GameGenre_Game>()
+                .HasOne(mapping => mapping.Game)
+                .WithMany(game => game.GameGenres)
+                .HasForeignKey(mapping => mapping.GameId)
+                .HasConstraintName("ForeignKey_GameGenre_Game_GameId");
+
+        }
     }
 }

@@ -20,5 +20,7 @@ namespace PlayTogether.Server.Models
         public string LogoURL { get; set; }
 
         public List<ApplicationUser_GamingPlatform> Users { get; set; }
+
+        public List<GamingPlatform_Game> Games { get; set; }
     }
 }

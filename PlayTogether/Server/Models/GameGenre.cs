@@ -17,5 +17,7 @@ namespace PlayTogether.Server.Models
         public string Slug { get; set; }
 
         public List<ApplicationUser_GameGenre> Users { get; set; }
+
+        public List<GameGenre_Game> Games { get; set; }
     }
 }
