@@ -37,8 +37,6 @@ namespace PlayTogether.Server.Data
 
         public DbSet<Game> Games { get; set; }
 
-        public DbSet<GameCover> GameCovers { get; set; }
-
         public DbSet<GameGenre_Game> GameGenre_Games { get; set; }
 
         public DbSet<GamingPlatform_Game> GamingPlatform_Games { get; set; }
@@ -107,17 +105,6 @@ namespace PlayTogether.Server.Data
                 .WithMany(platform => platform.Users)
                 .HasForeignKey(mapping => mapping.GameGenreId)
                 .HasConstraintName("ForeignKey_User_GamingPlatform_GameGenreId");
-
-            modelBuilder.Entity<GameCover>()
-                .HasKey(detail => detail.GameId)
-                .HasName("PrimaryKey_GameId");
-
-            modelBuilder.Entity<GameCover>()
-                .HasOne(cover => cover.Game)
-                .WithOne(game => game.GameCover)
-                .IsRequired()
-                .HasForeignKey<GameCover>(detail => detail.GameId)
-                .HasConstraintName("ForeignKey_GameCover_Game");
 
             modelBuilder.Entity<ApplicationUser_Game>()
                 .HasKey(mapping => new { mapping.ApplicationUserId, mapping.GameId })
