@@ -25,6 +25,8 @@ namespace PlayTogether.Server.Data
 
         public DbSet<Gender> Genders { get; set; }
 
+        public DbSet<GameSkillLevel> GameSkillLevels { get; set; }
+
         public DbSet<GamingPlatform> GamingPlatforms { get; set; }
 
         public DbSet<AppSetting> AppSettings { get; set; }
@@ -154,6 +156,12 @@ namespace PlayTogether.Server.Data
                 .HasForeignKey(mapping => mapping.GameId)
                 .HasConstraintName("ForeignKey_GameGenre_Game_GameId");
 
+            modelBuilder.Entity<ApplicationUser_Game>()
+                .HasOne(mapping => mapping.GameSkillLevel)
+                .WithOne()
+                .HasForeignKey<ApplicationUser_Game>(mapping => mapping.GameSkillLevelId)
+                .HasConstraintName("ForeignKey_User_Game_GameSkillLevelId")
+                .OnDelete(DeleteBehavior.NoAction);
         }
     }
 }
