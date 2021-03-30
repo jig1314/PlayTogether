@@ -30,7 +30,7 @@ namespace PlayTogether.Server.Data.Migrations
                 name: "IX_ApplicationUser_Games_GameSkillLevelId",
                 table: "ApplicationUser_Games",
                 column: "GameSkillLevelId",
-                unique: true,
+                unique: false,
                 filter: "[GameSkillLevelId] IS NOT NULL");
 
             migrationBuilder.AddForeignKey(
