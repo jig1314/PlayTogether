@@ -63,7 +63,7 @@ namespace PlayTogether.Server.Controllers
         }
 
         [HttpGet("userGames")]
-        public async Task<ActionResult<IEnumerable<GameDto>>> GetUserGames()
+        public async Task<ActionResult<IEnumerable<UserGameDto>>> GetUserGames()
         {
             try
             {
@@ -76,14 +76,15 @@ namespace PlayTogether.Server.Controllers
                 var userGames = await _context.ApplicationUser_Games.Where(mapping => mapping.ApplicationUserId == idUser)
                     .Include(mapping => mapping.Game).ToListAsync();
 
-                var gameDtos = userGames.Select(mapping => mapping.Game).Select(game => new GameDto()
+                var gameDtos = userGames.Select(mapping => mapping).Select(mapping => new UserGameDto()
                 {
-                    Id = game.Id,
-                    ApiId = game.ApiId,
-                    Name = game.Name,
-                    Summary = game.Summary,
-                    ReleaseDate = game.ReleaseDate,
-                    ImageUrl = game.ImageUrl
+                    Id = mapping.Game.Id,
+                    ApiId = mapping.Game.ApiId,
+                    Name = mapping.Game.Name,
+                    Summary = mapping.Game.Summary,
+                    ReleaseDate = mapping.Game.ReleaseDate,
+                    ImageUrl = mapping.Game.ImageUrl,
+                    GameSkillLevelId = mapping.GameSkillLevelId
                 });
 
                 return Ok(gameDtos);
@@ -94,8 +95,23 @@ namespace PlayTogether.Server.Controllers
             }
         }
 
+        [HttpGet("gameSkillLevels")]
+        public async Task<ActionResult<IEnumerable<GameSkillLevel>>> GetGameSkillLevels()
+        {
+            try
+            {
+                var gameSkillLevels = await _context.GameSkillLevels.ToListAsync();
+
+                return Ok(gameSkillLevels);
+            }
+            catch (Exception)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, "Error retreiving game skill levels!");
+            }
+        }
+
         [HttpPost("addUserGame")]
-        public async Task<IActionResult> AddUserGame(GameDto game)
+        public async Task<IActionResult> AddUserGame(UserGameDto game)
         {
             try
             {
@@ -184,6 +200,31 @@ namespace PlayTogether.Server.Controllers
             await _context.SaveChangesAsync();
 
             return newGame.Id;
+        }
+
+        [HttpPut("updateUserGameSkillLevel")]
+        public async Task<ActionResult> UpdateUserGameSkillLevel(UserGameDto userGameDto)
+        {
+            try
+            {
+                if (!HttpContext.User.Identity.IsAuthenticated)
+                {
+                    return StatusCode(StatusCodes.Status401Unauthorized, "Error update game skill level for the user");
+                }
+
+                var idUser = GetUserId();
+                var userGame = await _context.ApplicationUser_Games.FirstOrDefaultAsync(x => x.ApplicationUserId == idUser && x.GameId == userGameDto.Id.Value);
+                userGame.GameSkillLevelId = userGameDto.GameSkillLevelId;
+
+                _context.Entry(userGame).State = EntityState.Modified;
+                await _context.SaveChangesAsync();
+
+                return StatusCode(StatusCodes.Status202Accepted);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, "Error update game skill level for the user");
+            }
         }
 
         [HttpDelete("deleteUserGame/{apiId}")]

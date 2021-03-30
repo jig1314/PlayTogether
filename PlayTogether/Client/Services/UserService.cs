@@ -85,14 +85,14 @@ namespace PlayTogether.Client.Services
             response.EnsureSuccessStatusCode();
         }
 
-        public async Task AddUserGame(GameDto game)
+        public async Task AddUserGame(UserGameDto game)
         {
             var response = await httpClient.PostAsJsonAsync("api/games/addUserGame", game);
             response.EnsureSuccessStatusCode();
         }
 
-        public async Task<List<GameDto>> GetUserGames() =>
-            await httpClient.GetFromJsonAsync<List<GameDto>>($"api/games/userGames");
+        public async Task<List<UserGameDto>> GetUserGames() =>
+            await httpClient.GetFromJsonAsync<List<UserGameDto>>($"api/games/userGames");
 
         public async Task RemoveUserGame(long apiId)
         {
@@ -100,5 +100,10 @@ namespace PlayTogether.Client.Services
             response.EnsureSuccessStatusCode();
         }
 
+        public async Task UpdateUserGameSkillLevel(UserGameDto game)
+        {
+            var response = await httpClient.PutAsJsonAsync("api/games/updateUserGameSkillLevel", game);
+            response.EnsureSuccessStatusCode();
+        }
     }
 }

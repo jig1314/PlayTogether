@@ -12,5 +12,6 @@ namespace PlayTogether.Client.Services
         Task<List<GameSearchResult>> SearchForGames(GameSearchDto gameSearchDto);
         Task<List<GamingPlatformDto>> GetGamingPlatforms();
         Task<List<GameGenreDto>> GetGameGenres();
+        Task<List<GameSkillLevel>> GetGameSkillLevels();
     }
 }

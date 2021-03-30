@@ -23,8 +23,9 @@ namespace PlayTogether.Client.Services
         Task<List<GameGenreDto>> GetUserGameGenres();
         Task UpdateUserGameGenres(List<int> gameGenreIds);
 
-        Task<List<GameDto>> GetUserGames();
-        Task AddUserGame(GameDto game);
+        Task<List<UserGameDto>> GetUserGames();
+        Task AddUserGame(UserGameDto game);
         Task RemoveUserGame(long apiId);
+        Task UpdateUserGameSkillLevel(UserGameDto game);
     }
 }

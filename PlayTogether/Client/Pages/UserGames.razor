@@ -3,17 +3,24 @@
 <BSButton style="margin-top: 15px;" IsOutline="true" Color="Color.Primary" @onclick="@(() => GameSearchModal.Show())"><i class="fas fa-plus" style="margin-right: 5px;"></i>Add Game(s)</BSButton>
 <hr/>
 
-@if (Games != null)
+@if (Games != null && GameSkillLevels != null)
 {
     <BSRow>
         @foreach (var game in Games.OrderBy(game => game.Name))
         {
-            <BSCol style="padding-left: 10px; padding-right: 10px; margin-bottom: 15px; min-width: 992px; min-width: 300px; max-width: 25%;">
+            <BSCol style="padding-left: 10px; padding-right: 10px; margin-bottom: 15px; min-width: 350px; max-width: 33%;">
                 <BSMedia MediaType="MediaType.Media" style="margin-bottom: 15px;">
                     <BSMedia MediaType="MediaType.Image" VerticalAlignment="VerticalAlignment.Center" src="@game.ImageUrl" style="width: 90px; height: 90px;" />
                     <div class="media-body" style="width: 100%;">
-                        <h5 style="width: 100%; margin-top: 15px;">@game.Name</h5>
-                        <p class="form-text text-muted">Release Date: @game.ReleaseDate.ToString("MM/dd/yyy")<i style="margin-left: 5px" class="fas fa-heart" aria-hidden="true" @onclick="@(() => Unfavorited(game))"></i></p>
+                        <h5 style="width: 100%; margin-bottom: 0px;">@game.Name</h5>
+                        <p style="margin: auto;" class="form-text text-muted">Release Date: @game.ReleaseDate.ToString("MM/dd/yyy")<i style="margin-left: 7px" class="fas fa-heart" aria-hidden="true" @onclick="@(() => Unfavorited(game))"></i></p>
+                        <select style="margin-top: 3px;" @bind="@game.GameSkillLevelId" @bind:event="oninput" @onchange="() => OnSkillLevelChanged(game)">
+                            <option value="0">Please select skill level...</option>
+                            @foreach (var skillLevel in GameSkillLevels)
+                            {
+                                <option value="@skillLevel.Id">@skillLevel.Name</option>
+                            }
+                        </select>
                     </div>
                 </BSMedia>
             </BSCol>

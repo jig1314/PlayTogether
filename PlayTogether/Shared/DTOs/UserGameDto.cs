@@ -4,7 +4,7 @@ using System.Text;
 
 namespace PlayTogether.Shared.DTOs
 {
-    public class GameDto
+    public class UserGameDto
     {
         public int? Id { get; set; }
 
@@ -17,5 +17,7 @@ namespace PlayTogether.Shared.DTOs
         public DateTime ReleaseDate { get; set; }
 
         public string ImageUrl { get; set; }
+
+        public int? GameSkillLevelId { get; set; }
     }
 }

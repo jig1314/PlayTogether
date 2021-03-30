@@ -76,7 +76,7 @@ namespace PlayTogether.Client.Pages
         protected async Task Favorited(GameSearchResult game)
         {
             UserGamesApiIds.Add(game.ApiId);
-            await UserService.AddUserGame(new GameDto() 
+            await UserService.AddUserGame(new UserGameDto() 
             {
                 ApiId = game.ApiId,
                 Name = game.Name,
