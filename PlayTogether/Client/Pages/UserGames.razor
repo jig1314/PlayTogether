@@ -1,0 +1,37 @@
+﻿@inherits UserGamesBase
+
+<BSButton style="margin-top: 15px;" IsOutline="true" Color="Color.Primary" @onclick="@(() => GameSearchModal.Show())"><i class="fas fa-plus" style="margin-right: 5px;"></i>Add Game(s)</BSButton>
+<hr/>
+
+@if (Games != null)
+{
+    <BSRow>
+        @foreach (var game in Games.OrderBy(game => game.Name))
+        {
+            <BSCol style="padding-left: 10px; padding-right: 10px; margin-bottom: 15px; min-width: 992px; min-width: 300px; max-width: 25%;">
+                <BSMedia MediaType="MediaType.Media" style="margin-bottom: 15px;">
+                    <BSMedia MediaType="MediaType.Image" VerticalAlignment="VerticalAlignment.Center" src="@game.ImageUrl" style="width: 90px; height: 90px;" />
+                    <div class="media-body" style="width: 100%;">
+                        <h5 style="width: 100%; margin-top: 15px;">@game.Name</h5>
+                        <p class="form-text text-muted">Release Date: @game.ReleaseDate.ToString("MM/dd/yyy")<i style="margin-left: 5px" class="fas fa-heart" aria-hidden="true" @onclick="@(() => Unfavorited(game))"></i></p>
+                    </div>
+                </BSMedia>
+            </BSCol>
+        }
+    </BSRow>
+}
+
+<BSModal @ref="GameSearchModal" IsScrollable="true" Size="Size.Large" ShowEvent="@RefreshDataModal" HideEvent="@RefreshData">
+    <BSModalHeader OnClick="@(() => GameSearchModal.Hide())">Search for Games</BSModalHeader>
+    <BSModalBody><GameSearch @ref="GameSearchPageForModal" /></BSModalBody>
+    <BSModalFooter>
+        <BSButton Color="Color.Secondary" @onclick="@(() => GameSearchModal.Hide())">Close</BSButton>
+    </BSModalFooter>
+</BSModal>
+
+<style>
+    .fa-heart {
+        color: red;
+        cursor: pointer;
+    }
+</style>

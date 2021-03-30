@@ -8,6 +8,9 @@
     <BSNavItem>
         <BSNavLink IsActive="@IsNavActive("gameGenres")" href="manageProfile/preferences/gameGenres">Game Genres</BSNavLink>
     </BSNavItem>
+    <BSNavItem>
+        <BSNavLink IsActive="@IsNavActive("games")" href="manageProfile/preferences/games">Games</BSNavLink>
+    </BSNavItem>
 </BSNav>
 
 @ChildContent
@@ -44,6 +47,9 @@
                 break;
             case "gameGenres":
                 ChildContent =@<UserGameGenres />;
+                break;
+            case "games":
+                ChildContent =@<UserGames />;
                 break;
             default:
                 NavigationManager.NavigateTo("/manageProfile/preferences/gamingPlatforms");

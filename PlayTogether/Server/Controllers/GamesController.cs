@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Security.Claims;
+using System.Text.Json;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -50,22 +51,7 @@ namespace PlayTogether.Server.Controllers
                     Name = game.Name,
                     Summary = game.Summary,
                     ReleaseDate = game.FirstReleaseDate.GetValueOrDefault().DateTime,
-                    ImageUrl = game.Cover.Value.Url,
-                    ImageHeight = game.Cover.Value.Height.GetValueOrDefault(),
-                    ImageWidth = game.Cover.Value.Width.GetValueOrDefault(),
-                    GamingPlatforms = game.Platforms.Values.Select(platform => new GamingPlatformDto()
-                    {
-                        ApiId = platform.Id.Value,
-                        Abbreviation = platform.Abbreviation,
-                        Name = platform.Name,
-                        LogoURL = platform.Url
-                    }).ToList(),
-                    GameGenres = game.Genres.Values.Select(genre => new GameGenreDto()
-                    {
-                        ApiId = genre.Id.Value,
-                        Name = genre.Name,
-                        Slug = genre.Slug
-                    }).ToList()
+                    ImageUrl = game.Cover?.Value?.Url
                 });
 
                 return Ok(results);
@@ -88,8 +74,7 @@ namespace PlayTogether.Server.Controllers
 
                 var idUser = GetUserId();
                 var userGames = await _context.ApplicationUser_Games.Where(mapping => mapping.ApplicationUserId == idUser)
-                    .Include(mapping => mapping.Game)
-                    .Include(mapping => mapping.Game.GameCover).ToListAsync();
+                    .Include(mapping => mapping.Game).ToListAsync();
 
                 var gameDtos = userGames.Select(mapping => mapping.Game).Select(game => new GameDto()
                 {
@@ -98,9 +83,7 @@ namespace PlayTogether.Server.Controllers
                     Name = game.Name,
                     Summary = game.Summary,
                     ReleaseDate = game.ReleaseDate,
-                    ImageUrl = game.GameCover.ImageUrl,
-                    ImageHeight = game.GameCover.Height,
-                    ImageWidth = game.GameCover.Width
+                    ImageUrl = game.ImageUrl
                 });
 
                 return Ok(gameDtos);
@@ -112,10 +95,12 @@ namespace PlayTogether.Server.Controllers
         }
 
         [HttpPost("addUserGame")]
-        public async Task<IActionResult> AddUserGame(GameDto gameDto)
+        public async Task<IActionResult> AddUserGame(GameDto game)
         {
             try
             {
+                var apiId = game.ApiId;
+
                 if (!HttpContext.User.Identity.IsAuthenticated)
                 {
                     return StatusCode(StatusCodes.Status401Unauthorized, "Error adding game to the user");
@@ -123,21 +108,20 @@ namespace PlayTogether.Server.Controllers
 
                 var idUser = GetUserId();
 
-                if (!gameDto.Id.HasValue)
+                int newGameId;
+
+                if (await _context.Games.AnyAsync(game => game.ApiId == apiId))
                 {
-                    if (await _context.Games.AnyAsync(game => game.ApiId == gameDto.ApiId))
-                    {
-                        gameDto.Id = (await _context.Games.FirstOrDefaultAsync(game => game.ApiId == gameDto.ApiId)).Id;
-                    }
-                    else
-                    {
-                        gameDto.Id = await CreateGame(gameDto);
-                    }
+                    newGameId = (await _context.Games.FirstOrDefaultAsync(game => game.ApiId == apiId)).Id;
+                }
+                else
+                {
+                    newGameId = await CreateGame(apiId);
                 }
 
                 _context.ApplicationUser_Games.Add(new ApplicationUser_Game()
                 {
-                    GameId = gameDto.Id.Value,
+                    GameId = newGameId,
                     ApplicationUserId = idUser
                 });
 
@@ -145,22 +129,23 @@ namespace PlayTogether.Server.Controllers
 
                 return StatusCode(StatusCodes.Status202Accepted);
             }
-            catch (Exception)
+            catch (Exception ex)
             {
                 return StatusCode(StatusCodes.Status500InternalServerError, "Error adding game to the user");
             }
         }
 
-        private async Task<int> CreateGame(GameDto gameDto)
+        private async Task<int> CreateGame(long apiId)
         {
-            var newApiGame = await _videoGameRepository.GetGameAsync(gameDto.ApiId);
+            var newApiGame = await _videoGameRepository.GetGameAsync(apiId);
 
             var newGame = new Game()
             {
                 ApiId = newApiGame.Id.Value,
                 Name = newApiGame.Name,
                 Summary = newApiGame.Summary,
-                ReleaseDate = newApiGame.FirstReleaseDate.GetValueOrDefault().DateTime
+                ReleaseDate = newApiGame.FirstReleaseDate.GetValueOrDefault().DateTime,
+                ImageUrl = newApiGame.Cover?.Value?.Url
             };
 
             await _context.Games.AddAsync(newGame);
@@ -168,21 +153,10 @@ namespace PlayTogether.Server.Controllers
 
             newGame = await _context.Games.FirstOrDefaultAsync(game => game.ApiId == newGame.ApiId);
 
-            var newGameCover = new GameCover()
-            {
-                GameId = newGame.Id,
-                ImageUrl = newApiGame.Cover.Value.Url,
-                Height = newApiGame.Cover.Value.Height.GetValueOrDefault(),
-                Width = newApiGame.Cover.Value.Width.GetValueOrDefault()
-            };
-
-            await _context.GameCovers.AddAsync(newGameCover);
-            await _context.SaveChangesAsync();
-
             var gamingPlatforms = await _context.GamingPlatforms.ToListAsync();
 
             var platformIds = from platform in gamingPlatforms
-                              join apiPlatform in newApiGame.Platforms.Values on platform.ApiId equals apiPlatform.Id into existingPlatforms
+                              join apiPlatformId in newApiGame.Platforms?.Ids on platform.ApiId equals apiPlatformId into existingPlatforms
                               from existingPlatform in existingPlatforms
                               select platform.Id;
 
@@ -197,7 +171,7 @@ namespace PlayTogether.Server.Controllers
             var gameGenres = await _context.GameGenres.ToListAsync();
 
             var gameGenreIds = from genre in gameGenres
-                               join apiGenre in newApiGame.Genres.Values on genre.ApiId equals apiGenre.Id into existingGenres
+                               join apiGenreId in newApiGame.Genres?.Ids on genre.ApiId equals apiGenreId into existingGenres
                                from existingGenre in existingGenres
                                select genre.Id;
 
@@ -212,8 +186,8 @@ namespace PlayTogether.Server.Controllers
             return newGame.Id;
         }
 
-        [HttpDelete("deleteUserGame/{id}")]
-        public async Task<IActionResult> RemoveUserGame(int id)
+        [HttpDelete("deleteUserGame/{apiId}")]
+        public async Task<IActionResult> RemoveUserGame(long apiId)
         {
             try
             {
@@ -224,7 +198,8 @@ namespace PlayTogether.Server.Controllers
 
                 var idUser = GetUserId();
 
-                var userGame = await _context.ApplicationUser_Games.Where(mapping => mapping.ApplicationUserId == idUser && mapping.GameId == id).FirstOrDefaultAsync();
+                var game = await _context.Games.FirstOrDefaultAsync(game => game.ApiId == apiId);
+                var userGame = await _context.ApplicationUser_Games.Where(mapping => mapping.ApplicationUserId == idUser && mapping.GameId == game.Id).FirstOrDefaultAsync();
                 _context.ApplicationUser_Games.Remove(userGame);
 
                 await _context.SaveChangesAsync();

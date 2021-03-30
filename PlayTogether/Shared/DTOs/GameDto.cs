@@ -17,9 +17,5 @@ namespace PlayTogether.Shared.DTOs
         public DateTime ReleaseDate { get; set; }
 
         public string ImageUrl { get; set; }
-
-        public int ImageHeight { get; set; }
-
-        public int ImageWidth { get; set; }
     }
 }

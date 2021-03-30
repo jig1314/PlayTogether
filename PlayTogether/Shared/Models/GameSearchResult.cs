@@ -13,16 +13,8 @@ namespace PlayTogether.Shared.Models
 
         public string Summary { get; set; }
 
-        public DateTime ReleaseDate { get; set; }
+        public DateTime? ReleaseDate { get; set; }
 
         public string ImageUrl { get; set; }
-
-        public int ImageHeight { get; set; }
-
-        public int ImageWidth { get; set; }
-
-        public List<GamingPlatformDto> GamingPlatforms { get; set; }
-
-        public List<GameGenreDto> GameGenres { get; set; }
     }
 }

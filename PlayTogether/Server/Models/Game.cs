@@ -22,7 +22,7 @@ namespace PlayTogether.Server.Models
         [Required]
         public DateTime ReleaseDate { get; set; }
 
-        public GameCover GameCover { get; set; }
+        public string ImageUrl { get; set; }
 
         public List<ApplicationUser_Game> Users { get; set; }
 

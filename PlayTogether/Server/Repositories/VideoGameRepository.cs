@@ -32,24 +32,32 @@ namespace PlayTogether.Server.Repositories
             var apiHeaders = await GetHeaders();
             var client = new IGDBClient(apiHeaders.clientId, apiHeaders.authorization);
 
-            var query = new StringBuilder(" fields *; limit 500; ");
+            var query = new StringBuilder(" fields *; limit 500; where first_release_date != null");
+
+            if (gameSearch.GameGenreApiIds?.Count > 0)
+            {
+                query.AppendFormat($" & genres = ({string.Join(',', gameSearch.GameGenreApiIds)})");
+            }
+
+            if (gameSearch.GamingPlatformApiIds?.Count > 0)
+            {
+                query.AppendFormat($" & platforms = ({string.Join(',', gameSearch.GamingPlatformApiIds)})");
+            }
+
+            query.AppendFormat($"; ");
 
             if (!string.IsNullOrWhiteSpace(gameSearch.SearchCriteria))
             {
                 query.AppendFormat($" search \"{gameSearch.SearchCriteria}\"; ");
             }
 
-            if (gameSearch.GameGenreApiIds?.Count > 0)
-            {
-                query.AppendFormat($" where genres = ({string.Join(',', gameSearch.GameGenreApiIds)}); ");
-            }
-
-            if (gameSearch.GamingPlatformApiIds?.Count > 0)
-            {
-                query.AppendFormat($" where platforms = ({string.Join(',', gameSearch.GamingPlatformApiIds)}); ");
-            }
-
             var games = await client.QueryAsync<Game>(IGDBClient.Endpoints.Games, query: query.ToString());
+            var gameCovers = await client.QueryAsync<Cover>(IGDBClient.Endpoints.Covers, query: $" fields *; limit 500; where id = ({string.Join(',', games.Where(game => game.Cover != null && game.Id.HasValue).Select(game => game.Cover.Id))}); ");
+
+            foreach (var game in games.Where(game => game.Cover != null && game.Cover.Id.HasValue))
+            {
+                game.Cover = new IdentityOrValue<Cover>(gameCovers.FirstOrDefault(cover => cover.Id == game.Cover.Id.Value));
+            }
 
             return games;
         }
@@ -61,8 +69,15 @@ namespace PlayTogether.Server.Repositories
 
             var query = $" fields *; limit 1; where id = {apiId}; ";
 
-            var results = await client.QueryAsync<Game>(IGDBClient.Endpoints.Games, query: query);
-            return results.ToList().FirstOrDefault();
+            var game = (await client.QueryAsync<Game>(IGDBClient.Endpoints.Games, query: query)).ToList().FirstOrDefault();
+
+            if (game.Cover != null && game.Cover.Id.HasValue)
+            {
+                var gameCover = await client.QueryAsync<Cover>(IGDBClient.Endpoints.Covers, query: $" fields *; limit 1; where id = {game.Cover.Id}; ");
+                game.Cover = new IdentityOrValue<Cover>(gameCover.ToList().FirstOrDefault());
+            }
+
+            return game;
         }
     }
 }

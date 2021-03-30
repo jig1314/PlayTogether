@@ -22,6 +22,9 @@ namespace PlayTogether.Client.Pages
         [Inject]
         public IUserService UserService { get; set; }
 
+        [Inject]
+        public IGameService GameService { get; set; }
+
         public List<GamingPlatformDto> GamingPlatforms { get; set; }
 
         public List<int> UserGamingPlatformIds { get; set; }
@@ -36,7 +39,7 @@ namespace PlayTogether.Client.Pages
             }
             else
             {
-                GamingPlatforms = await UserService.GetGamingPlatforms();
+                GamingPlatforms = await GameService.GetGamingPlatforms();
                 UserGamingPlatformIds = (await UserService.GetUserGamingPlatforms()).Select(p => p.Id).ToList();
             }
         }
