@@ -1,0 +1,27 @@
+﻿@page "/gamerSearch/"
+@inherits GamerSearchBase
+
+<BSRow>
+    <BSCol Class="col-md-6">
+        <h2>Search For Gamers</h2>
+        <input type="search" class="form-control" @bind="@GamerSearchViewModel.SearchCriteria" @bind:event="oninput" @onchange="OnSearchCriteriaChanged" placeholder="Enter Gamer Search Criteria..." />
+        <hr />
+        @if (Gamers != null)
+        {
+            @foreach (var gamer in Gamers.OrderBy(gamer => gamer.UserName))
+            {
+                <BSRow style="padding: inherit; margin-top: 15px; margin-bottom: 20px;">
+                    <BSCard Color="Color.Light" style="width: 100%;">
+                        <BSCard CardType="CardType.Body">
+                            <BSCard CardType="CardType.Title" style="margin-bottom: 7px;">User - @gamer.UserName</BSCard>
+                            <hr style="margin-top: auto; margin-bottom: 5px;" />
+                            <BSCard CardType="CardType.Text" style="margin-bottom: inherit;">Name: @gamer.FirstName @gamer.LastName</BSCard>
+                            <BSCard CardType="CardType.Text" style="margin-bottom: unset;"><small class="text-muted">Email: @gamer.Email</small></BSCard>
+                        </BSCard>
+                    </BSCard>
+                </BSRow>
+            }
+        }
+    </BSCol>
+</BSRow>
+

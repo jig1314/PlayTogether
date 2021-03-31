@@ -105,5 +105,12 @@ namespace PlayTogether.Client.Services
             var response = await httpClient.PutAsJsonAsync("api/games/updateUserGameSkillLevel", game);
             response.EnsureSuccessStatusCode();
         }
+
+        public async Task<List<GamerSearchResult>> SearchForGamers(GamerSearchDto gamerSearchDto)
+        {
+            var response = await httpClient.PutAsJsonAsync("api/user/search", gamerSearchDto);
+            response.EnsureSuccessStatusCode();
+            return await response.Content.ReadFromJsonAsync<List<GamerSearchResult>>();
+        }
     }
 }
