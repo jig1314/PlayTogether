@@ -10,6 +10,9 @@ namespace PlayTogether.Server.Models
         [Key]
         public int Id { get; set; }
 
+        [Required]
+        public long ApiId { get; set; }
+
         public string Abbreviation { get; set; }
 
         [Required]
@@ -20,5 +23,7 @@ namespace PlayTogether.Server.Models
         public string LogoURL { get; set; }
 
         public List<ApplicationUser_GamingPlatform> Users { get; set; }
+
+        public List<GamingPlatform_Game> Games { get; set; }
     }
 }

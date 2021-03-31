@@ -272,6 +272,43 @@ namespace PlayTogether.Server.Controllers
             }
         }
 
+        [HttpPut("search")]
+        public async Task<ActionResult<IEnumerable<GamerSearchResult>>> SearchGamers(GamerSearchDto gamerSearch)
+        {
+            try
+            {
+                if (!HttpContext.User.Identity.IsAuthenticated)
+                {
+                    return StatusCode(StatusCodes.Status401Unauthorized, "Error searching for gamers!");
+                }
+
+                var gamersFromUserName = await _context.Users.Include(user => user.ApplicationUserDetails).Where(user => user.UserName.Contains(gamerSearch.SearchCriteria)).ToListAsync();
+                var gamersFromFirstName = await _context.Users.Include(user => user.ApplicationUserDetails).Where(user => user.ApplicationUserDetails.FirstName.Contains(gamerSearch.SearchCriteria)).ToListAsync();
+                var gamersFromLastName = await _context.Users.Include(user => user.ApplicationUserDetails).Where(user => user.ApplicationUserDetails.LastName.Contains(gamerSearch.SearchCriteria)).ToListAsync();
+                var gamersFromEmail = await _context.Users.Include(user => user.ApplicationUserDetails).Where(user => user.Email.Contains(gamerSearch.SearchCriteria)).ToListAsync();
+
+                var gamers = new List<ApplicationUser>();
+                gamers.AddRange(gamersFromUserName);
+                gamers.AddRange(gamersFromFirstName);
+                gamers.AddRange(gamersFromLastName);
+                gamers.AddRange(gamersFromEmail);
+
+                var results = gamers.Distinct().Select(gamer => new GamerSearchResult()
+                {
+                    FirstName = gamer.ApplicationUserDetails.FirstName,
+                    LastName = gamer.ApplicationUserDetails.LastName,
+                    Email = gamer.Email,
+                    UserName = gamer.UserName
+                });
+
+                return Ok(results);
+            }
+            catch (Exception)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, "Error searching for gamers!");
+            }
+        }
+
         [HttpDelete("delete/{userName}")]
         [AllowAnonymous]
         public async Task<ActionResult> DeleteUser(string userName)

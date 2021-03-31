@@ -3,15 +3,17 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using PlayTogether.Server.Data;
 
 namespace PlayTogether.Server.Data.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20210328172829_RemoveGameCoverIdFromGame")]
+    partial class RemoveGameCoverIdFromGame
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -383,17 +385,10 @@ namespace PlayTogether.Server.Data.Migrations
                     b.Property<int>("GameId")
                         .HasColumnType("int");
 
-                    b.Property<int?>("GameSkillLevelId")
-                        .HasColumnType("int");
-
                     b.HasKey("ApplicationUserId", "GameId")
                         .HasName("PrimaryKey_ApplicationUserId_GameId");
 
                     b.HasIndex("GameId");
-
-                    b.HasIndex("GameSkillLevelId")
-                        .IsUnique()
-                        .HasFilter("[GameSkillLevelId] IS NOT NULL");
 
                     b.ToTable("ApplicationUser_Games");
                 });
@@ -440,9 +435,6 @@ namespace PlayTogether.Server.Data.Migrations
                     b.Property<long>("ApiId")
                         .HasColumnType("bigint");
 
-                    b.Property<string>("ImageUrl")
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -456,6 +448,21 @@ namespace PlayTogether.Server.Data.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Games");
+                });
+
+            modelBuilder.Entity("PlayTogether.Server.Models.GameCover", b =>
+                {
+                    b.Property<int>("Height")
+                        .HasColumnType("int");
+
+                    b.Property<string>("ImageUrl")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("Width")
+                        .HasColumnType("int");
+
+                    b.ToTable("GameCovers");
                 });
 
             modelBuilder.Entity("PlayTogether.Server.Models.GameGenre", b =>
@@ -558,26 +565,6 @@ namespace PlayTogether.Server.Data.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Countries");
-                });
-
-            modelBuilder.Entity("PlayTogether.Shared.Models.GameSkillLevel", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
-
-                    b.Property<string>("Description")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("GameSkillLevels");
                 });
 
             modelBuilder.Entity("PlayTogether.Shared.Models.Gender", b =>
@@ -693,17 +680,9 @@ namespace PlayTogether.Server.Data.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("PlayTogether.Shared.Models.GameSkillLevel", "GameSkillLevel")
-                        .WithOne()
-                        .HasForeignKey("PlayTogether.Server.Models.ApplicationUser_Game", "GameSkillLevelId")
-                        .HasConstraintName("ForeignKey_User_Game_GameSkillLevelId")
-                        .OnDelete(DeleteBehavior.NoAction);
-
                     b.Navigation("ApplicationUser");
 
                     b.Navigation("Game");
-
-                    b.Navigation("GameSkillLevel");
                 });
 
             modelBuilder.Entity("PlayTogether.Server.Models.ApplicationUser_GameGenre", b =>

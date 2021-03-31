@@ -1,7 +1,9 @@
 ﻿using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Authorization;
 using PlayTogether.Client.Services;
+using PlayTogether.Client.ViewModels;
 using PlayTogether.Shared.DTOs;
+using PlayTogether.Shared.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,7 +11,7 @@ using System.Threading.Tasks;
 
 namespace PlayTogether.Client.Pages
 {
-    public class UserGameGenresBase : ComponentBase
+    public class GamerSearchBase : ComponentBase
     {
         [CascadingParameter]
         public Task<AuthenticationState> AuthenticationStateTask { get; set; }
@@ -22,38 +24,34 @@ namespace PlayTogether.Client.Pages
         [Inject]
         public IUserService UserService { get; set; }
 
-        [Inject]
-        public IGameService GameService { get; set; }
-
-        public List<GameGenreDto> GameGenres { get; set; }
-
-        public List<string> UserGameGenreIds { get; set; }
+        public GamerSearchViewModel GamerSearchViewModel { get; set; }
+        public List<GamerSearchResult> Gamers { get; set; }
 
         protected override async Task OnInitializedAsync()
         {
+            GamerSearchViewModel = new GamerSearchViewModel();
+
             AuthenticationState = await AuthenticationStateTask;
 
             if (!AuthenticationState.User.Identity.IsAuthenticated)
             {
                 NavigationManager.NavigateTo("/login");
             }
-            else
+        }
+
+        protected async void OnSearchCriteriaChanged(ChangeEventArgs eventArgs)
+        {
+            if (eventArgs.Value != null)
             {
-                await RefreshData();
+                var gamerSearchDto = new GamerSearchDto()
+                {
+                    SearchCriteria = GamerSearchViewModel.SearchCriteria
+                };
+
+                Gamers = await UserService.SearchForGamers(gamerSearchDto);
+                StateHasChanged();
             }
         }
 
-        protected async Task SaveGameGenresAsync()
-        {
-            GameGenres = null;
-            await UserService.UpdateUserGameGenres(UserGameGenreIds.ConvertAll((item) => Convert.ToInt32(item)));
-            await RefreshData();
-        }
-
-        private async Task RefreshData()
-        {
-            GameGenres = await GameService.GetGameGenres();
-            UserGameGenreIds = (await UserService.GetUserGameGenres()).Select(p => p.Id.ToString()).ToList();
-        }
     }
 }
