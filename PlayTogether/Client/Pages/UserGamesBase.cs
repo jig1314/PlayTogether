@@ -45,13 +45,17 @@ namespace PlayTogether.Client.Pages
             }
             else
             {
-                await RefreshData();
+                GameSkillLevels = await GameService.GetGameSkillLevels();
+                Games = await UserService.GetUserGames();
             }
         }
 
-        protected async Task RefreshData()
+        protected async Task OnHideModal()
         {
             Games = null;
+            GameSkillLevels = null;
+
+            await Task.Delay(100);
 
             GameSkillLevels = await GameService.GetGameSkillLevels();
             Games = await UserService.GetUserGames();

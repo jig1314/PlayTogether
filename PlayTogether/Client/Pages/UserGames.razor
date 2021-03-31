@@ -28,7 +28,7 @@
     </BSRow>
 }
 
-<BSModal @ref="GameSearchModal" IsScrollable="true" Size="Size.Large" ShowEvent="@RefreshDataModal" HideEvent="@RefreshData">
+<BSModal @ref="GameSearchModal" IsScrollable="true" IgnoreEscape="true" IgnoreClickOnBackdrop="true" Size="Size.Large" ShowEvent="@RefreshDataModal" HideEvent="@OnHideModal">
     <BSModalHeader OnClick="@(() => GameSearchModal.Hide())">Search for Games</BSModalHeader>
     <BSModalBody><GameSearch @ref="GameSearchPageForModal" /></BSModalBody>
     <BSModalFooter>
