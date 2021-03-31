@@ -22,6 +22,9 @@ namespace PlayTogether.Client.Pages
         [Inject]
         public IUserService UserService { get; set; }
 
+        [Inject]
+        public IGameService GameService { get; set; }
+
         public List<GameGenreDto> GameGenres { get; set; }
 
         public List<string> UserGameGenreIds { get; set; }
@@ -49,7 +52,7 @@ namespace PlayTogether.Client.Pages
 
         private async Task RefreshData()
         {
-            GameGenres = await UserService.GetGameGenres();
+            GameGenres = await GameService.GetGameGenres();
             UserGameGenreIds = (await UserService.GetUserGameGenres()).Select(p => p.Id.ToString()).ToList();
         }
     }
