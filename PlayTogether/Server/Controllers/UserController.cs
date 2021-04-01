@@ -72,6 +72,83 @@ namespace PlayTogether.Server.Controllers
             }
         }
 
+        [HttpGet("profile/{userName}")]
+        public async Task<ActionResult<UserProfileDto>> GetUserProfileInformation(string userName)
+        {
+            try
+            {
+                if (!HttpContext.User.Identity.IsAuthenticated)
+                {
+                    return StatusCode(StatusCodes.Status401Unauthorized, "Error retrieving user profile information");
+                }
+
+                var idUser = (await _context.Users.Where(d => d.UserName == userName).FirstOrDefaultAsync()).Id;
+
+                var user = await _context.Users.Where(d => d.UserName == userName)
+                    .Include(user => user.ApplicationUserDetails)
+                    .Include(user => user.ApplicationUserDetails.CountryOfResidence)
+                    .Include(user => user.ApplicationUserDetails.Gender)
+                    .FirstOrDefaultAsync();
+
+                var gamingPlatforms = await _context.ApplicationUser_GamingPlatform.Where(mapping => mapping.ApplicationUserId == idUser)
+                    .Include(mapping => mapping.GamingPlatform)
+                    .ToListAsync();
+
+                var gameGenres = await _context.ApplicationUser_GameGenres.Where(mapping => mapping.ApplicationUserId == idUser)
+                    .Include(mapping => mapping.GameGenre)
+                    .ToListAsync();
+
+                var games = await _context.ApplicationUser_Games.Where(mapping => mapping.ApplicationUserId == idUser)
+                    .Include(mapping => mapping.Game)
+                    .Include(mapping => mapping.GameSkillLevel)
+                    .ToListAsync();
+
+                var userProfileDto = new UserProfileDto()
+                {
+                    UserName = user.UserName,
+                    FirstName = user.ApplicationUserDetails.FirstName,
+                    LastName = user.ApplicationUserDetails.LastName,
+                    Email = user.Email,
+                    DateOfBirth = user.ApplicationUserDetails.DateOfBirth,
+                    CountryOfResidence = user.ApplicationUserDetails.CountryOfResidence,
+                    Gender = user.ApplicationUserDetails.Gender,
+                    PhoneNumber = user.PhoneNumber,
+                    GamingPlatforms = gamingPlatforms.Select(mapping => new GamingPlatformDto()
+                    {
+                        Id = mapping.GamingPlatform.Id,
+                        ApiId = mapping.GamingPlatform.ApiId,
+                        Abbreviation = mapping.GamingPlatform.Abbreviation,
+                        Name = mapping.GamingPlatform.Name,
+                        LogoURL = mapping.GamingPlatform.LogoURL
+                    }).ToList(),
+                    GameGenres = gameGenres.Select(mapping => new GameGenreDto()
+                    {
+                        Id = mapping.GameGenre.Id,
+                        ApiId = mapping.GameGenre.ApiId,
+                        Name = mapping.GameGenre.Name,
+                        Slug = mapping.GameGenre.Slug
+                    }).ToList(),
+                    Games = games.Select(mapping => new UserGameDto()
+                    {
+                        Id = mapping.Game.Id,
+                        ApiId = mapping.Game.ApiId,
+                        Name = mapping.Game.Name,
+                        Summary = mapping.Game.Summary,
+                        ReleaseDate = mapping.Game.ReleaseDate,
+                        ImageUrl = mapping.Game.ImageUrl,
+                        GameSkillLevelId = mapping.GameSkillLevelId,
+                        GameSkillLevel = mapping.GameSkillLevel
+                    }).ToList()
+                };
+
+                return Ok(userProfileDto);
+            }
+            catch (Exception)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, "Error retrieving user profile information");
+            }
+        }
+
         [HttpGet("genders")]
         [AllowAnonymous]
         public async Task<ActionResult<IEnumerable<Gender>>> GetAllGenders()
@@ -282,6 +359,8 @@ namespace PlayTogether.Server.Controllers
                     return StatusCode(StatusCodes.Status401Unauthorized, "Error searching for gamers!");
                 }
 
+                var idUser = GetUserId();
+
                 var gamersFromUserName = await _context.Users.Include(user => user.ApplicationUserDetails).Where(user => user.UserName.Contains(gamerSearch.SearchCriteria)).ToListAsync();
                 var gamersFromFirstName = await _context.Users.Include(user => user.ApplicationUserDetails).Where(user => user.ApplicationUserDetails.FirstName.Contains(gamerSearch.SearchCriteria)).ToListAsync();
                 var gamersFromLastName = await _context.Users.Include(user => user.ApplicationUserDetails).Where(user => user.ApplicationUserDetails.LastName.Contains(gamerSearch.SearchCriteria)).ToListAsync();
@@ -293,7 +372,7 @@ namespace PlayTogether.Server.Controllers
                 gamers.AddRange(gamersFromLastName);
                 gamers.AddRange(gamersFromEmail);
 
-                var results = gamers.Distinct().Select(gamer => new GamerSearchResult()
+                var results = gamers.Where(gamer => gamer.Id != idUser).Distinct().Select(gamer => new GamerSearchResult()
                 {
                     FirstName = gamer.ApplicationUserDetails.FirstName,
                     LastName = gamer.ApplicationUserDetails.LastName,
