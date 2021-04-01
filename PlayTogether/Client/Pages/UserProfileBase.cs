@@ -1,9 +1,9 @@
-﻿using Microsoft.AspNetCore.Components;
+﻿using BlazorStrap;
+using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Authorization;
 using PlayTogether.Client.Services;
 using PlayTogether.Client.ViewModels;
 using PlayTogether.Shared.DTOs;
-using PlayTogether.Shared.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -11,8 +11,9 @@ using System.Threading.Tasks;
 
 namespace PlayTogether.Client.Pages
 {
-    public class GamerSearchBase : ComponentBase
+    public class UserProfileBase : ComponentBase
     {
+
         [CascadingParameter]
         public Task<AuthenticationState> AuthenticationStateTask { get; set; }
 
@@ -24,35 +25,33 @@ namespace PlayTogether.Client.Pages
         [Inject]
         public IUserService UserService { get; set; }
 
-        public GamerSearchViewModel GamerSearchViewModel { get; set; }
+        public UserProfileDto UserProfileDto { get; set; }
 
-        public List<GamerSearchResult> Gamers { get; set; }
+        [Parameter]
+        public string UserName { get; set; }
+
+        public BSTabGroup TabGroup { get; set; }
+
+        public BSTab TabAbout { get; set; }
+
+        public BSTab TabGamingPlatforms { get; set; }
+
+        public BSTab TabGameGenres { get; set; }
+
+        public BSTab TabGames { get; set; }
 
         protected override async Task OnInitializedAsync()
         {
-            GamerSearchViewModel = new GamerSearchViewModel();
-
             AuthenticationState = await AuthenticationStateTask;
 
             if (!AuthenticationState.User.Identity.IsAuthenticated)
             {
                 NavigationManager.NavigateTo("/login");
             }
-        }
-
-        protected async void OnSearchCriteriaChanged(ChangeEventArgs eventArgs)
-        {
-            if (eventArgs.Value != null)
+            else
             {
-                var gamerSearchDto = new GamerSearchDto()
-                {
-                    SearchCriteria = GamerSearchViewModel.SearchCriteria
-                };
-
-                Gamers = await UserService.SearchForGamers(gamerSearchDto);
-                StateHasChanged();
+                UserProfileDto = await UserService.GetUserProfileInformation(UserName);
             }
         }
-
     }
 }

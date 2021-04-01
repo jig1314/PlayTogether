@@ -28,5 +28,6 @@ namespace PlayTogether.Client.Services
         Task RemoveUserGame(long apiId);
         Task UpdateUserGameSkillLevel(UserGameDto game);
         Task<List<GamerSearchResult>> SearchForGamers(GamerSearchDto gamerSearchDto);
+        Task<UserProfileDto> GetUserProfileInformation(string userName);
     }
 }

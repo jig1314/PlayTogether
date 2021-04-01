@@ -112,5 +112,8 @@ namespace PlayTogether.Client.Services
             response.EnsureSuccessStatusCode();
             return await response.Content.ReadFromJsonAsync<List<GamerSearchResult>>();
         }
+
+        public async Task<UserProfileDto> GetUserProfileInformation(string userName) =>
+            await httpClient.GetFromJsonAsync<UserProfileDto>($"api/user/profile/{userName}");
     }
 }
