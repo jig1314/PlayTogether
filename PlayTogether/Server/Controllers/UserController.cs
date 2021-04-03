@@ -105,6 +105,7 @@ namespace PlayTogether.Server.Controllers
 
                 var userProfileDto = new UserProfileDto()
                 {
+                    UserId = user.Id,
                     UserName = user.UserName,
                     FirstName = user.ApplicationUserDetails.FirstName,
                     LastName = user.ApplicationUserDetails.LastName,
@@ -146,6 +147,60 @@ namespace PlayTogether.Server.Controllers
             catch (Exception)
             {
                 return StatusCode(StatusCodes.Status500InternalServerError, "Error retrieving user profile information");
+            }
+        }
+
+        [HttpGet("friendUserIds")]
+        public async Task<ActionResult<IEnumerable<string>>> GetFriendUserIds()
+        {
+            try
+            {
+                if (!HttpContext.User.Identity.IsAuthenticated)
+                {
+                    return StatusCode(StatusCodes.Status401Unauthorized, "Error retrieving the user's friends ids");
+                }
+
+                var idUser = GetUserId();
+                var friendUserIds = await _context.ApplicationUser_Friends.Where(mapping => mapping.ApplicationUserId == idUser).Select(mapping => mapping.FriendUserId).ToListAsync();
+
+                return Ok(friendUserIds);
+            }
+            catch (Exception)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, "Error retrieving the user's friends ids");
+            }
+        }
+
+        [HttpGet("activeFriendRequests")]
+        public async Task<ActionResult<IEnumerable<FriendRequestDto>>> GetActiveFriendRequests()
+        {
+            try
+            {
+                if (!HttpContext.User.Identity.IsAuthenticated)
+                {
+                    return StatusCode(StatusCodes.Status401Unauthorized, "Error retrieving the user's active friend requests");
+                }
+
+                var idUser = GetUserId();
+
+                var activeFriendRequestStatusType = await _context.FriendRequestStatusTypes.FirstOrDefaultAsync(type => type.EnumCode == (int)Enums.FriendRequestStatusType.Sent);
+                var activeFriendRequests = await _context.FriendRequests
+                    .Where(request => (request.FromUserId == idUser || request.ToUserId == idUser) && request.FriendRequestStatusId == activeFriendRequestStatusType.Id)
+                    .ToListAsync();
+
+                var friendRequestDtos = activeFriendRequests.Select(request => new FriendRequestDto()
+                {
+                    Id = request.Id,
+                    FromUserId = request.FromUserId,
+                    ToUserId = request.ToUserId,
+                    FriendRequestStatus = activeFriendRequestStatusType
+                });
+
+                return Ok(friendRequestDtos);
+            }
+            catch (Exception)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, "Error retrieving the user's active friend requests");
             }
         }
 
@@ -270,6 +325,74 @@ namespace PlayTogether.Server.Controllers
             }
         }
 
+        [HttpPost("sendFriendRequest")]
+        public async Task<ActionResult> SendFriendRequest(FriendRequestDto friendRequestDto)
+        {
+            try
+            {
+                if (!HttpContext.User.Identity.IsAuthenticated)
+                {
+                    return StatusCode(StatusCodes.Status401Unauthorized, "Error sending the friend request");
+                }
+
+                var sentFriendRequestStatusType = await _context.FriendRequestStatusTypes.FirstOrDefaultAsync(type => type.EnumCode == (int)Enums.FriendRequestStatusType.Sent);
+
+                if (!_context.FriendRequests.Any(request => request.FromUserId == friendRequestDto.FromUserId && request.ToUserId == friendRequestDto.ToUserId))
+                {
+                    var newFriendRequest = new FriendRequest()
+                    {
+                        FromUserId = friendRequestDto.FromUserId,
+                        ToUserId = friendRequestDto.ToUserId,
+                        FriendRequestStatusId = sentFriendRequestStatusType.Id
+                    };
+
+                    _context.FriendRequests.Add(newFriendRequest);
+                    await _context.SaveChangesAsync();
+                }
+                else
+                {
+                    var existingFriendRequest = await _context.FriendRequests.FirstOrDefaultAsync(request => request.FromUserId == friendRequestDto.FromUserId && request.ToUserId == friendRequestDto.ToUserId);
+                    existingFriendRequest.FriendRequestStatusId = sentFriendRequestStatusType.Id;
+
+                    _context.Entry(existingFriendRequest).State = EntityState.Modified;
+                    await _context.SaveChangesAsync();
+                }
+
+                return StatusCode(StatusCodes.Status202Accepted);
+            }
+            catch (Exception)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, "Error sending the friend request");
+            }
+        }
+
+        [HttpPut("cancelFriendRequest")]
+        public async Task<ActionResult> CancelFriendRequest(FriendRequestDto friendRequestDto)
+        {
+            try
+            {
+                if (!HttpContext.User.Identity.IsAuthenticated)
+                {
+                    return StatusCode(StatusCodes.Status401Unauthorized, "Error cancelling the friend request");
+                }
+
+                var sentFriendRequestStatusType = await _context.FriendRequestStatusTypes.FirstOrDefaultAsync(type => type.EnumCode == (int)Enums.FriendRequestStatusType.Sent);
+                var cancelledFriendRequestStatusType = await _context.FriendRequestStatusTypes.FirstOrDefaultAsync(type => type.EnumCode == (int)Enums.FriendRequestStatusType.Cancelled);
+
+                var sentFriendRequest = await _context.FriendRequests.FirstOrDefaultAsync(request => request.FromUserId == friendRequestDto.FromUserId && request.ToUserId == friendRequestDto.ToUserId && request.FriendRequestStatusId == sentFriendRequestStatusType.Id);
+                sentFriendRequest.FriendRequestStatusId = cancelledFriendRequestStatusType.Id;
+
+                _context.Entry(sentFriendRequest).State = EntityState.Modified;
+                await _context.SaveChangesAsync();
+
+                return StatusCode(StatusCodes.Status202Accepted);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, "Error cancelling the friend request");
+            }
+        }
+
         [HttpPut("updateAccountInfo")]
         public async Task<ActionResult<UserAccountDto>> UpdateUserAccountInformation(UserAccountDto userAccountDto)
         {
@@ -374,6 +497,7 @@ namespace PlayTogether.Server.Controllers
 
                 var results = gamers.Where(gamer => gamer.Id != idUser).Distinct().Select(gamer => new GamerSearchResult()
                 {
+                    UserId = gamer.Id,
                     FirstName = gamer.ApplicationUserDetails.FirstName,
                     LastName = gamer.ApplicationUserDetails.LastName,
                     Email = gamer.Email,
