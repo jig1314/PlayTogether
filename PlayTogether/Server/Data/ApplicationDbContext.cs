@@ -172,6 +172,7 @@ namespace PlayTogether.Server.Data
             modelBuilder.Entity<FriendRequest>()
                 .HasOne(request => request.FromUser)
                 .WithMany(user => user.SentFriendRequests)
+                .IsRequired()
                 .HasForeignKey(request => request.FromUserId)
                 .HasConstraintName("ForeignKey_FriendRequest_User_FromUserId")
                 .OnDelete(DeleteBehavior.NoAction);
@@ -179,17 +180,26 @@ namespace PlayTogether.Server.Data
             modelBuilder.Entity<FriendRequest>()
                 .HasOne(request => request.ToUser)
                 .WithMany(user => user.ReceivedFriendRequests)
+                .IsRequired()
                 .HasForeignKey(request => request.ToUserId)
                 .HasConstraintName("ForeignKey_FriendRequest_User_ToUserId")
                 .OnDelete(DeleteBehavior.NoAction);
 
+            //modelBuilder.Entity<FriendRequest>()
+            //    .HasOne(request => request.FriendRequestStatus)
+            //    .WithOne()
+            //    .HasForeignKey<FriendRequest>(request => request.FriendRequestStatusId)
+            //    .HasConstraintName("ForeignKey_FriendRequest_FriendRequestStatusId")
+            //    .OnDelete(DeleteBehavior.Restrict);
+
             modelBuilder.Entity<FriendRequest>()
-                .HasOne(request => request.FriendRequestStatus)
-                .WithOne()
-                .HasForeignKey<FriendRequest>(request => request.FriendRequestStatusId)
+                .HasOne<FriendRequestStatusType>()
+                .WithMany()
+                .IsRequired()
+                .HasForeignKey(request => request.FriendRequestStatusId)
                 .HasConstraintName("ForeignKey_FriendRequest_FriendRequestStatusId")
                 .OnDelete(DeleteBehavior.NoAction);
-
+            
             modelBuilder.Entity<ApplicationUser_Friend>()
                 .HasOne(mapping => mapping.ApplicationUser)
                 .WithMany(user => user.Friends)

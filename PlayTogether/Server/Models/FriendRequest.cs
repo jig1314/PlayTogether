@@ -12,19 +12,14 @@ namespace PlayTogether.Server.Models
         [Key]
         public long Id { get; set; }
 
-        [Required]
         public string FromUserId { get; set; }
 
         public ApplicationUser FromUser { get; set; }
 
-        [Required]
         public string ToUserId { get; set; }
 
         public ApplicationUser ToUser { get; set; }
 
-        [Required]
         public int FriendRequestStatusId { get; set; }
-
-        public FriendRequestStatusType FriendRequestStatus { get; set; }
     }
 }
