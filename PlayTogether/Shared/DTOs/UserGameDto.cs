@@ -1,4 +1,5 @@
-﻿using System;
+﻿using PlayTogether.Shared.Models;
+using System;
 using System.Collections.Generic;
 using System.Text;
 
@@ -19,5 +20,7 @@ namespace PlayTogether.Shared.DTOs
         public string ImageUrl { get; set; }
 
         public int? GameSkillLevelId { get; set; }
+
+        public GameSkillLevel GameSkillLevel { get; set; }
     }
 }

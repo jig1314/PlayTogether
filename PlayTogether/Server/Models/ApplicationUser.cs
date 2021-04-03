@@ -15,5 +15,11 @@ namespace PlayTogether.Server.Models
         public List<ApplicationUser_GameGenre> GameGenres { get; set; }
 
         public List<ApplicationUser_Game> Games { get; set; }
+
+        public List<FriendRequest> SentFriendRequests { get; set; }
+
+        public List<FriendRequest> ReceivedFriendRequests { get; set; }
+
+        public List<ApplicationUser_Friend> Friends { get; set; }
     }
 }

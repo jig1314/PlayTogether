@@ -45,6 +45,12 @@ namespace PlayTogether.Server.Data
 
         public DbSet<ApplicationUser_Game> ApplicationUser_Games { get; set; }
 
+        public DbSet<FriendRequestStatusType> FriendRequestStatusTypes { get; set; }
+
+        public DbSet<FriendRequest> FriendRequests { get; set; }
+
+        public DbSet<ApplicationUser_Friend> ApplicationUser_Friends { get; set; }
+
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
@@ -162,6 +168,51 @@ namespace PlayTogether.Server.Data
                 .HasForeignKey<ApplicationUser_Game>(mapping => mapping.GameSkillLevelId)
                 .HasConstraintName("ForeignKey_User_Game_GameSkillLevelId")
                 .OnDelete(DeleteBehavior.NoAction);
+
+            modelBuilder.Entity<FriendRequest>()
+                .HasOne(request => request.FromUser)
+                .WithMany(user => user.SentFriendRequests)
+                .IsRequired()
+                .HasForeignKey(request => request.FromUserId)
+                .HasConstraintName("ForeignKey_FriendRequest_User_FromUserId")
+                .OnDelete(DeleteBehavior.NoAction);
+
+            modelBuilder.Entity<FriendRequest>()
+                .HasOne(request => request.ToUser)
+                .WithMany(user => user.ReceivedFriendRequests)
+                .IsRequired()
+                .HasForeignKey(request => request.ToUserId)
+                .HasConstraintName("ForeignKey_FriendRequest_User_ToUserId")
+                .OnDelete(DeleteBehavior.NoAction);
+
+            //modelBuilder.Entity<FriendRequest>()
+            //    .HasOne(request => request.FriendRequestStatus)
+            //    .WithOne()
+            //    .HasForeignKey<FriendRequest>(request => request.FriendRequestStatusId)
+            //    .HasConstraintName("ForeignKey_FriendRequest_FriendRequestStatusId")
+            //    .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<FriendRequest>()
+                .HasOne<FriendRequestStatusType>()
+                .WithMany()
+                .IsRequired()
+                .HasForeignKey(request => request.FriendRequestStatusId)
+                .HasConstraintName("ForeignKey_FriendRequest_FriendRequestStatusId")
+                .OnDelete(DeleteBehavior.NoAction);
+            
+            modelBuilder.Entity<ApplicationUser_Friend>()
+                .HasOne(mapping => mapping.ApplicationUser)
+                .WithMany(user => user.Friends)
+                .HasForeignKey(mapping => mapping.ApplicationUserId)
+                .HasConstraintName("ForeignKey_User_Friend_ApplicationUserId")
+                .OnDelete(DeleteBehavior.NoAction);
+
+            modelBuilder.Entity<ApplicationUser_Friend>()
+                .HasOne(mapping => mapping.FriendUser)
+                .WithMany()
+                .HasForeignKey(mapping => mapping.FriendUserId)
+                .HasConstraintName("ForeignKey_User_Friend_FriendUserId")
+                .OnDelete(DeleteBehavior.NoAction); 
         }
     }
 }

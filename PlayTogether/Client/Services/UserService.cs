@@ -112,5 +112,26 @@ namespace PlayTogether.Client.Services
             response.EnsureSuccessStatusCode();
             return await response.Content.ReadFromJsonAsync<List<GamerSearchResult>>();
         }
+
+        public async Task<UserProfileDto> GetUserProfileInformation(string userName) =>
+            await httpClient.GetFromJsonAsync<UserProfileDto>($"api/user/profile/{userName}");
+
+        public async Task<List<string>> GetFriendUserIds() =>
+            await httpClient.GetFromJsonAsync<List<string>>($"api/user/friendUserIds");
+
+        public async Task<List<FriendRequestDto>> GetActiveFriendRequests() =>
+            await httpClient.GetFromJsonAsync<List<FriendRequestDto>>($"api/user/activeFriendRequests");
+
+        public async Task SendFriendRequest(FriendRequestDto friendRequest)
+        {
+            var response = await httpClient.PostAsJsonAsync("api/user/sendFriendRequest", friendRequest);
+            response.EnsureSuccessStatusCode();
+        }
+
+        public async Task CancelFriendRequest(FriendRequestDto cancelledFriendRequest)
+        {
+            var response = await httpClient.PutAsJsonAsync("api/user/cancelFriendRequest", cancelledFriendRequest);
+            response.EnsureSuccessStatusCode();
+        }
     }
 }

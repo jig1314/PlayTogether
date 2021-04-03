@@ -3,15 +3,17 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using PlayTogether.Server.Data;
 
 namespace PlayTogether.Server.Data.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20210402180205_AddFriendAndFriendRequestSchema")]
+    partial class AddFriendAndFriendRequestSchema
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -474,7 +476,8 @@ namespace PlayTogether.Server.Data.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("FriendRequestStatusId");
+                    b.HasIndex("FriendRequestStatusId")
+                        .IsUnique();
 
                     b.HasIndex("FromUserId");
 
@@ -846,9 +849,9 @@ namespace PlayTogether.Server.Data.Migrations
 
             modelBuilder.Entity("PlayTogether.Server.Models.FriendRequest", b =>
                 {
-                    b.HasOne("PlayTogether.Shared.Models.FriendRequestStatusType", null)
-                        .WithMany()
-                        .HasForeignKey("FriendRequestStatusId")
+                    b.HasOne("PlayTogether.Shared.Models.FriendRequestStatusType", "FriendRequestStatus")
+                        .WithOne()
+                        .HasForeignKey("PlayTogether.Server.Models.FriendRequest", "FriendRequestStatusId")
                         .HasConstraintName("ForeignKey_FriendRequest_FriendRequestStatusId")
                         .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
@@ -866,6 +869,8 @@ namespace PlayTogether.Server.Data.Migrations
                         .HasConstraintName("ForeignKey_FriendRequest_User_ToUserId")
                         .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
+
+                    b.Navigation("FriendRequestStatus");
 
                     b.Navigation("FromUser");
 

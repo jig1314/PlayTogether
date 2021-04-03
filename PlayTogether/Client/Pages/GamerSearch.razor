@@ -1,27 +1,84 @@
 ﻿@page "/gamerSearch/"
 @inherits GamerSearchBase
 
-<BSRow>
-    <BSCol Class="col-md-6">
-        <h2>Search For Gamers</h2>
-        <input type="search" class="form-control" @bind="@GamerSearchViewModel.SearchCriteria" @bind:event="oninput" @onchange="OnSearchCriteriaChanged" placeholder="Enter Gamer Search Criteria..." />
-        <hr />
-        @if (Gamers != null)
-        {
-            @foreach (var gamer in Gamers.OrderBy(gamer => gamer.UserName))
-            {
-                <BSRow style="padding: inherit; margin-top: 15px; margin-bottom: 20px;">
-                    <BSCard Color="Color.Light" style="width: 100%;">
-                        <BSCard CardType="CardType.Body">
-                            <BSCard CardType="CardType.Title" style="margin-bottom: 7px;">User - @gamer.UserName</BSCard>
-                            <hr style="margin-top: auto; margin-bottom: 5px;" />
-                            <BSCard CardType="CardType.Text" style="margin-bottom: inherit;">Name: @gamer.FirstName @gamer.LastName</BSCard>
-                            <BSCard CardType="CardType.Text" style="margin-bottom: unset;"><small class="text-muted">Email: @gamer.Email</small></BSCard>
-                        </BSCard>
-                    </BSCard>
-                </BSRow>
-            }
-        }
-    </BSCol>
-</BSRow>
+@if (FriendUserIds != null && ActiveSentFriendRequestIds != null && ActiveReceivedFriendRequestIds != null)
+{
+    <BSContainer>
+        <BSRow>
+            <BSCol>
+                <h2>Search For Gamers</h2>
+                <input type="search" class="form-control" @bind="@GamerSearchViewModel.SearchCriteria" @bind:event="oninput" @onchange="OnSearchCriteriaChanged" placeholder="Enter Gamer Search Criteria..." />
+                <hr />
+                <BSRow>
+                    @if (Gamers != null)
+                    {
+                        @foreach (var gamer in Gamers.OrderBy(gamer => gamer.UserName))
+                        {
+                            <BSCol Class="col-lg-4">
 
+                                <div class="text-center card-box">
+                                    <div class="member-card pt-2 pb-2">
+                                        <div class="thumb-lg member-thumb mx-auto"><img src="alt-image.png" class="rounded-circle img-thumbnail"></div>
+                                        <div class="">
+                                            <h4><a href="profile/@gamer.UserName">@gamer.FirstName @gamer.LastName</a></h4>
+                                            <p class="text-muted" style="margin-bottom: unset;">@gamer.UserName</p>
+                                            <p class="text-muted" style="margin-bottom: unset;">@gamer.Email</p>
+                                            @if (FriendUserIds.Contains(gamer.UserId))
+                                            {
+                                                <BSButton ButtonType="ButtonType.Button" Color="Color.Light" IsDisabled="true" Class="btn mt-3 btn-rounded">Friend <i class="fas fa-smile-beam"></i></BSButton>
+                                            }
+                                            else if (ActiveSentFriendRequestIds.Contains(gamer.UserId))
+                                            {
+                                                <BSButton ButtonType="ButtonType.Button" IsDisabled="true" Class="btn btn-primary mt-3 btn-rounded waves-effect w-md waves-light">Friend Request Sent <i class="fas fa-check"></i></BSButton>
+                                                <BSButton ButtonType="ButtonType.Button" Color="Color.Link"  OnClick="@(() => CancelFriendRequest(gamer.UserId))">Cancel Friend Request</BSButton>
+
+                                            }
+                                            else if (ActiveReceivedFriendRequestIds.Contains(gamer.UserId))
+                                            {
+                                                <BSButton ButtonType="ButtonType.Button" Color="Color.Light" IsDisabled="true" Class="btn mt-3 btn-rounded">Accept/Reject Friend Request - Coming Soon <i class="far fa-clock"></i></BSButton>
+                                            }
+                                            else
+                                            {
+                                                <BSButton ButtonType="ButtonType.Button" Class="btn btn-primary mt-3 btn-rounded waves-effect w-md waves-light" OnClick="@(() => SendFriendRequest(gamer.UserId))">Send Friend Request</BSButton>
+                                            }
+                                        </div>
+                                    </div>
+                                </div>
+                            </BSCol>
+                        }
+                    }
+                </BSRow>
+            </BSCol>
+        </BSRow>
+    </BSContainer>
+}
+
+
+<style>
+
+    .card-box {
+        padding: 20px;
+        border: 1px solid #dee2e6;
+        border-radius: 3px;
+        margin-bottom: 30px;
+        background-color: #fff;
+    }
+
+    .thumb-lg {
+        height: 88px;
+        width: 88px;
+    }
+
+    .img-thumbnail {
+        padding: .25rem;
+        background-color: #fff;
+        border: 1px solid #dee2e6;
+        border-radius: .25rem;
+        max-width: 100%;
+        height: auto;
+    }
+
+    .btn-rounded {
+        border-radius: 2em;
+    }
+</style>
