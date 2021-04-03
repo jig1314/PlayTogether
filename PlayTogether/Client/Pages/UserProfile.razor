@@ -1,7 +1,7 @@
 ﻿@page "/profile/{userName}"
 @inherits UserProfileBase
 
-@if (UserProfileDto != null)
+@if (UserProfileDto != null && FriendUserIds != null && ActiveSentFriendRequestIds != null && ActiveReceivedFriendRequestIds != null)
 {
     <BSForm Model="@UserProfileDto">
         <BSTabGroup @ref="TabGroup">
@@ -12,6 +12,31 @@
                             <img src="alt-image.png" />
                         </span>
                         <h4 style="text-align: center; display: block; width: 100%; font-weight: 300;">@UserProfileDto.FirstName @UserProfileDto.LastName (@UserProfileDto.UserName)</h4>
+                        <span style="text-align: center; display: block; width: 100%;">
+                            @if (FriendUserIds.Contains(UserProfileDto.UserId))
+                            {
+                                <BSButton ButtonType="ButtonType.Button" Color="Color.Light" IsDisabled="true" Class="btn mt-3 btn-rounded">Friend <i class="fas fa-smile-beam"></i></BSButton>
+                            }
+                            else if (ActiveSentFriendRequestIds.Contains(UserProfileDto.UserId))
+                            {
+                                <BSButton ButtonType="ButtonType.Button" IsDisabled="true" Class="btn btn-primary mt-3 btn-rounded waves-effect w-md waves-light">Friend Request Sent <i class="fas fa-check"></i></BSButton>
+
+                            }
+                            else if (ActiveReceivedFriendRequestIds.Contains(UserProfileDto.UserId))
+                            {
+                                <BSButton ButtonType="ButtonType.Button" Color="Color.Light" IsDisabled="true" Class="btn mt-3 btn-rounded">Accept/Reject Friend Request - Coming Soon <i class="far fa-clock"></i></BSButton>
+                            }
+                            else
+                            {
+                                <BSButton ButtonType="ButtonType.Button" Class="btn btn-primary mt-3 btn-rounded waves-effect w-md waves-light" OnClick="@(() => SendFriendRequest(UserProfileDto.UserId))">Send Friend Request</BSButton>
+                            }
+                        </span>
+                        @if (ActiveSentFriendRequestIds.Contains(UserProfileDto.UserId))
+                        {
+                            <span style="text-align: center; display: block; width: 100%;">
+                                <BSButton ButtonType="ButtonType.Button" Color="Color.Link" OnClick="@(() => CancelFriendRequest(UserProfileDto.UserId))">Cancel Friend Request</BSButton>
+                            </span>
+                        }
                     </BSRow>
                     <BSTabList>
                         <BSTab @ref="TabAbout" InitialSelection="true">
@@ -115,3 +140,9 @@
         </BSTabGroup>
     </BSForm>
 }
+
+<style>
+    .btn-rounded {
+        border-radius: 2em;
+    }
+</style>
