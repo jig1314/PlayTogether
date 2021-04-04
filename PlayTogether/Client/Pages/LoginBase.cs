@@ -58,7 +58,10 @@ namespace PlayTogether.Client.Pages
             {
                 SubmittingData = true;
                 await UserService.Login(loginDto);
-                NavigationManager.NavigateTo("authentication/login");
+                if (!string.IsNullOrWhiteSpace(ReturnUrl))
+                    NavigationManager.NavigateTo($"authentication/login?returnUrl={ReturnUrl}");
+                else
+                    NavigationManager.NavigateTo("authentication/login");
             }
             catch (Exception ex)
             {

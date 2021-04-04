@@ -39,7 +39,7 @@ namespace PlayTogether.Client.Pages
 
             if (!AuthenticationState.User.Identity.IsAuthenticated)
             {
-                NavigationManager.NavigateTo("/login");
+                NavigationManager.NavigateTo($"/login/{Uri.EscapeDataString(NavigationManager.Uri)}");
             }
             else
             {
