@@ -4,7 +4,7 @@
 <input type="search" class="form-control" @bind="@GameSearchViewModel.SearchCriteria" @bind:event="oninput" @onchange="OnSearchCriteriaChanged" placeholder="Enter Game Search Criteria..." />
 <hr />
 
-@if (Games != null && !SubmittingData)
+@if (Games?.Count > 0 && !SubmittingData)
 {
     <BSRow>
         @foreach (var game in Games.OrderBy(game => game.Name))
@@ -28,6 +28,10 @@
             </BSCol>
         }
     </BSRow>
+}
+else if (Games?.Count == 0 && !SubmittingData)
+{
+    <p style="margin-left: 15px;">No results found.</p>
 }
 else if (SubmittingData)
 {

@@ -1,5 +1,7 @@
 ﻿@page "/gamerSearch/"
 @inherits GamerSearchBase
+@using BlazorStrap.Extensions.FluentValidation
+@using PlayTogether.Client.ViewModels
 
 @if (FriendUserIds != null && ActiveSentFriendRequestIds != null && ActiveReceivedFriendRequestIds != null)
 {
@@ -10,7 +12,7 @@
                 <input type="search" class="form-control" @bind="@GamerSearchViewModel.SearchCriteria" @bind:event="oninput" @onchange="OnSearchCriteriaChanged" placeholder="Enter Gamer Search Criteria..." />
                 <hr />
                 <BSRow>
-                    @if (Gamers != null && !SubmittingData)
+                    @if (Gamers?.Count > 0 && !SubmittingData)
                     {
                         @foreach (var gamer in Gamers.OrderBy(gamer => gamer.UserName))
                         {
@@ -46,6 +48,10 @@
                                 </div>
                             </BSCol>
                         }
+                    }
+                    else if (Gamers?.Count == 0 && !SubmittingData)
+                    {
+                        <p style="margin-left: 15px;">No results found.</p>
                     }
                     else if (SubmittingData)
                     {
