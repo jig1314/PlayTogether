@@ -31,6 +31,8 @@ namespace PlayTogether.Client.Pages
 
         public string ErrorMessage { get; set; }
 
+        public bool SubmittingData { get; set; } = false;
+
         protected override async Task OnInitializedAsync()
         {
             RegisterViewModel = new RegisterViewModel();
@@ -56,12 +58,17 @@ namespace PlayTogether.Client.Pages
 
             try
             {
+                SubmittingData = true;
                 await UserService.RegisterNewUser(registerUserDto);
                 NavigationManager.NavigateTo("authentication/login");
             }
             catch (Exception ex)
             {
                 ErrorMessage = $"{ex.Message}";
+            }
+            finally
+            {
+                SubmittingData = false;
             }
         }
     }

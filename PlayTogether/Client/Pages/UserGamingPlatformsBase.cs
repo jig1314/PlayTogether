@@ -29,6 +29,8 @@ namespace PlayTogether.Client.Pages
 
         public List<int> UserGamingPlatformIds { get; set; }
 
+        public bool SubmittingData { get; set; } = false;
+
         protected override async Task OnInitializedAsync()
         {
             AuthenticationState = await AuthenticationStateTask;
@@ -39,8 +41,10 @@ namespace PlayTogether.Client.Pages
             }
             else
             {
+                SubmittingData = true;
                 GamingPlatforms = await GameService.GetGamingPlatforms();
                 UserGamingPlatformIds = (await UserService.GetUserGamingPlatforms()).Select(p => p.Id).ToList();
+                SubmittingData = false;
             }
         }
 

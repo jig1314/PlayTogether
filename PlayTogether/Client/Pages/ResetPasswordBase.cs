@@ -23,6 +23,8 @@ namespace PlayTogether.Client.Pages
 
         public string ErrorMessage { get; set; }
 
+        public bool SubmittingData { get; set; } = false;
+
         protected override void OnInitialized()
         {
             ResetPasswordViewModel = new ResetPasswordViewModel();
@@ -40,12 +42,17 @@ namespace PlayTogether.Client.Pages
 
             try
             {
+                SubmittingData = true;
                 await UserService.ResetPassword(resetPasswordDto);
                 NavigationManager.NavigateTo("login");
             }
             catch (Exception ex)
             {
                 ErrorMessage = $"{ex.Message}";
+            }
+            finally
+            {
+                SubmittingData = false;
             }
         }
     }

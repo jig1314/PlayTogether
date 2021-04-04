@@ -1,7 +1,7 @@
 ﻿@page "/profile/{userName}"
 @inherits UserProfileBase
 
-@if (UserProfileDto != null && FriendUserIds != null && ActiveSentFriendRequestIds != null && ActiveReceivedFriendRequestIds != null)
+@if (UserProfileDto != null && FriendUserIds != null && ActiveSentFriendRequestIds != null && ActiveReceivedFriendRequestIds != null && !SubmittingData)
 {
     <BSForm Model="@UserProfileDto">
         <BSTabGroup @ref="TabGroup">
@@ -139,6 +139,10 @@
             </BSRow>
         </BSTabGroup>
     </BSForm>
+}
+else
+{
+    <div class="loading-bar"></div>
 }
 
 <style>

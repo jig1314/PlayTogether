@@ -50,6 +50,7 @@ namespace PlayTogether.Client.Pages
 
         public string IdUser { get; set; }
 
+        public bool SubmittingData { get; set; } = false;
 
         protected override async Task OnInitializedAsync()
         {
@@ -61,6 +62,7 @@ namespace PlayTogether.Client.Pages
             }
             else
             {
+                SubmittingData = true;
                 IdUser = AuthenticationState.User.FindFirst("sub").Value;
 
                 UserProfileDto = await UserService.GetUserProfileInformation(UserName);
@@ -71,6 +73,8 @@ namespace PlayTogether.Client.Pages
                 ActiveSentFriendRequests = activeFriendRequests.Where(request => request.FromUserId == IdUser).ToList();
                 ActiveSentFriendRequestIds = ActiveSentFriendRequests.Select(request => request.ToUserId).ToList();
                 ActiveReceivedFriendRequestIds = activeFriendRequests.Where(request => request.ToUserId == IdUser).Select(request => request.FromUserId).ToList();
+
+                SubmittingData = false;
             }
         }
 

@@ -29,6 +29,8 @@ namespace PlayTogether.Client.Pages
 
         public List<string> UserGameGenreIds { get; set; }
 
+        public bool SubmittingData { get; set; } = false;
+
         protected override async Task OnInitializedAsync()
         {
             AuthenticationState = await AuthenticationStateTask;
@@ -52,8 +54,10 @@ namespace PlayTogether.Client.Pages
 
         private async Task RefreshData()
         {
+            SubmittingData = true;
             GameGenres = await GameService.GetGameGenres();
             UserGameGenreIds = (await UserService.GetUserGameGenres()).Select(p => p.Id.ToString()).ToList();
+            SubmittingData = false;
         }
     }
 }

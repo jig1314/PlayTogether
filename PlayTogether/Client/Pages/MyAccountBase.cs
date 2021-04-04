@@ -92,8 +92,10 @@ namespace PlayTogether.Client.Pages
             {
                 ErrorMessage = $"{ex.Message}";
             }
-
-            SubmittingData = false;
+            finally
+            {
+                SubmittingData = false;
+            }
         }
     }
 }

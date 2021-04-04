@@ -10,7 +10,7 @@
                 <input type="search" class="form-control" @bind="@GamerSearchViewModel.SearchCriteria" @bind:event="oninput" @onchange="OnSearchCriteriaChanged" placeholder="Enter Gamer Search Criteria..." />
                 <hr />
                 <BSRow>
-                    @if (Gamers != null)
+                    @if (Gamers != null && !SubmittingData)
                     {
                         @foreach (var gamer in Gamers.OrderBy(gamer => gamer.UserName))
                         {
@@ -30,7 +30,7 @@
                                             else if (ActiveSentFriendRequestIds.Contains(gamer.UserId))
                                             {
                                                 <BSButton ButtonType="ButtonType.Button" IsDisabled="true" Class="btn btn-primary mt-3 btn-rounded waves-effect w-md waves-light">Friend Request Sent <i class="fas fa-check"></i></BSButton>
-                                                <BSButton ButtonType="ButtonType.Button" Color="Color.Link"  OnClick="@(() => CancelFriendRequest(gamer.UserId))">Cancel Friend Request</BSButton>
+                                                <BSButton ButtonType="ButtonType.Button" Color="Color.Link" OnClick="@(() => CancelFriendRequest(gamer.UserId))">Cancel Friend Request</BSButton>
 
                                             }
                                             else if (ActiveReceivedFriendRequestIds.Contains(gamer.UserId))
@@ -46,6 +46,10 @@
                                 </div>
                             </BSCol>
                         }
+                    }
+                    else if (SubmittingData)
+                    {
+                        <div class="loading-bar"></div>
                     }
                 </BSRow>
             </BSCol>
