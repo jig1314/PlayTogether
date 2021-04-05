@@ -22,9 +22,14 @@ namespace PlayTogether.Client.Pages
         [Inject]
         public IUserService UserService { get; set; }
 
+        [Inject]
+        public IGameService GameService { get; set; }
+
         public List<GamingPlatformDto> GamingPlatforms { get; set; }
 
         public List<int> UserGamingPlatformIds { get; set; }
+
+        public bool SubmittingData { get; set; } = false;
 
         protected override async Task OnInitializedAsync()
         {
@@ -32,12 +37,14 @@ namespace PlayTogether.Client.Pages
 
             if (!AuthenticationState.User.Identity.IsAuthenticated)
             {
-                NavigationManager.NavigateTo("/login");
+                NavigationManager.NavigateTo($"/login/{Uri.EscapeDataString(NavigationManager.Uri)}");
             }
             else
             {
-                GamingPlatforms = await UserService.GetGamingPlatforms();
+                SubmittingData = true;
+                GamingPlatforms = await GameService.GetGamingPlatforms();
                 UserGamingPlatformIds = (await UserService.GetUserGamingPlatforms()).Select(p => p.Id).ToList();
+                SubmittingData = false;
             }
         }
 

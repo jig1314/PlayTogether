@@ -375,6 +375,53 @@ namespace PlayTogether.Server.Data.Migrations
                     b.ToTable("ApplicationUserDetails");
                 });
 
+            modelBuilder.Entity("PlayTogether.Server.Models.ApplicationUser_Friend", b =>
+                {
+                    b.Property<long>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<string>("ApplicationUserId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("FriendUserId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ApplicationUserId");
+
+                    b.HasIndex("FriendUserId");
+
+                    b.ToTable("ApplicationUser_Friends");
+                });
+
+            modelBuilder.Entity("PlayTogether.Server.Models.ApplicationUser_Game", b =>
+                {
+                    b.Property<string>("ApplicationUserId")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<int>("GameId")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("GameSkillLevelId")
+                        .HasColumnType("int");
+
+                    b.HasKey("ApplicationUserId", "GameId")
+                        .HasName("PrimaryKey_ApplicationUserId_GameId");
+
+                    b.HasIndex("GameId");
+
+                    b.HasIndex("GameSkillLevelId")
+                        .IsUnique()
+                        .HasFilter("[GameSkillLevelId] IS NOT NULL");
+
+                    b.ToTable("ApplicationUser_Games");
+                });
+
             modelBuilder.Entity("PlayTogether.Server.Models.ApplicationUser_GameGenre", b =>
                 {
                     b.Property<string>("ApplicationUserId")
@@ -407,12 +454,72 @@ namespace PlayTogether.Server.Data.Migrations
                     b.ToTable("ApplicationUser_GamingPlatform");
                 });
 
+            modelBuilder.Entity("PlayTogether.Server.Models.FriendRequest", b =>
+                {
+                    b.Property<long>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<int>("FriendRequestStatusId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("FromUserId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("ToUserId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("FriendRequestStatusId");
+
+                    b.HasIndex("FromUserId");
+
+                    b.HasIndex("ToUserId");
+
+                    b.ToTable("FriendRequests");
+                });
+
+            modelBuilder.Entity("PlayTogether.Server.Models.Game", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<long>("ApiId")
+                        .HasColumnType("bigint");
+
+                    b.Property<string>("ImageUrl")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("ReleaseDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Summary")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Games");
+                });
+
             modelBuilder.Entity("PlayTogether.Server.Models.GameGenre", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int")
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<long>("ApiId")
+                        .HasColumnType("bigint");
 
                     b.Property<string>("Name")
                         .IsRequired()
@@ -426,6 +533,22 @@ namespace PlayTogether.Server.Data.Migrations
                     b.ToTable("GameGenres");
                 });
 
+            modelBuilder.Entity("PlayTogether.Server.Models.GameGenre_Game", b =>
+                {
+                    b.Property<int>("GameGenreId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("GameId")
+                        .HasColumnType("int");
+
+                    b.HasKey("GameGenreId", "GameId")
+                        .HasName("PrimaryKey_GameGenreId_GameId");
+
+                    b.HasIndex("GameId");
+
+                    b.ToTable("GameGenre_Games");
+                });
+
             modelBuilder.Entity("PlayTogether.Server.Models.GamingPlatform", b =>
                 {
                     b.Property<int>("Id")
@@ -435,6 +558,9 @@ namespace PlayTogether.Server.Data.Migrations
 
                     b.Property<string>("Abbreviation")
                         .HasColumnType("nvarchar(max)");
+
+                    b.Property<long>("ApiId")
+                        .HasColumnType("bigint");
 
                     b.Property<string>("LogoURL")
                         .HasColumnType("nvarchar(max)");
@@ -449,6 +575,22 @@ namespace PlayTogether.Server.Data.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("GamingPlatforms");
+                });
+
+            modelBuilder.Entity("PlayTogether.Server.Models.GamingPlatform_Game", b =>
+                {
+                    b.Property<int>("GamingPlatformId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("GameId")
+                        .HasColumnType("int");
+
+                    b.HasKey("GamingPlatformId", "GameId")
+                        .HasName("PrimaryKey_GamingPlatformId_GameId");
+
+                    b.HasIndex("GameId");
+
+                    b.ToTable("GamingPlatform_Games");
                 });
 
             modelBuilder.Entity("PlayTogether.Shared.Models.Country", b =>
@@ -469,6 +611,48 @@ namespace PlayTogether.Server.Data.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Countries");
+                });
+
+            modelBuilder.Entity("PlayTogether.Shared.Models.FriendRequestStatusType", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<string>("Description")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("EnumCode")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("FriendRequestStatusTypes");
+                });
+
+            modelBuilder.Entity("PlayTogether.Shared.Models.GameSkillLevel", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("GameSkillLevels");
                 });
 
             modelBuilder.Entity("PlayTogether.Shared.Models.Gender", b =>
@@ -568,6 +752,56 @@ namespace PlayTogether.Server.Data.Migrations
                     b.Navigation("Gender");
                 });
 
+            modelBuilder.Entity("PlayTogether.Server.Models.ApplicationUser_Friend", b =>
+                {
+                    b.HasOne("PlayTogether.Server.Models.ApplicationUser", "ApplicationUser")
+                        .WithMany("Friends")
+                        .HasForeignKey("ApplicationUserId")
+                        .HasConstraintName("ForeignKey_User_Friend_ApplicationUserId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.HasOne("PlayTogether.Server.Models.ApplicationUser", "FriendUser")
+                        .WithMany()
+                        .HasForeignKey("FriendUserId")
+                        .HasConstraintName("ForeignKey_User_Friend_FriendUserId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.Navigation("ApplicationUser");
+
+                    b.Navigation("FriendUser");
+                });
+
+            modelBuilder.Entity("PlayTogether.Server.Models.ApplicationUser_Game", b =>
+                {
+                    b.HasOne("PlayTogether.Server.Models.ApplicationUser", "ApplicationUser")
+                        .WithMany("Games")
+                        .HasForeignKey("ApplicationUserId")
+                        .HasConstraintName("ForeignKey_User_Game_ApplicationUserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("PlayTogether.Server.Models.Game", "Game")
+                        .WithMany("Users")
+                        .HasForeignKey("GameId")
+                        .HasConstraintName("ForeignKey_User_Game_GameId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("PlayTogether.Shared.Models.GameSkillLevel", "GameSkillLevel")
+                        .WithOne()
+                        .HasForeignKey("PlayTogether.Server.Models.ApplicationUser_Game", "GameSkillLevelId")
+                        .HasConstraintName("ForeignKey_User_Game_GameSkillLevelId")
+                        .OnDelete(DeleteBehavior.NoAction);
+
+                    b.Navigation("ApplicationUser");
+
+                    b.Navigation("Game");
+
+                    b.Navigation("GameSkillLevel");
+                });
+
             modelBuilder.Entity("PlayTogether.Server.Models.ApplicationUser_GameGenre", b =>
                 {
                     b.HasOne("PlayTogether.Server.Models.ApplicationUser", "ApplicationUser")
@@ -610,22 +844,113 @@ namespace PlayTogether.Server.Data.Migrations
                     b.Navigation("GamingPlatform");
                 });
 
+            modelBuilder.Entity("PlayTogether.Server.Models.FriendRequest", b =>
+                {
+                    b.HasOne("PlayTogether.Shared.Models.FriendRequestStatusType", null)
+                        .WithMany()
+                        .HasForeignKey("FriendRequestStatusId")
+                        .HasConstraintName("ForeignKey_FriendRequest_FriendRequestStatusId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.HasOne("PlayTogether.Server.Models.ApplicationUser", "FromUser")
+                        .WithMany("SentFriendRequests")
+                        .HasForeignKey("FromUserId")
+                        .HasConstraintName("ForeignKey_FriendRequest_User_FromUserId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.HasOne("PlayTogether.Server.Models.ApplicationUser", "ToUser")
+                        .WithMany("ReceivedFriendRequests")
+                        .HasForeignKey("ToUserId")
+                        .HasConstraintName("ForeignKey_FriendRequest_User_ToUserId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.Navigation("FromUser");
+
+                    b.Navigation("ToUser");
+                });
+
+            modelBuilder.Entity("PlayTogether.Server.Models.GameGenre_Game", b =>
+                {
+                    b.HasOne("PlayTogether.Server.Models.GameGenre", "GameGenre")
+                        .WithMany("Games")
+                        .HasForeignKey("GameGenreId")
+                        .HasConstraintName("ForeignKey_GameGenre_Game_GameGenreId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("PlayTogether.Server.Models.Game", "Game")
+                        .WithMany("GameGenres")
+                        .HasForeignKey("GameId")
+                        .HasConstraintName("ForeignKey_GameGenre_Game_GameId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Game");
+
+                    b.Navigation("GameGenre");
+                });
+
+            modelBuilder.Entity("PlayTogether.Server.Models.GamingPlatform_Game", b =>
+                {
+                    b.HasOne("PlayTogether.Server.Models.Game", "Game")
+                        .WithMany("GamingPlatforms")
+                        .HasForeignKey("GameId")
+                        .HasConstraintName("ForeignKey_GamingPlatform_Game_GameId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("PlayTogether.Server.Models.GamingPlatform", "GamingPlatform")
+                        .WithMany("Games")
+                        .HasForeignKey("GamingPlatformId")
+                        .HasConstraintName("ForeignKey_GamingPlatform_Game_GamingPlatformId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Game");
+
+                    b.Navigation("GamingPlatform");
+                });
+
             modelBuilder.Entity("PlayTogether.Server.Models.ApplicationUser", b =>
                 {
                     b.Navigation("ApplicationUserDetails");
 
+                    b.Navigation("Friends");
+
+                    b.Navigation("GameGenres");
+
+                    b.Navigation("Games");
+
+                    b.Navigation("GamingPlatforms");
+
+                    b.Navigation("ReceivedFriendRequests");
+
+                    b.Navigation("SentFriendRequests");
+                });
+
+            modelBuilder.Entity("PlayTogether.Server.Models.Game", b =>
+                {
                     b.Navigation("GameGenres");
 
                     b.Navigation("GamingPlatforms");
+
+                    b.Navigation("Users");
                 });
 
             modelBuilder.Entity("PlayTogether.Server.Models.GameGenre", b =>
                 {
+                    b.Navigation("Games");
+
                     b.Navigation("Users");
                 });
 
             modelBuilder.Entity("PlayTogether.Server.Models.GamingPlatform", b =>
                 {
+                    b.Navigation("Games");
+
                     b.Navigation("Users");
                 });
 #pragma warning restore 612, 618

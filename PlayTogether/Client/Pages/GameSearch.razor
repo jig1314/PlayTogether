@@ -1,0 +1,48 @@
+﻿@inherits GameSearchBase
+@using PlayTogether.Shared.Models
+
+<input type="search" class="form-control" @bind="@GameSearchViewModel.SearchCriteria" @bind:event="oninput" @onchange="OnSearchCriteriaChanged" placeholder="Enter Game Search Criteria..." />
+<hr />
+
+@if (Games?.Count > 0 && !SubmittingData)
+{
+    <BSRow>
+        @foreach (var game in Games.OrderBy(game => game.Name))
+        {
+            <BSCol style="padding-left: 10px; padding-right: 10px; margin-bottom: 15px; min-width: 350px; max-width: 50%;">
+                <BSMedia MediaType="MediaType.Media" style="margin-bottom: 15px;">
+                    <BSMedia MediaType="MediaType.Image" VerticalAlignment="VerticalAlignment.Center" src="@game.ImageUrl" style="width: 90px; height: 90px;" />
+                    <div class="media-body" style="width: 100%;">
+                        <h5 style="width: 100%; margin-top: 15px;">@game.Name</h5>
+                        @if (UserGamesApiIds.Contains(game.ApiId))
+                        {
+                            <p class="form-text text-muted">Release Date: @game.ReleaseDate?.ToString("MM/dd/yyy")<i style="margin-left: 5px" class="fas fa-heart" aria-hidden="true" @onclick="@(() => Unfavorited(game))"></i></p>
+
+                        }
+                        else
+                        {
+                            <p class="form-text text-muted">Release Date: @game.ReleaseDate?.ToString("MM/dd/yyy")<i style="margin-left: 5px" class="far fa-heart" aria-hidden="true" @onclick="@(() => Favorited(game))"></i></p>
+                        }
+                    </div>
+                </BSMedia>
+            </BSCol>
+        }
+    </BSRow>
+}
+else if (Games?.Count == 0 && !SubmittingData)
+{
+    <p style="margin-left: 15px;">No results found.</p>
+}
+else if (SubmittingData)
+{
+    <BSRow>
+        <div style="position: relative; flex: none;" class="loading-bar"></div>
+    </BSRow>
+}
+
+<style>
+    .fa-heart {
+        color: red;
+        cursor: pointer;
+    }
+</style>

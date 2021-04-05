@@ -72,6 +72,138 @@ namespace PlayTogether.Server.Controllers
             }
         }
 
+        [HttpGet("profile/{userName}")]
+        public async Task<ActionResult<UserProfileDto>> GetUserProfileInformation(string userName)
+        {
+            try
+            {
+                if (!HttpContext.User.Identity.IsAuthenticated)
+                {
+                    return StatusCode(StatusCodes.Status401Unauthorized, "Error retrieving user profile information");
+                }
+
+                var idUser = (await _context.Users.Where(d => d.UserName == userName).FirstOrDefaultAsync()).Id;
+
+                var user = await _context.Users.Where(d => d.UserName == userName)
+                    .Include(user => user.ApplicationUserDetails)
+                    .Include(user => user.ApplicationUserDetails.CountryOfResidence)
+                    .Include(user => user.ApplicationUserDetails.Gender)
+                    .FirstOrDefaultAsync();
+
+                var gamingPlatforms = await _context.ApplicationUser_GamingPlatform.Where(mapping => mapping.ApplicationUserId == idUser)
+                    .Include(mapping => mapping.GamingPlatform)
+                    .ToListAsync();
+
+                var gameGenres = await _context.ApplicationUser_GameGenres.Where(mapping => mapping.ApplicationUserId == idUser)
+                    .Include(mapping => mapping.GameGenre)
+                    .ToListAsync();
+
+                var games = await _context.ApplicationUser_Games.Where(mapping => mapping.ApplicationUserId == idUser)
+                    .Include(mapping => mapping.Game)
+                    .Include(mapping => mapping.GameSkillLevel)
+                    .ToListAsync();
+
+                var userProfileDto = new UserProfileDto()
+                {
+                    UserId = user.Id,
+                    UserName = user.UserName,
+                    FirstName = user.ApplicationUserDetails.FirstName,
+                    LastName = user.ApplicationUserDetails.LastName,
+                    Email = user.Email,
+                    DateOfBirth = user.ApplicationUserDetails.DateOfBirth,
+                    CountryOfResidence = user.ApplicationUserDetails.CountryOfResidence,
+                    Gender = user.ApplicationUserDetails.Gender,
+                    PhoneNumber = user.PhoneNumber,
+                    GamingPlatforms = gamingPlatforms.Select(mapping => new GamingPlatformDto()
+                    {
+                        Id = mapping.GamingPlatform.Id,
+                        ApiId = mapping.GamingPlatform.ApiId,
+                        Abbreviation = mapping.GamingPlatform.Abbreviation,
+                        Name = mapping.GamingPlatform.Name,
+                        LogoURL = mapping.GamingPlatform.LogoURL
+                    }).ToList(),
+                    GameGenres = gameGenres.Select(mapping => new GameGenreDto()
+                    {
+                        Id = mapping.GameGenre.Id,
+                        ApiId = mapping.GameGenre.ApiId,
+                        Name = mapping.GameGenre.Name,
+                        Slug = mapping.GameGenre.Slug
+                    }).ToList(),
+                    Games = games.Select(mapping => new UserGameDto()
+                    {
+                        Id = mapping.Game.Id,
+                        ApiId = mapping.Game.ApiId,
+                        Name = mapping.Game.Name,
+                        Summary = mapping.Game.Summary,
+                        ReleaseDate = mapping.Game.ReleaseDate,
+                        ImageUrl = mapping.Game.ImageUrl,
+                        GameSkillLevelId = mapping.GameSkillLevelId,
+                        GameSkillLevel = mapping.GameSkillLevel
+                    }).ToList()
+                };
+
+                return Ok(userProfileDto);
+            }
+            catch (Exception)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, "Error retrieving user profile information");
+            }
+        }
+
+        [HttpGet("friendUserIds")]
+        public async Task<ActionResult<IEnumerable<string>>> GetFriendUserIds()
+        {
+            try
+            {
+                if (!HttpContext.User.Identity.IsAuthenticated)
+                {
+                    return StatusCode(StatusCodes.Status401Unauthorized, "Error retrieving the user's friends ids");
+                }
+
+                var idUser = GetUserId();
+                var friendUserIds = await _context.ApplicationUser_Friends.Where(mapping => mapping.ApplicationUserId == idUser).Select(mapping => mapping.FriendUserId).ToListAsync();
+
+                return Ok(friendUserIds);
+            }
+            catch (Exception)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, "Error retrieving the user's friends ids");
+            }
+        }
+
+        [HttpGet("activeFriendRequests")]
+        public async Task<ActionResult<IEnumerable<FriendRequestDto>>> GetActiveFriendRequests()
+        {
+            try
+            {
+                if (!HttpContext.User.Identity.IsAuthenticated)
+                {
+                    return StatusCode(StatusCodes.Status401Unauthorized, "Error retrieving the user's active friend requests");
+                }
+
+                var idUser = GetUserId();
+
+                var activeFriendRequestStatusType = await _context.FriendRequestStatusTypes.FirstOrDefaultAsync(type => type.EnumCode == (int)Enums.FriendRequestStatusType.Sent);
+                var activeFriendRequests = await _context.FriendRequests
+                    .Where(request => (request.FromUserId == idUser || request.ToUserId == idUser) && request.FriendRequestStatusId == activeFriendRequestStatusType.Id)
+                    .ToListAsync();
+
+                var friendRequestDtos = activeFriendRequests.Select(request => new FriendRequestDto()
+                {
+                    Id = request.Id,
+                    FromUserId = request.FromUserId,
+                    ToUserId = request.ToUserId,
+                    FriendRequestStatus = activeFriendRequestStatusType
+                });
+
+                return Ok(friendRequestDtos);
+            }
+            catch (Exception)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, "Error retrieving the user's active friend requests");
+            }
+        }
+
         [HttpGet("genders")]
         [AllowAnonymous]
         public async Task<ActionResult<IEnumerable<Gender>>> GetAllGenders()
@@ -193,6 +325,74 @@ namespace PlayTogether.Server.Controllers
             }
         }
 
+        [HttpPost("sendFriendRequest")]
+        public async Task<ActionResult> SendFriendRequest(FriendRequestDto friendRequestDto)
+        {
+            try
+            {
+                if (!HttpContext.User.Identity.IsAuthenticated)
+                {
+                    return StatusCode(StatusCodes.Status401Unauthorized, "Error sending the friend request");
+                }
+
+                var sentFriendRequestStatusType = await _context.FriendRequestStatusTypes.FirstOrDefaultAsync(type => type.EnumCode == (int)Enums.FriendRequestStatusType.Sent);
+
+                if (!_context.FriendRequests.Any(request => request.FromUserId == friendRequestDto.FromUserId && request.ToUserId == friendRequestDto.ToUserId))
+                {
+                    var newFriendRequest = new FriendRequest()
+                    {
+                        FromUserId = friendRequestDto.FromUserId,
+                        ToUserId = friendRequestDto.ToUserId,
+                        FriendRequestStatusId = sentFriendRequestStatusType.Id
+                    };
+
+                    _context.FriendRequests.Add(newFriendRequest);
+                    await _context.SaveChangesAsync();
+                }
+                else
+                {
+                    var existingFriendRequest = await _context.FriendRequests.FirstOrDefaultAsync(request => request.FromUserId == friendRequestDto.FromUserId && request.ToUserId == friendRequestDto.ToUserId);
+                    existingFriendRequest.FriendRequestStatusId = sentFriendRequestStatusType.Id;
+
+                    _context.Entry(existingFriendRequest).State = EntityState.Modified;
+                    await _context.SaveChangesAsync();
+                }
+
+                return StatusCode(StatusCodes.Status202Accepted);
+            }
+            catch (Exception)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, "Error sending the friend request");
+            }
+        }
+
+        [HttpPut("cancelFriendRequest")]
+        public async Task<ActionResult> CancelFriendRequest(FriendRequestDto friendRequestDto)
+        {
+            try
+            {
+                if (!HttpContext.User.Identity.IsAuthenticated)
+                {
+                    return StatusCode(StatusCodes.Status401Unauthorized, "Error cancelling the friend request");
+                }
+
+                var sentFriendRequestStatusType = await _context.FriendRequestStatusTypes.FirstOrDefaultAsync(type => type.EnumCode == (int)Enums.FriendRequestStatusType.Sent);
+                var cancelledFriendRequestStatusType = await _context.FriendRequestStatusTypes.FirstOrDefaultAsync(type => type.EnumCode == (int)Enums.FriendRequestStatusType.Cancelled);
+
+                var sentFriendRequest = await _context.FriendRequests.FirstOrDefaultAsync(request => request.FromUserId == friendRequestDto.FromUserId && request.ToUserId == friendRequestDto.ToUserId && request.FriendRequestStatusId == sentFriendRequestStatusType.Id);
+                sentFriendRequest.FriendRequestStatusId = cancelledFriendRequestStatusType.Id;
+
+                _context.Entry(sentFriendRequest).State = EntityState.Modified;
+                await _context.SaveChangesAsync();
+
+                return StatusCode(StatusCodes.Status202Accepted);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, "Error cancelling the friend request");
+            }
+        }
+
         [HttpPut("updateAccountInfo")]
         public async Task<ActionResult<UserAccountDto>> UpdateUserAccountInformation(UserAccountDto userAccountDto)
         {
@@ -269,6 +469,46 @@ namespace PlayTogether.Server.Controllers
             catch (Exception ex)
             {
                 return StatusCode(StatusCodes.Status500InternalServerError, (ex.InnerException != null) ? ex.InnerException.Message : ex.Message);
+            }
+        }
+
+        [HttpPut("search")]
+        public async Task<ActionResult<IEnumerable<GamerSearchResult>>> SearchGamers(GamerSearchDto gamerSearch)
+        {
+            try
+            {
+                if (!HttpContext.User.Identity.IsAuthenticated)
+                {
+                    return StatusCode(StatusCodes.Status401Unauthorized, "Error searching for gamers!");
+                }
+
+                var idUser = GetUserId();
+
+                var gamersFromUserName = await _context.Users.Include(user => user.ApplicationUserDetails).Where(user => user.UserName.Contains(gamerSearch.SearchCriteria)).ToListAsync();
+                var gamersFromFirstName = await _context.Users.Include(user => user.ApplicationUserDetails).Where(user => user.ApplicationUserDetails.FirstName.Contains(gamerSearch.SearchCriteria)).ToListAsync();
+                var gamersFromLastName = await _context.Users.Include(user => user.ApplicationUserDetails).Where(user => user.ApplicationUserDetails.LastName.Contains(gamerSearch.SearchCriteria)).ToListAsync();
+                var gamersFromEmail = await _context.Users.Include(user => user.ApplicationUserDetails).Where(user => user.Email.Contains(gamerSearch.SearchCriteria)).ToListAsync();
+
+                var gamers = new List<ApplicationUser>();
+                gamers.AddRange(gamersFromUserName);
+                gamers.AddRange(gamersFromFirstName);
+                gamers.AddRange(gamersFromLastName);
+                gamers.AddRange(gamersFromEmail);
+
+                var results = gamers.Where(gamer => gamer.Id != idUser).Distinct().Select(gamer => new GamerSearchResult()
+                {
+                    UserId = gamer.Id,
+                    FirstName = gamer.ApplicationUserDetails.FirstName,
+                    LastName = gamer.ApplicationUserDetails.LastName,
+                    Email = gamer.Email,
+                    UserName = gamer.UserName
+                });
+
+                return Ok(results);
+            }
+            catch (Exception)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, "Error searching for gamers!");
             }
         }
 

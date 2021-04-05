@@ -22,9 +22,14 @@ namespace PlayTogether.Client.Pages
         [Inject]
         public IUserService UserService { get; set; }
 
+        [Inject]
+        public IGameService GameService { get; set; }
+
         public List<GameGenreDto> GameGenres { get; set; }
 
         public List<string> UserGameGenreIds { get; set; }
+
+        public bool SubmittingData { get; set; } = false;
 
         protected override async Task OnInitializedAsync()
         {
@@ -32,7 +37,7 @@ namespace PlayTogether.Client.Pages
 
             if (!AuthenticationState.User.Identity.IsAuthenticated)
             {
-                NavigationManager.NavigateTo("/login");
+                NavigationManager.NavigateTo($"/login/{Uri.EscapeDataString(NavigationManager.Uri)}");
             }
             else
             {
@@ -49,8 +54,10 @@ namespace PlayTogether.Client.Pages
 
         private async Task RefreshData()
         {
-            GameGenres = await UserService.GetGameGenres();
+            SubmittingData = true;
+            GameGenres = await GameService.GetGameGenres();
             UserGameGenreIds = (await UserService.GetUserGameGenres()).Select(p => p.Id.ToString()).ToList();
+            SubmittingData = false;
         }
     }
 }

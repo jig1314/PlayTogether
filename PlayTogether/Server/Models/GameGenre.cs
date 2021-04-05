@@ -12,10 +12,15 @@ namespace PlayTogether.Server.Models
         public int Id { get; set; }
 
         [Required]
+        public long ApiId { get; set; }
+
+        [Required]
         public string Name { get; set; }
 
         public string Slug { get; set; }
 
         public List<ApplicationUser_GameGenre> Users { get; set; }
+
+        public List<GameGenre_Game> Games { get; set; }
     }
 }

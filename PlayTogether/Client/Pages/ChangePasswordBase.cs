@@ -29,13 +29,15 @@ namespace PlayTogether.Client.Pages
 
         public string ErrorMessage { get; set; }
 
+        public bool SubmittingData { get; set; } = false;
+
         protected override async Task OnInitializedAsync()
         {
             AuthenticationState = await AuthenticationStateTask;
 
             if (!AuthenticationState.User.Identity.IsAuthenticated)
             {
-                NavigationManager.NavigateTo("/login");
+                NavigationManager.NavigateTo($"/login/{Uri.EscapeDataString(NavigationManager.Uri)}");
             }
             else
             {
@@ -55,12 +57,18 @@ namespace PlayTogether.Client.Pages
 
             try
             {
+                SubmittingData = true;
+
                 await UserService.UpdatePassword(changePasswordDto);
                 NavigationManager.NavigateTo("manageProfile/myAccount");
             }
             catch (Exception ex)
             {
                 ErrorMessage = $"{ex.Message}";
+            }
+            finally
+            {
+                SubmittingData = false;
             }
         }
     }
