@@ -35,18 +35,19 @@ namespace PlayTogether.Client.Pages
 
         public GameSearch GameSearchPageForModal { get; set; }
 
+        public bool SubmittingData { get; set; } = false;
+
         protected override async Task OnInitializedAsync()
         {
             AuthenticationState = await AuthenticationStateTask;
 
             if (!AuthenticationState.User.Identity.IsAuthenticated)
             {
-                NavigationManager.NavigateTo("/login");
+                NavigationManager.NavigateTo($"/login/{Uri.EscapeDataString(NavigationManager.Uri)}");
             }
             else
             {
-                GameSkillLevels = await GameService.GetGameSkillLevels();
-                Games = await UserService.GetUserGames();
+                await RefreshData();
             }
         }
 
@@ -55,10 +56,17 @@ namespace PlayTogether.Client.Pages
             Games = null;
             GameSkillLevels = null;
 
-            await Task.Delay(100);
+            SubmittingData = true;
+            await Task.Delay(2000);
+            await RefreshData();
+        }
 
+        private async Task RefreshData()
+        {
+            SubmittingData = true;
             GameSkillLevels = await GameService.GetGameSkillLevels();
             Games = await UserService.GetUserGames();
+            SubmittingData = false;
         }
 
         protected async Task RefreshDataModal()

@@ -33,6 +33,8 @@ namespace PlayTogether.Client.Pages
 
         public List<long> UserGamesApiIds { get; set; }
 
+        public bool SubmittingData { get; set; } = false;
+
         protected override async Task OnInitializedAsync()
         {
             GameSearchViewModel = new GameSearchViewModel();
@@ -41,7 +43,7 @@ namespace PlayTogether.Client.Pages
 
             if (!AuthenticationState.User.Identity.IsAuthenticated)
             {
-                NavigationManager.NavigateTo("/login");
+                NavigationManager.NavigateTo($"/login/{Uri.EscapeDataString(NavigationManager.Uri)}");
             }
             else
             {
@@ -68,7 +70,9 @@ namespace PlayTogether.Client.Pages
                     SearchCriteria = GameSearchViewModel.SearchCriteria
                 };
 
+                SubmittingData = true;
                 Games = await GameService.SearchForGames(gameSearchDto);
+                SubmittingData = false;
                 StateHasChanged();
             }
         }

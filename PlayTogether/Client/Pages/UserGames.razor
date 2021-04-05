@@ -1,9 +1,9 @@
 ﻿@inherits UserGamesBase
 
 <BSButton style="margin-top: 15px;" IsOutline="true" Color="Color.Primary" @onclick="@(() => GameSearchModal.Show())"><i class="fas fa-plus" style="margin-right: 5px;"></i>Add Game(s)</BSButton>
-<hr/>
+<hr />
 
-@if (Games != null && GameSkillLevels != null)
+@if (Games != null && GameSkillLevels != null && !SubmittingData)
 {
     <BSRow>
         @foreach (var game in Games.OrderBy(game => game.Name))
@@ -26,6 +26,10 @@
             </BSCol>
         }
     </BSRow>
+}
+else if (SubmittingData)
+{
+    <div id="mainLoadingBar" style="position: relative;" class="loading-bar"></div>
 }
 
 <BSModal @ref="GameSearchModal" IsScrollable="true" IgnoreEscape="true" IgnoreClickOnBackdrop="true" Size="Size.Large" ShowEvent="@RefreshDataModal" HideEvent="@OnHideModal">

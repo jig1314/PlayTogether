@@ -38,7 +38,10 @@ namespace PlayTogether.Client
             // Supply HttpClient instances that include access tokens when making requests to the server project
             builder.Services.AddScoped(sp => sp.GetRequiredService<IHttpClientFactory>().CreateClient("PlayTogether.ServerAPI"));
 
-            builder.Services.AddApiAuthorization();
+            builder.Services.AddApiAuthorization(options =>
+            {
+                options.AuthenticationPaths.LogOutSucceededPath = "/";
+            });
 
             builder.Services.AddBootstrapCss();
 

@@ -4,7 +4,7 @@
 @using BlazorStrap.Extensions.FluentValidation
 @using PlayTogether.Client.ViewModels
 
-@if (RegisterViewModel != null && Genders != null && Countries != null)
+@if (RegisterViewModel != null && Genders != null && Countries != null && !SubmittingData)
 {
     <BSContainer>
         <BSRow>
@@ -60,12 +60,12 @@
                             <BSInput id="genderDropdown" InputType="InputType.Select" @bind-Value="@RegisterViewModel.GenderId">
                                 <option value="">Please select a Gender...</option>
                                 @if (Genders != null)
-                                {
-                                    @foreach (var gender in Genders)
                                     {
+                                    @foreach (var gender in Genders)
+                                        {
                                         <option value="@gender.Id">@gender.Value</option>
+                                        }
                                     }
-                                }
                             </BSInput>
                             <BSFormFeedback For="@(() => RegisterViewModel.GenderId)" />
                         </BSFormGroup>
@@ -74,12 +74,12 @@
                             <BSInput id="countryOfResidenceDropdown" InputType="InputType.Select" @bind-Value="@RegisterViewModel.CountryOfResidenceId">
                                 <option value="">Select a Country...</option>
                                 @if (Countries != null)
-                                {
-                                    @foreach (var country in Countries)
                                     {
+                                    @foreach (var country in Countries)
+                                        {
                                         <option value="@country.Id">@country.Name</option>
+                                        }
                                     }
-                                }
                             </BSInput>
                             <BSFormFeedback For="@(() => RegisterViewModel.CountryOfResidenceId)" />
                         </BSFormGroup>
@@ -96,6 +96,10 @@
             </div>
         </BSRow>
     </BSContainer>
+}
+else
+{
+    <div class="loading-bar"></div>
 }
 
 <style>
