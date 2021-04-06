@@ -9,7 +9,7 @@
         <BSRow>
             <BSCol>
                 <h2>Search For Gamers</h2>
-                <input type="search" class="form-control" @bind="@GamerSearchViewModel.SearchCriteria" @bind:event="oninput" @onchange="OnSearchCriteriaChanged" placeholder="Enter Gamer Search Criteria..." />
+                <input id="gamerSearchBar" type="search" class="form-control" @bind="@GamerSearchViewModel.SearchCriteria" @bind:event="oninput" @onchange="OnSearchCriteriaChanged" placeholder="Enter Gamer Search Criteria..." />
                 <hr />
                 <BSRow>
                     @if (Gamers?.Count > 0 && !SubmittingData)
@@ -51,7 +51,7 @@
                     }
                     else if (Gamers?.Count == 0 && !SubmittingData)
                     {
-                        <p style="margin-left: 15px;">No results found.</p>
+                        <p id="noResultsNotice" style="margin-left: 15px;">No results found.</p>
                     }
                     else if (SubmittingData)
                     {
