@@ -52,11 +52,15 @@ namespace PlayTogether.Server.Repositories
             }
 
             var games = await client.QueryAsync<Game>(IGDBClient.Endpoints.Games, query: query.ToString());
-            var gameCovers = await client.QueryAsync<Cover>(IGDBClient.Endpoints.Covers, query: $" fields *; limit 500; where id = ({string.Join(',', games.Where(game => game.Cover != null && game.Id.HasValue).Select(game => game.Cover.Id))}); ");
 
-            foreach (var game in games.Where(game => game.Cover != null && game.Cover.Id.HasValue))
+            if (games?.Length > 0)
             {
-                game.Cover = new IdentityOrValue<Cover>(gameCovers.FirstOrDefault(cover => cover.Id == game.Cover.Id.Value));
+                var gameCovers = await client.QueryAsync<Cover>(IGDBClient.Endpoints.Covers, query: $" fields *; limit 500; where id = ({string.Join(',', games.Where(game => game.Cover != null && game.Id.HasValue).Select(game => game.Cover.Id))}); ");
+
+                foreach (var game in games.Where(game => game.Cover != null && game.Cover.Id.HasValue))
+                {
+                    game.Cover = new IdentityOrValue<Cover>(gameCovers.FirstOrDefault(cover => cover.Id == game.Cover.Id.Value));
+                }
             }
 
             return games;

@@ -37,6 +37,7 @@ namespace PlayTogether.Server.Controllers
                 var gamingPlatformDtos = gamingPlatforms.Select(platform => new GamingPlatformDto()
                 {
                     Id = platform.Id,
+                    ApiId = platform.ApiId,
                     Abbreviation = platform.Abbreviation,
                     Name = platform.Name,
                     LogoURL = platform.LogoURL

@@ -25,6 +25,9 @@ namespace PlayTogether.Client.Pages
         [Inject]
         public IUserService UserService { get; set; }
 
+        [Inject]
+        public IGameService GameService { get; set; }
+
         public GamerSearchViewModel GamerSearchViewModel { get; set; }
 
         public List<GamerSearchResult> Gamers { get; set; }
@@ -37,9 +40,23 @@ namespace PlayTogether.Client.Pages
 
         public List<string> ActiveReceivedFriendRequestIds { get; set; }
 
+        public List<GamingPlatformDto> GamingPlatforms { get; set; }
+
+        public List<string> FilterGamingPlatformIds { get; set; } = new List<string>();
+
+        public List<GameGenreDto> GameGenres { get; set; }
+
+        public List<string> FilterGameGenreIds { get; set; } = new List<string>();
+
+        public List<UserGameDto> Games { get; set; }
+
+        public List<string> FilterGameIds { get; set; } = new List<string>();
+
         public string IdUser { get; set; }
 
         public bool SubmittingData { get; set; } = false;
+
+        public bool IsFilterOpen { get; set; } = false;
 
         protected override async Task OnInitializedAsync()
         {
@@ -61,6 +78,10 @@ namespace PlayTogether.Client.Pages
                 ActiveSentFriendRequests = activeFriendRequests.Where(request => request.FromUserId == IdUser).ToList();
                 ActiveSentFriendRequestIds = ActiveSentFriendRequests.Select(request => request.ToUserId).ToList();
                 ActiveReceivedFriendRequestIds = activeFriendRequests.Where(request => request.ToUserId == IdUser).Select(request => request.FromUserId).ToList();
+
+                GamingPlatforms = await GameService.GetGamingPlatforms();
+                GameGenres = await GameService.GetGameGenres();
+                Games = await UserService.GetUserGames();
             }
         }
 
@@ -68,16 +89,39 @@ namespace PlayTogether.Client.Pages
         {
             if (eventArgs.Value != null)
             {
-                var gamerSearchDto = new GamerSearchDto()
-                {
-                    SearchCriteria = GamerSearchViewModel.SearchCriteria
-                };
-
-                SubmittingData = true;
-                Gamers = await UserService.SearchForGamers(gamerSearchDto);
-                SubmittingData = false;
-                StateHasChanged();
+                await SearchForGamers();
             }
+        }
+
+        protected async Task ApplyFilter()
+        {
+            await SearchForGamers();
+        }
+
+        protected void ResetFilter()
+        {
+            FilterGameGenreIds = new List<string>();
+            FilterGameIds = new List<string>();
+            FilterGamingPlatformIds = new List<string>();
+            StateHasChanged();
+        }
+
+        private async Task SearchForGamers()
+        {
+            IsFilterOpen = false;
+            StateHasChanged();
+            var gamerSearchDto = new GamerSearchDto()
+            {
+                SearchCriteria = GamerSearchViewModel.SearchCriteria,
+                GamingPlatformIds = FilterGamingPlatformIds.ConvertAll((item) => Convert.ToInt32(item)),
+                GameGenreIds = FilterGameGenreIds.ConvertAll((item) => Convert.ToInt32(item)),
+                GameIds = FilterGameIds.ConvertAll((item) => Convert.ToInt32(item))
+            };
+
+            SubmittingData = true;
+            Gamers = await UserService.SearchForGamers(gamerSearchDto);
+            SubmittingData = false;
+            StateHasChanged();
         }
 
         protected async Task SendFriendRequest(string toUserId)

@@ -387,7 +387,7 @@ namespace PlayTogether.Server.Controllers
 
                 return StatusCode(StatusCodes.Status202Accepted);
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 return StatusCode(StatusCodes.Status500InternalServerError, "Error cancelling the friend request");
             }
@@ -483,17 +483,43 @@ namespace PlayTogether.Server.Controllers
                 }
 
                 var idUser = GetUserId();
-
-                var gamersFromUserName = await _context.Users.Include(user => user.ApplicationUserDetails).Where(user => user.UserName.Contains(gamerSearch.SearchCriteria)).ToListAsync();
-                var gamersFromFirstName = await _context.Users.Include(user => user.ApplicationUserDetails).Where(user => user.ApplicationUserDetails.FirstName.Contains(gamerSearch.SearchCriteria)).ToListAsync();
-                var gamersFromLastName = await _context.Users.Include(user => user.ApplicationUserDetails).Where(user => user.ApplicationUserDetails.LastName.Contains(gamerSearch.SearchCriteria)).ToListAsync();
-                var gamersFromEmail = await _context.Users.Include(user => user.ApplicationUserDetails).Where(user => user.Email.Contains(gamerSearch.SearchCriteria)).ToListAsync();
-
                 var gamers = new List<ApplicationUser>();
-                gamers.AddRange(gamersFromUserName);
-                gamers.AddRange(gamersFromFirstName);
-                gamers.AddRange(gamersFromLastName);
-                gamers.AddRange(gamersFromEmail);
+
+                if (!string.IsNullOrWhiteSpace(gamerSearch.SearchCriteria))
+                {
+                    gamers = await _context.Users
+                        .Include(user => user.ApplicationUserDetails)
+                        .Include(user => user.GamingPlatforms)
+                        .Include(user => user.GameGenres)
+                        .Include(user => user.Games)
+                        .Where(user => user.UserName.Contains(gamerSearch.SearchCriteria) ||
+                            user.ApplicationUserDetails.FirstName.Contains(gamerSearch.SearchCriteria) ||
+                            user.ApplicationUserDetails.LastName.Contains(gamerSearch.SearchCriteria) ||
+                            user.Email.Contains(gamerSearch.SearchCriteria)).ToListAsync();
+                }
+                else
+                {
+                    gamers = await _context.Users
+                        .Include(user => user.ApplicationUserDetails)
+                        .Include(user => user.GamingPlatforms)
+                        .Include(user => user.GameGenres)
+                        .Include(user => user.Games).ToListAsync();
+                }
+
+                if (gamerSearch.GamingPlatformIds?.Count > 0)
+                {
+                    gamers = gamers.Where(user => user.GamingPlatforms.Any(platform => gamerSearch.GamingPlatformIds.Contains(platform.GamingPlatformId))).ToList();
+                }
+
+                if (gamerSearch.GameGenreIds?.Count > 0)
+                {
+                    gamers = gamers.Where(user => user.GameGenres.Any(genre => gamerSearch.GameGenreIds.Contains(genre.GameGenreId))).ToList();
+                }
+
+                if (gamerSearch.GameIds?.Count > 0)
+                {
+                    gamers = gamers.Where(user => user.Games.Any(game => gamerSearch.GameIds.Contains(game.GameId))).ToList();
+                }
 
                 var results = gamers.Where(gamer => gamer.Id != idUser).Distinct().Select(gamer => new GamerSearchResult()
                 {
@@ -506,9 +532,9 @@ namespace PlayTogether.Server.Controllers
 
                 return Ok(results);
             }
-            catch (Exception)
+            catch (Exception ex)
             {
-                return StatusCode(StatusCodes.Status500InternalServerError, "Error searching for gamers!");
+                return StatusCode(StatusCodes.Status500InternalServerError, (ex.InnerException != null) ? ex.InnerException.Message : ex.Message);
             }
         }
 
