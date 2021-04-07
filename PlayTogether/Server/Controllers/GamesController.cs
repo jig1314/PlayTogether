@@ -145,7 +145,7 @@ namespace PlayTogether.Server.Controllers
 
                 return StatusCode(StatusCodes.Status202Accepted);
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 return StatusCode(StatusCodes.Status500InternalServerError, "Error adding game to the user");
             }
@@ -221,7 +221,7 @@ namespace PlayTogether.Server.Controllers
 
                 return StatusCode(StatusCodes.Status202Accepted);
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 return StatusCode(StatusCodes.Status500InternalServerError, "Error update game skill level for the user");
             }
