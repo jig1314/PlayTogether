@@ -49,3 +49,6 @@ Our backlog is ordered according to the expected workflow of the gamers that wil
 
 ## Sprint 1
 All documentation about Sprint 1 can be found in the Sprint 1 folder in thie repo. The Documentation.md will provide additional information.
+
+## Sprint 2
+All documentation about Sprint 2 can be found in the Sprint 2 folder in thie repo. The Documentation.md will provide additional information.
