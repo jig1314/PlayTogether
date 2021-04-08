@@ -12,7 +12,7 @@
             {
                 Checked = true;
             }
-            <input type="checkbox" checked=@Checked
+            <input style="margin-right: 5px;" type="checkbox" checked=@Checked
                    @onchange="eventArgs => { CheckboxClicked(Value, eventArgs.Value); }" />
             @Text <br />
         }

@@ -15,12 +15,23 @@ namespace PlayTogether.Client.Services
         Task<UserAccountDto> GetUserAccountInfo();
         Task UpdateUserAccountInfo(UserAccountDto userAccountDto);
         Task UpdatePassword(ChangePasswordDto changePasswordDto);
-        Task<List<GamingPlatformDto>> GetGamingPlatforms();
+
         Task<List<GamingPlatformDto>> GetUserGamingPlatforms();
         Task AddUserGamingPlatform(GamingPlatformDto gamingPlatform);
         Task RemoveUserGamingPlatform(GamingPlatformDto gamingPlatform);
-        Task<List<GameGenreDto>> GetGameGenres();
+
         Task<List<GameGenreDto>> GetUserGameGenres();
         Task UpdateUserGameGenres(List<int> gameGenreIds);
+
+        Task<List<UserGameDto>> GetUserGames();
+        Task AddUserGame(UserGameDto game);
+        Task RemoveUserGame(long apiId);
+        Task UpdateUserGameSkillLevel(UserGameDto game);
+        Task<List<GamerSearchResult>> SearchForGamers(GamerSearchDto gamerSearchDto);
+        Task<UserProfileDto> GetUserProfileInformation(string userName);
+        Task<List<string>> GetFriendUserIds();
+        Task<List<FriendRequestDto>> GetActiveFriendRequests();
+        Task SendFriendRequest(FriendRequestDto friendRequest);
+        Task CancelFriendRequest(FriendRequestDto cancelledFriendRequest);
     }
 }

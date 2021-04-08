@@ -61,9 +61,6 @@ namespace PlayTogether.Client.Services
             }
         }
 
-        public async Task<List<GamingPlatformDto>> GetGamingPlatforms() =>
-            await httpClient.GetFromJsonAsync<List<GamingPlatformDto>>($"api/gamingPlatforms/gamingPlatforms");
-
         public async Task<List<GamingPlatformDto>> GetUserGamingPlatforms() =>
             await httpClient.GetFromJsonAsync<List<GamingPlatformDto>>($"api/gamingPlatforms/userGamingPlatforms");
 
@@ -79,15 +76,61 @@ namespace PlayTogether.Client.Services
             response.EnsureSuccessStatusCode();
         }
 
-        public async Task<List<GameGenreDto>> GetGameGenres() =>
-            await httpClient.GetFromJsonAsync<List<GameGenreDto>>($"api/gameGenres/gameGenres");
-
         public async Task<List<GameGenreDto>> GetUserGameGenres() =>
             await httpClient.GetFromJsonAsync<List<GameGenreDto>>($"api/gameGenres/userGameGenres");
 
         public async Task UpdateUserGameGenres(List<int> gameGenreIds)
         {
             var response = await httpClient.PutAsJsonAsync("api/gameGenres/updateGameGenres", gameGenreIds);
+            response.EnsureSuccessStatusCode();
+        }
+
+        public async Task AddUserGame(UserGameDto game)
+        {
+            var response = await httpClient.PostAsJsonAsync("api/games/addUserGame", game);
+            response.EnsureSuccessStatusCode();
+        }
+
+        public async Task<List<UserGameDto>> GetUserGames() =>
+            await httpClient.GetFromJsonAsync<List<UserGameDto>>($"api/games/userGames");
+
+        public async Task RemoveUserGame(long apiId)
+        {
+            var response = await httpClient.DeleteAsync($"api/games/deleteUserGame/{apiId}");
+            response.EnsureSuccessStatusCode();
+        }
+
+        public async Task UpdateUserGameSkillLevel(UserGameDto game)
+        {
+            var response = await httpClient.PutAsJsonAsync("api/games/updateUserGameSkillLevel", game);
+            response.EnsureSuccessStatusCode();
+        }
+
+        public async Task<List<GamerSearchResult>> SearchForGamers(GamerSearchDto gamerSearchDto)
+        {
+            var response = await httpClient.PutAsJsonAsync("api/user/search", gamerSearchDto);
+            response.EnsureSuccessStatusCode();
+            return await response.Content.ReadFromJsonAsync<List<GamerSearchResult>>();
+        }
+
+        public async Task<UserProfileDto> GetUserProfileInformation(string userName) =>
+            await httpClient.GetFromJsonAsync<UserProfileDto>($"api/user/profile/{userName}");
+
+        public async Task<List<string>> GetFriendUserIds() =>
+            await httpClient.GetFromJsonAsync<List<string>>($"api/user/friendUserIds");
+
+        public async Task<List<FriendRequestDto>> GetActiveFriendRequests() =>
+            await httpClient.GetFromJsonAsync<List<FriendRequestDto>>($"api/user/activeFriendRequests");
+
+        public async Task SendFriendRequest(FriendRequestDto friendRequest)
+        {
+            var response = await httpClient.PostAsJsonAsync("api/user/sendFriendRequest", friendRequest);
+            response.EnsureSuccessStatusCode();
+        }
+
+        public async Task CancelFriendRequest(FriendRequestDto cancelledFriendRequest)
+        {
+            var response = await httpClient.PutAsJsonAsync("api/user/cancelFriendRequest", cancelledFriendRequest);
             response.EnsureSuccessStatusCode();
         }
     }

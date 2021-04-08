@@ -1,30 +1,33 @@
 ﻿@inherits UserGamingPlatformsBase
-@using Blazorise
 
-@if (GamingPlatforms != null && UserGamingPlatformIds != null)
+@if (GamingPlatforms != null && UserGamingPlatformIds != null && !SubmittingData)
 {
     <BSRow>
         @foreach (var gamingPlatform in GamingPlatforms.OrderBy(platform => platform.Name))
         {
-        <BSCol style="padding-left: 10px; padding-right: 10px; margin-bottom: 15px; min-width: 992px; min-width: 300px; max-width: 25%;">
-            <BSMedia MediaType="MediaType.Media" style="margin-bottom: 15px;">
-                <BSMedia MediaType="MediaType.Image" VerticalAlignment="VerticalAlignment.Center" src="@gamingPlatform.LogoURL" style="width: 90px; height: 90px;" />
-                <div class="media-body" style="width: 100%;">
-                    <h5 style="width: 100%; margin-top: 15px;">@gamingPlatform.Name</h5>
-                    @if (UserGamingPlatformIds.Contains(gamingPlatform.Id))
-                    {
-                        <p>@gamingPlatform.Abbreviation<i style="margin-left: 5px" class="fas fa-heart" aria-hidden="true" @onclick="@(() => Unfavorited(gamingPlatform))"></i></p>
+            <BSCol style="padding-left: 10px; padding-right: 10px; margin-bottom: 15px; min-width: 300px; max-width: 25%;">
+                <BSMedia MediaType="MediaType.Media" style="margin-bottom: 15px;">
+                    <BSMedia MediaType="MediaType.Image" VerticalAlignment="VerticalAlignment.Center" src="@gamingPlatform.LogoURL" style="width: 90px; height: 90px;" />
+                    <div class="media-body" style="width: 100%;">
+                        <h5 style="width: 100%; margin-top: 15px;">@gamingPlatform.Name</h5>
+                        @if (UserGamingPlatformIds.Contains(gamingPlatform.Id))
+                        {
+                            <p>@gamingPlatform.Abbreviation<i style="margin-left: 5px" class="fas fa-heart" aria-hidden="true" @onclick="@(() => Unfavorited(gamingPlatform))"></i></p>
 
-                    }
-                    else
-                    {
-                        <p>@gamingPlatform.Abbreviation<i style="margin-left: 5px" class="far fa-heart" aria-hidden="true" @onclick="@(() => Favorited(gamingPlatform))"></i></p>
-                    }
-                </div>
-            </BSMedia>
-        </BSCol>
+                        }
+                        else
+                        {
+                            <p>@gamingPlatform.Abbreviation<i style="margin-left: 5px" class="far fa-heart" aria-hidden="true" @onclick="@(() => Favorited(gamingPlatform))"></i></p>
+                        }
+                    </div>
+                </BSMedia>
+            </BSCol>
         }
     </BSRow>
+}
+else
+{
+    <div style="position: relative;" class="loading-bar"></div>
 }
 
 

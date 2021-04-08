@@ -8,6 +8,8 @@ namespace PlayTogether.Shared.DTOs
     {
         public int Id { get; set; }
 
+        public long ApiId { get; set; }
+
         public string Name { get; set; }
 
         public string Slug { get; set; }

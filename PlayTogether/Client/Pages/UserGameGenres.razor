@@ -3,14 +3,18 @@
 
 <h5 style="margin-top: 10px;">Select your favorite game genres</h5>
 
-@if (GameGenres != null && UserGameGenreIds != null)
+@if (GameGenres != null && UserGameGenreIds != null && !SubmittingData)
 {
     <BSCol Class="col-12">
         <BSRow class="col-12 row">
-            <CheckedListBox Data="@GameGenres" TextField="@((item) => item.Name)" ValueField="@((item) => item.Id)" SelectedValues="@UserGameGenreIds" />
+            <CheckedListBox Data="@GameGenres.OrderBy(x => x.Name)" TextField="@((item) => item.Name)" ValueField="@((item) => item.Id)" SelectedValues="@UserGameGenreIds" />
         </BSRow>
         <BSCol Class="col-sm-2" style="margin-top: 5px; padding: unset;">
             <BSButton ButtonType="ButtonType.Button" Class="btn btn-info btn-block btn-primary" @onclick="SaveGameGenresAsync">Save</BSButton>
         </BSCol>
     </BSCol>
+}
+else
+{
+    <div style="position: relative;" class="loading-bar"></div>
 }
