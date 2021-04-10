@@ -393,6 +393,68 @@ namespace PlayTogether.Server.Controllers
             }
         }
 
+        [HttpPut("acceptFriendRequest")]
+        public async Task<ActionResult> AcceptFriendRequest(FriendRequestDto friendRequestDto)
+        {
+            try
+            {
+                if (!HttpContext.User.Identity.IsAuthenticated)
+                {
+                    return StatusCode(StatusCodes.Status401Unauthorized, "Error declining the friend request");
+                }
+
+                var sentFriendRequestStatusType = await _context.FriendRequestStatusTypes.FirstOrDefaultAsync(type => type.EnumCode == (int)Enums.FriendRequestStatusType.Sent);
+                var acceptedFriendRequestStatusType = await _context.FriendRequestStatusTypes.FirstOrDefaultAsync(type => type.EnumCode == (int)Enums.FriendRequestStatusType.Accepted);
+
+                var sentFriendRequest = await _context.FriendRequests.FirstOrDefaultAsync(request => request.FromUserId == friendRequestDto.FromUserId && request.ToUserId == friendRequestDto.ToUserId && request.FriendRequestStatusId == sentFriendRequestStatusType.Id);
+                sentFriendRequest.FriendRequestStatusId = acceptedFriendRequestStatusType.Id;
+
+                var newFriends = new List<ApplicationUser_Friend>()
+                {
+                    new ApplicationUser_Friend() { ApplicationUserId = friendRequestDto.FromUserId, FriendUserId = friendRequestDto.ToUserId },
+                    new ApplicationUser_Friend() { ApplicationUserId = friendRequestDto.ToUserId, FriendUserId = friendRequestDto.FromUserId }
+                };
+
+                _context.Entry(sentFriendRequest).State = EntityState.Modified;
+                _context.ApplicationUser_Friends.AddRange(newFriends);
+                await _context.SaveChangesAsync();
+
+                return StatusCode(StatusCodes.Status202Accepted);
+            }
+            catch (Exception)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, "Error declining the friend request");
+            }
+        }
+
+
+        [HttpPut("declineFriendRequest")]
+        public async Task<ActionResult> DeclineFriendRequest(FriendRequestDto friendRequestDto)
+        {
+            try
+            {
+                if (!HttpContext.User.Identity.IsAuthenticated)
+                {
+                    return StatusCode(StatusCodes.Status401Unauthorized, "Error declining the friend request");
+                }
+
+                var sentFriendRequestStatusType = await _context.FriendRequestStatusTypes.FirstOrDefaultAsync(type => type.EnumCode == (int)Enums.FriendRequestStatusType.Sent);
+                var rejectedFriendRequestStatusType = await _context.FriendRequestStatusTypes.FirstOrDefaultAsync(type => type.EnumCode == (int)Enums.FriendRequestStatusType.Rejected);
+
+                var sentFriendRequest = await _context.FriendRequests.FirstOrDefaultAsync(request => request.FromUserId == friendRequestDto.FromUserId && request.ToUserId == friendRequestDto.ToUserId && request.FriendRequestStatusId == sentFriendRequestStatusType.Id);
+                sentFriendRequest.FriendRequestStatusId = rejectedFriendRequestStatusType.Id;
+
+                _context.Entry(sentFriendRequest).State = EntityState.Modified;
+                await _context.SaveChangesAsync();
+
+                return StatusCode(StatusCodes.Status202Accepted);
+            }
+            catch (Exception)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, "Error declining the friend request");
+            }
+        }
+
         [HttpPut("updateAccountInfo")]
         public async Task<ActionResult<UserAccountDto>> UpdateUserAccountInformation(UserAccountDto userAccountDto)
         {
