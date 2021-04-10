@@ -123,7 +123,8 @@
                                             }
                                             else if (ActiveReceivedFriendRequestIds.Contains(gamer.UserId))
                                             {
-                                                <BSButton ButtonType="ButtonType.Button" Color="Color.Light" IsDisabled="true" Class="btn mt-3 btn-rounded">Accept/Reject Friend Request - Coming Soon <i class="far fa-clock"></i></BSButton>
+                                                <BSButton ButtonType="ButtonType.Button" OnClick="@(() => AccpetFriendRequest(gamer.UserId))" Class="btn btn-primary mt-3 btn-rounded waves-effect w-md waves-light">Accept Friend Request <i class="fas fa-check"></i></BSButton>
+                                                <BSButton ButtonType="ButtonType.Button" OnClick="@(() => DeclineFriendRequest(gamer.UserId))" Color="Color.Link">Decline Friend Request</BSButton>
                                             }
                                             else
                                             {

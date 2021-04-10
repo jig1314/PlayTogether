@@ -38,6 +38,8 @@ namespace PlayTogether.Client.Pages
 
         public List<string> ActiveSentFriendRequestIds { get; set; }
 
+        public List<FriendRequestDto> ActiveReceivedFriendRequests { get; set; }
+
         public List<string> ActiveReceivedFriendRequestIds { get; set; }
 
         public List<GamingPlatformDto> GamingPlatforms { get; set; }
@@ -77,7 +79,9 @@ namespace PlayTogether.Client.Pages
 
                 ActiveSentFriendRequests = activeFriendRequests.Where(request => request.FromUserId == IdUser).ToList();
                 ActiveSentFriendRequestIds = ActiveSentFriendRequests.Select(request => request.ToUserId).ToList();
-                ActiveReceivedFriendRequestIds = activeFriendRequests.Where(request => request.ToUserId == IdUser).Select(request => request.FromUserId).ToList();
+
+                ActiveReceivedFriendRequests = activeFriendRequests.Where(request => request.ToUserId == IdUser).ToList();
+                ActiveReceivedFriendRequestIds = ActiveReceivedFriendRequests.Select(request => request.FromUserId).ToList();
 
                 GamingPlatforms = await GameService.GetGamingPlatforms();
                 GameGenres = await GameService.GetGameGenres();
@@ -146,6 +150,24 @@ namespace PlayTogether.Client.Pages
             ActiveSentFriendRequests.Remove(cancelledFriendRequest);
 
             await UserService.CancelFriendRequest(cancelledFriendRequest);
+        }
+
+        protected async Task AccpetFriendRequest(string fromUserId)
+        {
+            var acceptedFriendRequest = ActiveReceivedFriendRequests.FirstOrDefault(request => request.FromUserId == fromUserId);
+            FriendUserIds.Add(fromUserId);
+
+            await UserService.AcceptFriendRequest(acceptedFriendRequest);
+        }
+
+        protected async Task DeclineFriendRequest(string fromUserId)
+        {
+            var declinedFriendRequest = ActiveReceivedFriendRequests.FirstOrDefault(request => request.FromUserId == fromUserId);
+
+            ActiveReceivedFriendRequestIds.Remove(fromUserId);
+            ActiveReceivedFriendRequests.Remove(declinedFriendRequest);
+
+            await UserService.DeclineFriendRequest(declinedFriendRequest);
         }
     }
 }

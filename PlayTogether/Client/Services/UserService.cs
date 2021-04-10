@@ -133,5 +133,17 @@ namespace PlayTogether.Client.Services
             var response = await httpClient.PutAsJsonAsync("api/user/cancelFriendRequest", cancelledFriendRequest);
             response.EnsureSuccessStatusCode();
         }
+
+        public async Task DeclineFriendRequest(FriendRequestDto declinedFriendRequest)
+        {
+            var response = await httpClient.PutAsJsonAsync("api/user/declineFriendRequest", declinedFriendRequest);
+            response.EnsureSuccessStatusCode();
+        }
+
+        public async Task AcceptFriendRequest(FriendRequestDto acceptedFriendRequest)
+        {
+            var response = await httpClient.PutAsJsonAsync("api/user/acceptFriendRequest", acceptedFriendRequest);
+            response.EnsureSuccessStatusCode();
+        }
     }
 }

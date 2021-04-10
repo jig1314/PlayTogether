@@ -33,5 +33,7 @@ namespace PlayTogether.Client.Services
         Task<List<FriendRequestDto>> GetActiveFriendRequests();
         Task SendFriendRequest(FriendRequestDto friendRequest);
         Task CancelFriendRequest(FriendRequestDto cancelledFriendRequest);
+        Task DeclineFriendRequest(FriendRequestDto declinedFriendRequest);
+        Task AcceptFriendRequest(FriendRequestDto acceptedFriendRequest);
     }
 }

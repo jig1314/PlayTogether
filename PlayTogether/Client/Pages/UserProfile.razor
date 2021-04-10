@@ -24,17 +24,23 @@
                             }
                             else if (ActiveReceivedFriendRequestIds.Contains(UserProfileDto.UserId))
                             {
-                                <BSButton ButtonType="ButtonType.Button" Color="Color.Light" IsDisabled="true" Class="btn mt-3 btn-rounded">Accept/Reject Friend Request - Coming Soon <i class="far fa-clock"></i></BSButton>
+                                <BSButton ButtonType="ButtonType.Button" OnClick="@(() => AccpetFriendRequest(UserProfileDto.UserId))" Class="btn btn-primary mt-3 btn-rounded waves-effect w-md waves-light">Accept Friend Request <i class="fas fa-check"></i></BSButton>
                             }
                             else
                             {
                                 <BSButton ButtonType="ButtonType.Button" Class="btn btn-primary mt-3 btn-rounded waves-effect w-md waves-light" OnClick="@(() => SendFriendRequest(UserProfileDto.UserId))">Send Friend Request</BSButton>
                             }
                         </span>
-                        @if (ActiveSentFriendRequestIds.Contains(UserProfileDto.UserId))
+                        @if (ActiveSentFriendRequestIds.Contains(UserProfileDto.UserId) && !FriendUserIds.Contains(UserProfileDto.UserId))
                         {
                             <span style="text-align: center; display: block; width: 100%;">
                                 <BSButton ButtonType="ButtonType.Button" Color="Color.Link" OnClick="@(() => CancelFriendRequest(UserProfileDto.UserId))">Cancel Friend Request</BSButton>
+                            </span>
+                        }
+                        else if (ActiveReceivedFriendRequestIds.Contains(UserProfileDto.UserId) && !FriendUserIds.Contains(UserProfileDto.UserId))
+                        {
+                            <span style="text-align: center; display: block; width: 100%;">
+                                <BSButton ButtonType="ButtonType.Button" OnClick="@(() => DeclineFriendRequest(UserProfileDto.UserId))" Color="Color.Link">Decline Friend Request</BSButton>
                             </span>
                         }
                     </BSRow>
