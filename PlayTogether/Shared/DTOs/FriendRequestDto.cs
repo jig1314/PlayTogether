@@ -11,7 +11,11 @@ namespace PlayTogether.Shared.DTOs
 
         public string FromUserId { get; set; }
 
+        public UserBasicInfo FromUser { get; set; }
+
         public string ToUserId { get; set; }
+        
+        public UserBasicInfo ToUser { get; set; }
 
         public FriendRequestStatusType FriendRequestStatus { get; set; }
     }

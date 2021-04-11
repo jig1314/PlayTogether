@@ -150,8 +150,8 @@ namespace PlayTogether.Server.Controllers
             }
         }
 
-        [HttpGet("friendUserIds")]
-        public async Task<ActionResult<IEnumerable<string>>> GetFriendUserIds()
+        [HttpGet("friendUsers")]
+        public async Task<ActionResult<IEnumerable<UserBasicInfo>>> GetFriendUserIds()
         {
             try
             {
@@ -161,9 +161,19 @@ namespace PlayTogether.Server.Controllers
                 }
 
                 var idUser = GetUserId();
-                var friendUserIds = await _context.ApplicationUser_Friends.Where(mapping => mapping.ApplicationUserId == idUser).Select(mapping => mapping.FriendUserId).ToListAsync();
+                var friendUsers = await _context.ApplicationUser_Friends
+                    .Include(mapping => mapping.FriendUser)
+                    .Include(mapping => mapping.FriendUser.ApplicationUserDetails)
+                    .Where(mapping => mapping.ApplicationUserId == idUser).Select(mapping => new UserBasicInfo()
+                    {
+                        UserId = mapping.FriendUserId,
+                        FirstName = mapping.FriendUser.ApplicationUserDetails.FirstName,
+                        LastName = mapping.FriendUser.ApplicationUserDetails.LastName,
+                        Email = mapping.FriendUser.Email,
+                        UserName = mapping.FriendUser.UserName
+                    }).ToListAsync();
 
-                return Ok(friendUserIds);
+                return Ok(friendUsers);
             }
             catch (Exception)
             {
@@ -185,6 +195,8 @@ namespace PlayTogether.Server.Controllers
 
                 var activeFriendRequestStatusType = await _context.FriendRequestStatusTypes.FirstOrDefaultAsync(type => type.EnumCode == (int)Enums.FriendRequestStatusType.Sent);
                 var activeFriendRequests = await _context.FriendRequests
+                    .Include(request => request.FromUser).Include(request => request.FromUser.ApplicationUserDetails)
+                    .Include(request => request.ToUser).Include(request => request.ToUser.ApplicationUserDetails)
                     .Where(request => (request.FromUserId == idUser || request.ToUserId == idUser) && request.FriendRequestStatusId == activeFriendRequestStatusType.Id)
                     .ToListAsync();
 
@@ -192,7 +204,23 @@ namespace PlayTogether.Server.Controllers
                 {
                     Id = request.Id,
                     FromUserId = request.FromUserId,
+                    FromUser = new UserBasicInfo()
+                    {
+                        UserId = request.FromUser.Id,
+                        FirstName = request.FromUser.ApplicationUserDetails.FirstName,
+                        LastName = request.FromUser.ApplicationUserDetails.LastName,
+                        Email = request.FromUser.Email,
+                        UserName = request.FromUser.UserName
+                    },
                     ToUserId = request.ToUserId,
+                    ToUser = new UserBasicInfo()
+                    {
+                        UserId = request.ToUser.Id,
+                        FirstName = request.ToUser.ApplicationUserDetails.FirstName,
+                        LastName = request.ToUser.ApplicationUserDetails.LastName,
+                        Email = request.ToUser.Email,
+                        UserName = request.ToUser.UserName
+                    },
                     FriendRequestStatus = activeFriendRequestStatusType
                 });
 
@@ -535,7 +563,7 @@ namespace PlayTogether.Server.Controllers
         }
 
         [HttpPut("search")]
-        public async Task<ActionResult<IEnumerable<GamerSearchResult>>> SearchGamers(GamerSearchDto gamerSearch)
+        public async Task<ActionResult<IEnumerable<UserBasicInfo>>> SearchGamers(GamerSearchDto gamerSearch)
         {
             try
             {
@@ -583,7 +611,7 @@ namespace PlayTogether.Server.Controllers
                     gamers = gamers.Where(user => user.Games.Any(game => gamerSearch.GameIds.Contains(game.GameId))).ToList();
                 }
 
-                var results = gamers.Where(gamer => gamer.Id != idUser).Distinct().Select(gamer => new GamerSearchResult()
+                var results = gamers.Where(gamer => gamer.Id != idUser).Distinct().Select(gamer => new UserBasicInfo()
                 {
                     UserId = gamer.Id,
                     FirstName = gamer.ApplicationUserDetails.FirstName,
