@@ -24,7 +24,7 @@
                             }
                             else if (ActiveReceivedFriendRequestIds.Contains(UserProfileDto.UserId))
                             {
-                                <BSButton ButtonType="ButtonType.Button" OnClick="@(() => AccpetFriendRequest(UserProfileDto.UserId))" Class="btn btn-primary mt-3 btn-rounded waves-effect w-md waves-light">Accept Friend Request <i class="fas fa-check"></i></BSButton>
+                                <BSButton ButtonType="ButtonType.Button" OnClick="@(() => AcceptFriendRequest(UserProfileDto.UserId))" Class="btn btn-primary mt-3 btn-rounded waves-effect w-md waves-light">Accept Friend Request <i class="fas fa-check"></i></BSButton>
                             }
                             else
                             {

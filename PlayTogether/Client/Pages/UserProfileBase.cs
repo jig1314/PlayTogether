@@ -69,7 +69,7 @@ namespace PlayTogether.Client.Pages
 
                 UserProfileDto = await UserService.GetUserProfileInformation(UserName);
 
-                FriendUserIds = await UserService.GetFriendUserIds();
+                FriendUserIds = (await UserService.GetFriendUsers()).Select(user => user.UserId).ToList();
                 var activeFriendRequests = await UserService.GetActiveFriendRequests();
 
                 ActiveSentFriendRequests = activeFriendRequests.Where(request => request.FromUserId == IdUser).ToList();
@@ -106,7 +106,7 @@ namespace PlayTogether.Client.Pages
             await UserService.CancelFriendRequest(cancelledFriendRequest);
         }
 
-        protected async Task AccpetFriendRequest(string fromUserId)
+        protected async Task AcceptFriendRequest(string fromUserId)
         {
             var acceptedFriendRequest = ActiveReceivedFriendRequests.FirstOrDefault(request => request.FromUserId == fromUserId);
             FriendUserIds.Add(fromUserId);
