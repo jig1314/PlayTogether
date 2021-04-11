@@ -2,8 +2,8 @@
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Authorization;
 using PlayTogether.Client.Services;
-using PlayTogether.Client.ViewModels;
 using PlayTogether.Shared.DTOs;
+using PlayTogether.Shared.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -11,9 +11,8 @@ using System.Threading.Tasks;
 
 namespace PlayTogether.Client.Pages
 {
-    public class MyProfileBase : ComponentBase
+    public class FriendPopUpBase : ComponentBase
     {
-
         [CascadingParameter]
         public Task<AuthenticationState> AuthenticationStateTask { get; set; }
 
@@ -25,25 +24,17 @@ namespace PlayTogether.Client.Pages
         [Inject]
         public IUserService UserService { get; set; }
 
-        public UserProfileDto UserProfileDto { get; set; }
+        public BSTab TabFriendRequests { get; set; }
 
-        public BSTabGroup TabGroup { get; set; }
+        public BSTab TabFriends { get; set; }
 
-        public BSTab TabAbout { get; set; }
-
-        public BSTab TabGamingPlatforms { get; set; }
-
-        public BSTab TabGameGenres { get; set; }
-
-        public BSTab TabGames { get; set; }
+        public List<UserBasicInfo> FriendUsers { get; set; }
 
         public List<FriendRequestDto> ActiveReceivedFriendRequests { get; set; }
 
-        public BSModal FriendModal { get; set; }
+        public List<string> AcceptedFriendRequestsUserIds { get; set; } = new List<string>();
 
-        public FriendPopUp FriendPopUp { get; set; }
-
-        public bool RetrievingData { get; set; } = false;
+        public List<string> DeclinedFriendRequestsUserIds { get; set; } = new List<string>();
 
         protected override async Task OnInitializedAsync()
         {
@@ -53,47 +44,34 @@ namespace PlayTogether.Client.Pages
             {
                 NavigationManager.NavigateTo($"/login/{Uri.EscapeDataString(NavigationManager.Uri)}");
             }
-            else
-            {
-                await RefreshData();
-            }
         }
 
-        private async Task RefreshData()
+        public async Task RefreshData()
         {
-            RetrievingData = true;
-
-            var userName = AuthenticationState.User.Identity.Name;
             var idUser = AuthenticationState.User.FindFirst("sub").Value;
 
-            UserProfileDto = await UserService.GetUserProfileInformation(userName);
+            FriendUsers = await UserService.GetFriendUsers();
 
             var activeFriendRequests = await UserService.GetActiveFriendRequests();
             ActiveReceivedFriendRequests = activeFriendRequests.Where(request => request.ToUserId == idUser).ToList();
 
-            RetrievingData = false;
-        }
-        
-        protected async Task OnHideModal()
-        {
-            UserProfileDto = null;
-            ActiveReceivedFriendRequests = null;
-
-            RetrievingData = true;
-            await Task.Delay(2000);
-            await RefreshData();
+            StateHasChanged();
         }
 
-        protected async Task RefreshDataModal()
+        protected async Task AcceptFriendRequest(string fromUserId)
         {
-            if (FriendPopUp != null)
-                await FriendPopUp.RefreshData();
+            var acceptedFriendRequest = ActiveReceivedFriendRequests.FirstOrDefault(request => request.FromUserId == fromUserId);
+            AcceptedFriendRequestsUserIds.Add(fromUserId);
+
+            await UserService.AcceptFriendRequest(acceptedFriendRequest);
         }
 
-
-        protected void NavigateToManageAccountPage()
+        protected async Task DeclineFriendRequest(string fromUserId)
         {
-            NavigationManager.NavigateTo("/manageProfile/myAccount");
+            var declinedFriendRequest = ActiveReceivedFriendRequests.FirstOrDefault(request => request.FromUserId == fromUserId);
+            DeclinedFriendRequestsUserIds.Add(fromUserId);
+
+            await UserService.DeclineFriendRequest(declinedFriendRequest);
         }
     }
 }

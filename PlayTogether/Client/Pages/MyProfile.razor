@@ -15,13 +15,13 @@
                             <img id="profileImage" src="alt-image.png" />
                         </span>
                         <span style="text-align: center; display: block; width: 100%;">
-                            <BSButton id="changePhotoButton" class="btn btn-lg btn-primary">
-                                Change Photo - Coming Soon
+                            <BSButton id="changePhotoButton" class="btn btn-lg btn-primary" style="padding-left: unset; padding-right: unset;">
+                                Change Photo - Coming Soon <i class="far fa-clock"></i>
                             </BSButton>
                         </span>
                         <h4 style="text-align: center; display: block; width: 100%; font-weight: 300;">@UserProfileDto.FirstName @UserProfileDto.LastName (@UserProfileDto.UserName)</h4>
                         <span style="text-align: center; display: block; width: 100%;">
-                            <BSButton style="border-color: rgb(85 88 89 / 50%);" ButtonType="ButtonType.Button" Color="Color.Light" Class="btn mt-3 btn-rounded waves-effect w-md waves-light">
+                            <BSButton @onclick="@(() => FriendModal.Show())" style="border-color: rgb(85 88 89 / 50%);" ButtonType="ButtonType.Button" Color="Color.Light" Class="btn mt-3 btn-rounded waves-effect w-md waves-light">
                                 See All Friends
                                 @if (ActiveReceivedFriendRequests?.Count > 0)
                                 {
@@ -136,6 +136,14 @@ else
 {
     <div class="loading-bar"></div>
 }
+
+<BSModal @ref="FriendModal" IsScrollable="true" IgnoreEscape="true" IgnoreClickOnBackdrop="true" Size="Size.Large" ShowEvent="@RefreshDataModal" HideEvent="@OnHideModal">
+    <BSModalHeader OnClick="@(() => FriendModal.Hide())">Friends</BSModalHeader>
+    <BSModalBody><FriendPopUp @ref="FriendPopUp" /></BSModalBody>
+    <BSModalFooter>
+        <BSButton Color="Color.Secondary" @onclick="@(() => FriendModal.Hide())">Close</BSButton>
+    </BSModalFooter>
+</BSModal>
 
 <style>
     .btn-rounded {

@@ -106,18 +106,18 @@ namespace PlayTogether.Client.Services
             response.EnsureSuccessStatusCode();
         }
 
-        public async Task<List<GamerSearchResult>> SearchForGamers(GamerSearchDto gamerSearchDto)
+        public async Task<List<UserBasicInfo>> SearchForGamers(GamerSearchDto gamerSearchDto)
         {
             var response = await httpClient.PutAsJsonAsync("api/user/search", gamerSearchDto);
             response.EnsureSuccessStatusCode();
-            return await response.Content.ReadFromJsonAsync<List<GamerSearchResult>>();
+            return await response.Content.ReadFromJsonAsync<List<UserBasicInfo>>();
         }
 
         public async Task<UserProfileDto> GetUserProfileInformation(string userName) =>
             await httpClient.GetFromJsonAsync<UserProfileDto>($"api/user/profile/{userName}");
 
-        public async Task<List<string>> GetFriendUserIds() =>
-            await httpClient.GetFromJsonAsync<List<string>>($"api/user/friendUserIds");
+        public async Task<List<UserBasicInfo>> GetFriendUsers() =>
+            await httpClient.GetFromJsonAsync<List<UserBasicInfo>>($"api/user/friendUsers");
 
         public async Task<List<FriendRequestDto>> GetActiveFriendRequests() =>
             await httpClient.GetFromJsonAsync<List<FriendRequestDto>>($"api/user/activeFriendRequests");
