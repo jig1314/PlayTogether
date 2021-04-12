@@ -1,16 +1,67 @@
-﻿@inherits FriendPopUpBase
+﻿@inherits UserFriendPopUpBase
 
-@if (FriendUsers != null && ActiveReceivedFriendRequests != null)
+@if (FriendUserIds != null && ActiveSentFriendRequestIds != null && ActiveReceivedFriendRequestIds != null && UsersFriends != null)
 {
     <BSTabGroup>
         <BSTabList>
             <BSTab @ref="@TabFriends" InitialSelection="true">
-                <BSTabLabel>Friends</BSTabLabel>
+                <BSTabLabel>All Friends</BSTabLabel>
                 <BSTabContent>
                     <BSRow>
-                        @if (FriendUsers?.Count > 0)
+                        @if (UsersFriends?.Count > 0)
                         {
-                            @foreach (var friend in FriendUsers.OrderBy(friend => friend.UserName))
+                            @foreach (var friend in UsersFriends.OrderBy(friend => friend.UserName))
+                            {
+                                <div class="col-md-12">
+                                    <div class="row well well-white mini-profile-widget bootdey.com">
+                                        <div class="col-md-3">
+                                            <div class="image-container">
+                                                <img src="alt-image.png" class="avatar img-responsive">
+                                            </div>
+                                        </div>
+                                        <div class="col-md-9">
+                                            <div style="text-align: center;" class="details">
+                                                <h5><a href="profile/@friend.UserName">@friend.FirstName @friend.LastName (@friend.UserName)</a></h5>
+                                                <hr style="margin-bottom: unset;" />
+                                                @if (FriendUserIds.Contains(friend.UserId))
+                                                {
+                                                    <BSButton ButtonType="ButtonType.Button" Color="Color.Light" IsDisabled="true" Class="btn mt-3 btn-rounded">Friend <i class="fas fa-smile-beam"></i></BSButton>
+                                                }
+                                                else if (ActiveSentFriendRequestIds.Contains(friend.UserId))
+                                                {
+                                                    <BSButton ButtonType="ButtonType.Button" IsDisabled="true" Class="btn btn-primary mt-3 btn-rounded waves-effect w-md waves-light">Friend Request Sent <i class="fas fa-check"></i></BSButton>
+                                                    <BSButton ButtonType="ButtonType.Button" OnClick="@(() => CancelFriendRequest(friend.UserId))" Class="btn mt-3 btn-rounded waves-effect w-md waves-light" Color="Color.Secondary">Cancel Friend Request <i class="fas fa-times"></i></BSButton>
+
+                                                }
+                                                else if (ActiveReceivedFriendRequestIds.Contains(friend.UserId))
+                                                {
+                                                    <BSButton ButtonType="ButtonType.Button" OnClick="@(() => AcceptFriendRequest(friend.UserId))" Class="btn btn-primary mt-3 btn-rounded waves-effect w-md waves-light">Accept Friend Request <i class="fas fa-check"></i></BSButton>
+                                                    <BSButton ButtonType="ButtonType.Button" OnClick="@(() => DeclineFriendRequest(friend.UserId))" Class="btn mt-3 btn-rounded waves-effect w-md waves-light" Color="Color.Secondary">Decline Friend Request <i class="fas fa-times"></i></BSButton>
+                                                }
+                                                else
+                                                {
+                                                    <BSButton ButtonType="ButtonType.Button" Class="btn btn-primary mt-3 btn-rounded waves-effect w-md waves-light" OnClick="@(() => SendFriendRequest(friend.UserId))">Send Friend Request</BSButton>
+                                                }
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            }
+                        }
+                        else
+                        {
+                            <p style="margin-top: 5px; margin-left: 15px;">They have no friends...yet!</p>
+                        }
+                    </BSRow>
+                </BSTabContent>
+            </BSTab>
+            <BSTab @ref="@TabMutualFriends">
+                <BSTabLabel>Mutual Friends</BSTabLabel>
+                <BSTabContent>
+                    <BSRow>
+                        @if (UsersFriends?.Count > 0)
+                        {
+                            @foreach (var friend in UsersFriends.Where(user => FriendUserIds.Contains(user.UserId)).OrderBy(friend => friend.UserName))
                             {
                                 <div class="col-md-12">
                                     <div class="row well well-white mini-profile-widget bootdey.com">
@@ -31,59 +82,7 @@
                         }
                         else
                         {
-                            <p style="margin-top: 5px; margin-left: 15px;">You have no friends...yet!</p>
-                        }
-                    </BSRow>
-                </BSTabContent>
-            </BSTab>
-            <BSTab @ref="@TabFriendRequests">
-                @if (ActiveReceivedFriendRequests?.Count - DeclinedFriendRequestsUserIds.Count - AcceptedFriendRequestsUserIds.Count > 0)
-                {
-                    <BSTabLabel>Friend Requests (@(ActiveReceivedFriendRequests.Count - DeclinedFriendRequestsUserIds.Count - AcceptedFriendRequestsUserIds.Count))</BSTabLabel>
-                }
-                else
-                {
-                    <BSTabLabel>Friend Requests</BSTabLabel>
-                }
-                <BSTabContent>
-                    <BSRow>
-                        @if (ActiveReceivedFriendRequests?.Count > 0)
-                        {
-                            @foreach (var friendRequest in ActiveReceivedFriendRequests.OrderBy(friendRequest => friendRequest.FromUser.UserName))
-                            {
-                                <div class="col-md-12">
-                                    <div class="row well well-white mini-profile-widget bootdey.com">
-                                        <div class="col-md-3">
-                                            <div class="image-container">
-                                                <img src="alt-image.png" class="avatar img-responsive">
-                                            </div>
-                                        </div>
-                                        <div class="col-md-9">
-                                            <div style="text-align: center;" class="details">
-                                                <h5><a href="profile/@friendRequest.FromUser.UserName">@friendRequest.FromUser.FirstName @friendRequest.FromUser.LastName (@friendRequest.FromUser.UserName)</a></h5>
-                                                <hr style="margin-bottom: unset;" />
-                                                @if (AcceptedFriendRequestsUserIds.Contains(friendRequest.FromUserId))
-                                                {
-                                                    <BSButton ButtonType="ButtonType.Button" IsDisabled="true" Class="btn btn-primary mt-3 btn-rounded waves-effect w-md waves-light">Accepted <i class="fas fa-check"></i></BSButton>
-                                                }
-                                                else if (DeclinedFriendRequestsUserIds.Contains(friendRequest.FromUserId))
-                                                {
-                                                    <BSButton ButtonType="ButtonType.Button" IsDisabled="true" Class="btn mt-3 btn-rounded waves-effect w-md waves-light" Color="Color.Secondary">Declined <i class="fas fa-times"></i></BSButton>
-                                                }
-                                                else
-                                                {
-                                                    <BSButton ButtonType="ButtonType.Button" OnClick="@(() => AcceptFriendRequest(friendRequest.FromUser.UserId))" Class="btn btn-primary mt-3 btn-rounded waves-effect w-md waves-light">Accept <i class="fas fa-check"></i></BSButton>
-                                                    <BSButton ButtonType="ButtonType.Button" OnClick="@(() => DeclineFriendRequest(friendRequest.FromUser.UserId))" Class="btn mt-3 btn-rounded waves-effect w-md waves-light" Color="Color.Secondary">Decline <i class="fas fa-times"></i></BSButton>
-                                                }
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            }
-                        }
-                        else if (ActiveReceivedFriendRequests?.Count == 0)
-                        {
-                            <p style="margin-top: 5px; margin-left: 15px;">No pending friend requests.</p>
+                            <p style="margin-top: 5px; margin-left: 15px;">You have no mutual friends...yet!</p>
                         }
                     </BSRow>
                 </BSTabContent>

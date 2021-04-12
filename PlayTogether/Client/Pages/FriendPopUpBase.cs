@@ -50,7 +50,7 @@ namespace PlayTogether.Client.Pages
         {
             var idUser = AuthenticationState.User.FindFirst("sub").Value;
 
-            FriendUsers = await UserService.GetFriendUsers();
+            FriendUsers = await UserService.GetFriends();
 
             var activeFriendRequests = await UserService.GetActiveFriendRequests();
             ActiveReceivedFriendRequests = activeFriendRequests.Where(request => request.ToUserId == idUser).ToList();

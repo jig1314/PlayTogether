@@ -116,8 +116,8 @@ namespace PlayTogether.Client.Services
         public async Task<UserProfileDto> GetUserProfileInformation(string userName) =>
             await httpClient.GetFromJsonAsync<UserProfileDto>($"api/user/profile/{userName}");
 
-        public async Task<List<UserBasicInfo>> GetFriendUsers() =>
-            await httpClient.GetFromJsonAsync<List<UserBasicInfo>>($"api/user/friendUsers");
+        public async Task<List<UserBasicInfo>> GetFriends() =>
+            await httpClient.GetFromJsonAsync<List<UserBasicInfo>>($"api/user/getFriends");
 
         public async Task<List<FriendRequestDto>> GetActiveFriendRequests() =>
             await httpClient.GetFromJsonAsync<List<FriendRequestDto>>($"api/user/activeFriendRequests");
@@ -145,5 +145,8 @@ namespace PlayTogether.Client.Services
             var response = await httpClient.PutAsJsonAsync("api/user/acceptFriendRequest", acceptedFriendRequest);
             response.EnsureSuccessStatusCode();
         }
+
+        public async Task<List<UserBasicInfo>> GetUsersFriends(string userName) =>
+            await httpClient.GetFromJsonAsync<List<UserBasicInfo>>($"api/user/getFriends/{userName}");
     }
 }

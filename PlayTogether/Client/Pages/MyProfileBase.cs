@@ -90,7 +90,6 @@ namespace PlayTogether.Client.Pages
                 await FriendPopUp.RefreshData();
         }
 
-
         protected void NavigateToManageAccountPage()
         {
             NavigationManager.NavigateTo("/manageProfile/myAccount");

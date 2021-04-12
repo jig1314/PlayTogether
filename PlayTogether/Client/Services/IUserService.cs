@@ -29,11 +29,12 @@ namespace PlayTogether.Client.Services
         Task UpdateUserGameSkillLevel(UserGameDto game);
         Task<List<UserBasicInfo>> SearchForGamers(GamerSearchDto gamerSearchDto);
         Task<UserProfileDto> GetUserProfileInformation(string userName);
-        Task<List<UserBasicInfo>> GetFriendUsers();
+        Task<List<UserBasicInfo>> GetFriends();
         Task<List<FriendRequestDto>> GetActiveFriendRequests();
         Task SendFriendRequest(FriendRequestDto friendRequest);
         Task CancelFriendRequest(FriendRequestDto cancelledFriendRequest);
         Task DeclineFriendRequest(FriendRequestDto declinedFriendRequest);
         Task AcceptFriendRequest(FriendRequestDto acceptedFriendRequest);
+        Task<List<UserBasicInfo>> GetUsersFriends(string userName);
     }
 }

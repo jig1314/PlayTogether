@@ -1,13 +1,19 @@
 ﻿@page "/profile/{userName}"
 @inherits UserProfileBase
 
-@if (UserProfileDto != null && FriendUserIds != null && ActiveSentFriendRequestIds != null && ActiveReceivedFriendRequestIds != null && !SubmittingData)
+@if (UserProfileDto != null && FriendUserIds != null && ActiveSentFriendRequestIds != null && ActiveReceivedFriendRequestIds != null && !RetrievingData)
 {
     <BSForm Model="@UserProfileDto">
         <BSTabGroup @ref="TabGroup">
             <BSRow>
                 <BSCol Class="col-md-6">
                     <BSRow style="margin-bottom: 25px;">
+                        <span style="text-align: right; display: block; width: 100%;">
+                            <BSButton @onclick="@(() => UserFriendPopUpModal.Show())" style="border-color: rgb(85 88 89 / 50%);" ButtonType="ButtonType.Button" Color="Color.Light" Class="btn mt-3 btn-rounded waves-effect w-md waves-light">
+                                See All Friends
+                                <i style="cursor: pointer;" class="fas fa-users"></i>
+                            </BSButton>
+                        </span>
                         <span style="text-align: center; display: block; width: 100%;">
                             <img src="alt-image.png" />
                         </span>
@@ -34,13 +40,13 @@
                         @if (ActiveSentFriendRequestIds.Contains(UserProfileDto.UserId) && !FriendUserIds.Contains(UserProfileDto.UserId))
                         {
                             <span style="text-align: center; display: block; width: 100%;">
-                                <BSButton ButtonType="ButtonType.Button" Color="Color.Link" OnClick="@(() => CancelFriendRequest(UserProfileDto.UserId))">Cancel Friend Request</BSButton>
+                                <BSButton ButtonType="ButtonType.Button" OnClick="@(() => CancelFriendRequest(UserProfileDto.UserId))" Class="btn mt-3 btn-rounded waves-effect w-md waves-light" Color="Color.Secondary">Cancel Friend Request <i class="fas fa-times"></i></BSButton>
                             </span>
                         }
                         else if (ActiveReceivedFriendRequestIds.Contains(UserProfileDto.UserId) && !FriendUserIds.Contains(UserProfileDto.UserId))
                         {
                             <span style="text-align: center; display: block; width: 100%;">
-                                <BSButton ButtonType="ButtonType.Button" OnClick="@(() => DeclineFriendRequest(UserProfileDto.UserId))" Color="Color.Link">Decline Friend Request</BSButton>
+                                <BSButton ButtonType="ButtonType.Button" OnClick="@(() => DeclineFriendRequest(UserProfileDto.UserId))" Class="btn mt-3 btn-rounded waves-effect w-md waves-light" Color="Color.Secondary">Decline Friend Request <i class="fas fa-times"></i></BSButton>
                             </span>
                         }
                     </BSRow>
@@ -150,6 +156,14 @@ else
 {
     <div class="loading-bar"></div>
 }
+
+<BSModal @ref="UserFriendPopUpModal" IsScrollable="true" IgnoreEscape="true" IgnoreClickOnBackdrop="true" Size="Size.Large" ShowEvent="@RefreshDataModal" HideEvent="@OnHideModal">
+    <BSModalHeader OnClick="@(() => UserFriendPopUpModal.Hide())">Friends</BSModalHeader>
+    <BSModalBody><UserFriendPopUp @ref="UserFriendPopUp" /></BSModalBody>
+    <BSModalFooter>
+        <BSButton Color="Color.Secondary" @onclick="@(() => UserFriendPopUpModal.Hide())">Close</BSButton>
+    </BSModalFooter>
+</BSModal>
 
 <style>
     .btn-rounded {

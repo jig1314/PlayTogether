@@ -150,14 +150,14 @@ namespace PlayTogether.Server.Controllers
             }
         }
 
-        [HttpGet("friendUsers")]
-        public async Task<ActionResult<IEnumerable<UserBasicInfo>>> GetFriendUserIds()
+        [HttpGet("getFriends")]
+        public async Task<ActionResult<IEnumerable<UserBasicInfo>>> GetFriends()
         {
             try
             {
                 if (!HttpContext.User.Identity.IsAuthenticated)
                 {
-                    return StatusCode(StatusCodes.Status401Unauthorized, "Error retrieving the user's friends ids");
+                    return StatusCode(StatusCodes.Status401Unauthorized, "Error retrieving the user's friends");
                 }
 
                 var idUser = GetUserId();
@@ -177,7 +177,38 @@ namespace PlayTogether.Server.Controllers
             }
             catch (Exception)
             {
-                return StatusCode(StatusCodes.Status500InternalServerError, "Error retrieving the user's friends ids");
+                return StatusCode(StatusCodes.Status500InternalServerError, "Error retrieving the user's friends");
+            }
+        }
+
+        [HttpGet("getFriends/{userName}")]
+        public async Task<ActionResult<IEnumerable<UserBasicInfo>>> GetFriends(string userName)
+        {
+            try
+            {
+                if (!HttpContext.User.Identity.IsAuthenticated)
+                {
+                    return StatusCode(StatusCodes.Status401Unauthorized, "Error retrieving the user's friends");
+                }
+
+                var friendUsers = await _context.ApplicationUser_Friends
+                    .Include(mapping => mapping.ApplicationUser)
+                    .Include(mapping => mapping.FriendUser)
+                    .Include(mapping => mapping.FriendUser.ApplicationUserDetails)
+                    .Where(mapping => mapping.ApplicationUser.UserName == userName).Select(mapping => new UserBasicInfo()
+                    {
+                        UserId = mapping.FriendUserId,
+                        FirstName = mapping.FriendUser.ApplicationUserDetails.FirstName,
+                        LastName = mapping.FriendUser.ApplicationUserDetails.LastName,
+                        Email = mapping.FriendUser.Email,
+                        UserName = mapping.FriendUser.UserName
+                    }).ToListAsync();
+
+                return Ok(friendUsers);
+            }
+            catch (Exception)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, "Error retrieving the user's friends");
             }
         }
 
