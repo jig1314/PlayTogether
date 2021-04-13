@@ -37,5 +37,6 @@ namespace PlayTogether.Client.Services
         Task AcceptFriendRequest(FriendRequestDto acceptedFriendRequest);
         Task<List<UserBasicInfo>> GetUsersFriends(string userName);
         Task UnfriendUser(string idUser);
+        Task DeleteAccount(DeleteAccountDto deleteAccountDto);
     }
 }
