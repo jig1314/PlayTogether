@@ -133,6 +133,13 @@ namespace PlayTogether.Client.Pages
             await UserService.DeclineFriendRequest(declinedFriendRequest);
         }
 
+        protected async Task UnfriendUser(string idUser)
+        {
+            FriendUserIds.Remove(idUser);
+
+            await UserService.UnfriendUser(idUser);
+        }
+
         protected async Task OnHideModal()
         {
             UserProfileDto = null;

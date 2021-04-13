@@ -148,5 +148,11 @@ namespace PlayTogether.Client.Services
 
         public async Task<List<UserBasicInfo>> GetUsersFriends(string userName) =>
             await httpClient.GetFromJsonAsync<List<UserBasicInfo>>($"api/user/getFriends/{userName}");
+
+        public async Task UnfriendUser(string idUser)
+        {
+            var response = await httpClient.DeleteAsync($"api/user/unfriendUser/{idUser}");
+            response.EnsureSuccessStatusCode();
+        }
     }
 }

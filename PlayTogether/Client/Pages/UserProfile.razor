@@ -1,6 +1,10 @@
 ﻿@page "/profile/{userName}"
 @inherits UserProfileBase
 
+@code{
+    bool IsDropdownOpen { get; set; } = false;
+}
+
 @if (UserProfileDto != null && FriendUserIds != null && ActiveSentFriendRequestIds != null && ActiveReceivedFriendRequestIds != null && !RetrievingData)
 {
     <BSForm Model="@UserProfileDto">
@@ -8,12 +12,19 @@
             <BSRow>
                 <BSCol Class="col-md-6">
                     <BSRow style="margin-bottom: 25px;">
-                        <span style="text-align: right; display: block; width: 100%;">
-                            <BSButton @onclick="@(() => UserFriendPopUpModal.Show())" style="border-color: rgb(85 88 89 / 50%);" ButtonType="ButtonType.Button" Color="Color.Light" Class="btn mt-3 btn-rounded waves-effect w-md waves-light">
+                        <BSDropdown style="text-align: right; display: block; width: 100%;" IsOpen="@IsDropdownOpen">
+                            <BSButton @onclick="@(() => UserFriendPopUpModal.Show())" style="border-color: rgb(85 88 89 / 50%);" ButtonType="ButtonType.Button" Color="Color.Light" Class="btn btn-rounded waves-effect w-md waves-light">
                                 See All Friends
                                 <i style="cursor: pointer;" class="fas fa-users"></i>
                             </BSButton>
-                        </span>
+                            @if (FriendUserIds.Contains(UserProfileDto.UserId))
+                            {
+                                <BSDropdownToggle @onclick="(() => { IsDropdownOpen = !IsDropdownOpen; })"><i style="cursor: pointer;" class="fas fa-ellipsis-v"></i></BSDropdownToggle>
+                                <BSDropdownMenu style="right: 0; left: unset;" @bind-IsOpen="@IsDropdownOpen">
+                                    <BSDropdownItem style="color: red;" IsButton="true" @onclick="@(() => UnfriendUser(UserProfileDto.UserId))"><i class="fas fa-user-minus" style="margin-right: 5px;"></i>Unfriend @UserProfileDto.UserName</BSDropdownItem>
+                                </BSDropdownMenu>
+                            }
+                        </BSDropdown>
                         <span style="text-align: center; display: block; width: 100%;">
                             <img src="alt-image.png" />
                         </span>
