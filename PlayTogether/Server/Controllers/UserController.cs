@@ -679,5 +679,29 @@ namespace PlayTogether.Server.Controllers
                 return StatusCode(StatusCodes.Status500InternalServerError, (ex.InnerException != null) ? ex.InnerException.Message : ex.Message);
             }
         }
+
+        [HttpDelete("unfriendUser/{friendUserId}")]
+        public async Task<ActionResult> UnfriendUser(string friendUserId)
+        {
+            try
+            {
+                if (!HttpContext.User.Identity.IsAuthenticated)
+                {
+                    return StatusCode(StatusCodes.Status401Unauthorized, "Error unfriending user!");
+                }
+
+                var idUser = GetUserId();
+                var friendships = await _context.ApplicationUser_Friends.Where(mapping => (mapping.ApplicationUserId == idUser && mapping.FriendUserId == friendUserId) || (mapping.ApplicationUserId == friendUserId && mapping.FriendUserId == idUser)).ToListAsync();
+
+                _context.ApplicationUser_Friends.RemoveRange(friendships);
+                await _context.SaveChangesAsync();
+
+                return StatusCode(StatusCodes.Status202Accepted);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, (ex.InnerException != null) ? ex.InnerException.Message : ex.Message);
+            }
+        }
     }
 }
