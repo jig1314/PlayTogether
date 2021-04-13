@@ -1,11 +1,6 @@
-﻿using PlayTogether.Shared.DTOs;
-using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace PlayTogether.Shared.Models
+﻿namespace PlayTogether.Shared.Models
 {
-    public class GamerSearchResult
+    public class UserBasicInfo
     {
         public string UserId { get; set; }
 
