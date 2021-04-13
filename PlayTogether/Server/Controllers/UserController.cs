@@ -659,6 +659,57 @@ namespace PlayTogether.Server.Controllers
             }
         }
 
+        [HttpPut("deleteAccount")]
+        public async Task<ActionResult> DeleteAccount(DeleteAccountDto deleteAccountDto)
+        {
+            try
+            {
+                if (!HttpContext.User.Identity.IsAuthenticated)
+                {
+                    return StatusCode(StatusCodes.Status401Unauthorized, "You are not authorized to delete this account!");
+                }
+
+                var idUser = GetUserId();
+                var user = await _context.Users
+                    .Include(user => user.ApplicationUserDetails)
+                    .Include(user => user.GamingPlatforms)
+                    .Include(user => user.GameGenres)
+                    .Include(user => user.Games)
+                    .Include(user => user.SentFriendRequests)
+                    .Include(user => user.ReceivedFriendRequests)
+                    .FirstOrDefaultAsync(user => user.Id == idUser);
+
+                var password = Encoding.UTF8.GetString(WebEncoders.Base64UrlDecode(deleteAccountDto.Password));
+                if (!await _userManager.CheckPasswordAsync(user, password))
+                {
+                    throw new Exception($"Incorrect password.");
+                }
+
+                var friendships = await _context.ApplicationUser_Friends.Where(mapping => mapping.ApplicationUserId == idUser || mapping.FriendUserId == idUser).ToListAsync();
+                _context.ApplicationUser_Friends.RemoveRange(friendships);
+                _context.FriendRequests.RemoveRange(user.ReceivedFriendRequests);
+                _context.FriendRequests.RemoveRange(user.SentFriendRequests);
+                _context.ApplicationUser_Games.RemoveRange(user.Games);
+                _context.ApplicationUser_GameGenres.RemoveRange(user.GameGenres);
+                _context.ApplicationUser_GamingPlatform.RemoveRange(user.GamingPlatforms);
+                _context.ApplicationUserDetails.RemoveRange(user.ApplicationUserDetails);
+
+                var result = await _userManager.DeleteAsync(user);
+
+                if (!result.Succeeded)
+                {
+                    throw new InvalidOperationException($"Unexpected error occurred deleting the account for {user.UserName}.");
+                }
+
+                await _signInManager.SignOutAsync();
+                return StatusCode(StatusCodes.Status202Accepted);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, (ex.InnerException != null) ? ex.InnerException.Message : ex.Message);
+            }
+        }
+
         [HttpDelete("delete/{userName}")]
         [AllowAnonymous]
         public async Task<ActionResult> DeleteUser(string userName)
