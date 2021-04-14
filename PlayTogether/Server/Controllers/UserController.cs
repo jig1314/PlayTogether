@@ -694,6 +694,8 @@ namespace PlayTogether.Server.Controllers
                 _context.ApplicationUser_GamingPlatform.RemoveRange(user.GamingPlatforms);
                 _context.ApplicationUserDetails.RemoveRange(user.ApplicationUserDetails);
 
+                await _context.SaveChangesAsync();
+
                 var result = await _userManager.DeleteAsync(user);
 
                 if (!result.Succeeded)
@@ -702,6 +704,7 @@ namespace PlayTogether.Server.Controllers
                 }
 
                 await _signInManager.SignOutAsync();
+
                 return StatusCode(StatusCodes.Status202Accepted);
             }
             catch (Exception ex)

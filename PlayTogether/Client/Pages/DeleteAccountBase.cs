@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Authorization;
+using Microsoft.AspNetCore.Components.WebAssembly.Authentication;
 using Microsoft.AspNetCore.WebUtilities;
 using PlayTogether.Client.Services;
 using PlayTogether.Client.ViewModels;
@@ -24,6 +25,9 @@ namespace PlayTogether.Client.Pages
 
         [Inject]
         public IUserService UserService { get; set; }
+
+        [Inject]
+        public SignOutSessionStateManager SignOutManager { get; set; }
 
         public string ErrorMessage { get; set; }
 
@@ -58,15 +62,13 @@ namespace PlayTogether.Client.Pages
             {
                 SubmittingData = true;
 
+                await SignOutManager.SetSignOutState();
                 await UserService.DeleteAccount(deleteAccountDto);
                 NavigationManager.NavigateTo("/", true);
             }
             catch (Exception ex)
             {
                 ErrorMessage = $"{ex.Message}";
-            }
-            finally
-            {
                 SubmittingData = false;
             }
         }
