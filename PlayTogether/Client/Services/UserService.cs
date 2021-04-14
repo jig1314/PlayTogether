@@ -154,5 +154,22 @@ namespace PlayTogether.Client.Services
             var response = await httpClient.DeleteAsync($"api/user/unfriendUser/{idUser}");
             response.EnsureSuccessStatusCode();
         }
+
+        public async Task DeleteAccount(DeleteAccountDto deleteAccountDto)
+        {
+            try
+            {
+                var response = await httpClient.PutAsJsonAsync("api/user/deleteAccount", deleteAccountDto);
+                var content = await response.Content.ReadAsStringAsync();
+                if (!response.IsSuccessStatusCode)
+                {
+                    throw new ApplicationException(content);
+                }
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+        }
     }
 }
