@@ -1,15 +1,101 @@
 ﻿@page "/gamerSearch/"
 @inherits GamerSearchBase
-@using BlazorStrap.Extensions.FluentValidation
 @using PlayTogether.Client.ViewModels
+@using PlayTogether.Client.CustomControls;
 
-@if (FriendUserIds != null && ActiveSentFriendRequestIds != null && ActiveReceivedFriendRequestIds != null)
+@if (FriendUserIds != null && ActiveSentFriendRequestIds != null && ActiveReceivedFriendRequestIds != null && GamingPlatforms != null && GameGenres != null && Games != null)
 {
     <BSContainer>
         <BSRow>
             <BSCol>
                 <h2>Search For Gamers</h2>
-                <input id="gamerSearchBar" type="search" class="form-control" @bind="@GamerSearchViewModel.SearchCriteria" @bind:event="oninput" @onchange="OnSearchCriteriaChanged" placeholder="Enter Gamer Search Criteria..." />
+                <BSRow>
+                    <BSCol style="width: 100%; padding-right: unset;">
+                        <input id="gamerSearchBar" type="search" class="form-control" @bind="@GamerSearchViewModel.SearchCriteria" @bind:event="oninput" @onchange="OnSearchCriteriaChanged" placeholder="Enter Gamer Search Criteria..." />
+                    </BSCol>
+                    <BSCol style="max-width: 50px; padding: unset; margin-right: 15px;">
+                        <span style="text-align: right; display: block; width: 100%;">
+                            <BSButton ButtonType="ButtonType.Button" Color="Color.Light" Class="btn-rounded" OnClick="(() => { IsFilterOpen = !IsFilterOpen; StateHasChanged(); })"><i class="fas fa-filter"></i></BSButton>
+                        </span>
+                    </BSCol>
+                </BSRow>
+                <BSCollapse IsOpen="@IsFilterOpen">
+                    <div class="accordion" style="margin-top: 15px;">
+                        <BSCollapseItem>
+                            <BSCard CardType="CardType.Card">
+                                <BSCard CardType="CardType.Body" style="padding: 0.75rem 1.25rem;">
+                                    <BSCollapseToggle style="width: 100%; border: none; outline: none; box-shadow: none;">
+                                        <BSRow>
+                                            <BSCol style="width: 100%;"><span style="text-align: left; display: block; width: 100%;">Favorite Gaming Platforms</span></BSCol>
+                                            <BSCol style="max-width: 10px; padding: unset; margin-right: 15px;">
+                                                <span style="text-align: right; display: block; width: 100%;"><i class="fas @(context ?  "fa-caret-up" : "fa-caret-down") "></i></span>
+                                            </BSCol>
+                                        </BSRow>
+                                    </BSCollapseToggle>
+                                </BSCard>
+                                <BSCollapse>
+                                    <BSCard CardType="CardType.Body" style="padding: 0rem 1.25rem 0.75rem;">
+                                        <BSCol Class="col-12">
+                                            <BSRow class="col-12 row">
+                                                <CheckedListBox Data="@GamingPlatforms.OrderBy(x => x.Name)" TextField="@((item) => item.Name)" ValueField="@((item) => item.Id)" SelectedValues="@FilterGamingPlatformIds" />
+                                            </BSRow>
+                                        </BSCol>
+                                    </BSCard>
+                                </BSCollapse>
+                            </BSCard>
+                        </BSCollapseItem>
+                        <BSCollapseItem>
+                            <BSCard CardType="CardType.Card">
+                                <BSCard CardType="CardType.Body" style="padding: 0.75rem 1.25rem;">
+                                    <BSCollapseToggle style="width: 100%; border: none; outline: none; box-shadow: none;">
+                                        <BSRow>
+                                            <BSCol style="width: 100%;"><span style="text-align: left; display: block; width: 100%;">Favorite Game Genres</span></BSCol>
+                                            <BSCol style="max-width: 10px; padding: unset; margin-right: 15px;">
+                                                <span style="text-align: right; display: block; width: 100%;"><i class="fas @(context ?  "fa-caret-up" : "fa-caret-down") "></i></span>
+                                            </BSCol>
+                                        </BSRow>
+                                    </BSCollapseToggle>
+                                </BSCard>
+                                <BSCollapse>
+                                    <BSCard CardType="CardType.Body" style="padding: 0rem 1.25rem 0.75rem;">
+                                        <BSCol Class="col-12">
+                                            <BSRow class="col-12 row">
+                                                <CheckedListBox Data="@GameGenres.OrderBy(x => x.Name)" TextField="@((item) => item.Name)" ValueField="@((item) => item.Id)" SelectedValues="@FilterGameGenreIds" />
+                                            </BSRow>
+                                        </BSCol>
+                                    </BSCard>
+                                </BSCollapse>
+                            </BSCard>
+                        </BSCollapseItem>
+                        <BSCollapseItem>
+                            <BSCard CardType="CardType.Card">
+                                <BSCard CardType="CardType.Body" style="padding: 0.75rem 1.25rem;">
+                                    <BSCollapseToggle style="width: 100%; border: none; outline: none; box-shadow: none;">
+                                        <BSRow>
+                                            <BSCol style="width: 100%;"><span style="text-align: left; display: block; width: 100%;">Favorite Games</span></BSCol>
+                                            <BSCol style="max-width: 10px; padding: unset; margin-right: 15px;">
+                                                <span style="text-align: right; display: block; width: 100%;"><i class="fas @(context ?  "fa-caret-up" : "fa-caret-down") "></i></span>
+                                            </BSCol>
+                                        </BSRow>
+                                    </BSCollapseToggle>
+                                </BSCard>
+                                <BSCollapse>
+                                    <BSCard CardType="CardType.Body" style="padding: 0rem 1.25rem 0.75rem;">
+                                        <BSCol Class="col-12">
+                                            <BSRow class="col-12 row">
+                                                <CheckedListBox Data="@Games.OrderBy(x => x.Name)" TextField="@((item) => item.Name)" ValueField="@((item) => item.Id)" SelectedValues="@FilterGameIds" />
+                                            </BSRow>
+                                        </BSCol>
+                                    </BSCard>
+                                </BSCollapse>
+                            </BSCard>
+                        </BSCollapseItem>
+                    </div>
+                    <span style="text-align: right; display: block; width: 100%;">
+                        <BSButton ButtonType="ButtonType.Button" Color="Color.Light" Class="btn btn-secondary mt-3 btn-rounded waves-effect w-md waves-light" style="margin-right: 5px;" OnClick="@(() =>  ResetFilter())"><i class="fas fa-redo" style="margin-right: 5px;"></i>Reset Filter(s)</BSButton>
+                        <BSButton ButtonType="ButtonType.Button" Class="btn btn-primary mt-3 btn-rounded waves-effect w-md waves-light" OnClick="@(() =>  ApplyFilter())">Apply Filter(s)</BSButton>
+                    </span>
+                </BSCollapse>
                 <hr />
                 <BSRow>
                     @if (Gamers?.Count > 0 && !SubmittingData)
@@ -32,12 +118,13 @@
                                             else if (ActiveSentFriendRequestIds.Contains(gamer.UserId))
                                             {
                                                 <BSButton ButtonType="ButtonType.Button" IsDisabled="true" Class="btn btn-primary mt-3 btn-rounded waves-effect w-md waves-light">Friend Request Sent <i class="fas fa-check"></i></BSButton>
-                                                <BSButton ButtonType="ButtonType.Button" Color="Color.Link" OnClick="@(() => CancelFriendRequest(gamer.UserId))">Cancel Friend Request</BSButton>
+                                                <BSButton ButtonType="ButtonType.Button" OnClick="@(() => CancelFriendRequest(gamer.UserId))"  Class="btn mt-3 btn-rounded waves-effect w-md waves-light" Color="Color.Secondary">Cancel Friend Request <i class="fas fa-times"></i></BSButton>
 
                                             }
                                             else if (ActiveReceivedFriendRequestIds.Contains(gamer.UserId))
                                             {
-                                                <BSButton ButtonType="ButtonType.Button" Color="Color.Light" IsDisabled="true" Class="btn mt-3 btn-rounded">Accept/Reject Friend Request - Coming Soon <i class="far fa-clock"></i></BSButton>
+                                                <BSButton ButtonType="ButtonType.Button" OnClick="@(() => AcceptFriendRequest(gamer.UserId))" Class="btn btn-primary mt-3 btn-rounded waves-effect w-md waves-light">Accept Friend Request <i class="fas fa-check"></i></BSButton>
+                                                <BSButton ButtonType="ButtonType.Button" OnClick="@(() => DeclineFriendRequest(gamer.UserId))"  Class="btn mt-3 btn-rounded waves-effect w-md waves-light" Color="Color.Secondary">Decline Friend Request <i class="fas fa-times"></i></BSButton>
                                             }
                                             else
                                             {
@@ -62,7 +149,6 @@
         </BSRow>
     </BSContainer>
 }
-
 
 <style>
 

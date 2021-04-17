@@ -1,0 +1,184 @@
+﻿@inherits UserFriendPopUpBase
+
+@if (FriendUserIds != null && ActiveSentFriendRequestIds != null && ActiveReceivedFriendRequestIds != null && UsersFriends != null)
+{
+    <BSTabGroup>
+        <BSTabList>
+            <BSTab @ref="@TabFriends" InitialSelection="true">
+                <BSTabLabel>All Friends</BSTabLabel>
+                <BSTabContent>
+                    <BSRow>
+                        @if (UsersFriends?.Count > 0)
+                        {
+                            @foreach (var friend in UsersFriends.OrderBy(friend => friend.UserName))
+                            {
+                                <div class="col-md-12">
+                                    <div class="row well well-white mini-profile-widget bootdey.com">
+                                        <div class="col-md-3">
+                                            <div class="image-container">
+                                                <img src="alt-image.png" class="avatar img-responsive">
+                                            </div>
+                                        </div>
+                                        <div class="col-md-9">
+                                            <div style="text-align: center;" class="details">
+                                                <h5><a href="profile/@friend.UserName">@friend.FirstName @friend.LastName (@friend.UserName)</a></h5>
+                                                <hr style="margin-bottom: unset;" />
+                                                @if (FriendUserIds.Contains(friend.UserId))
+                                                {
+                                                    <BSButton ButtonType="ButtonType.Button" Color="Color.Light" IsDisabled="true" Class="btn mt-3 btn-rounded">Friend <i class="fas fa-smile-beam"></i></BSButton>
+                                                }
+                                                else if (ActiveSentFriendRequestIds.Contains(friend.UserId))
+                                                {
+                                                    <BSButton ButtonType="ButtonType.Button" IsDisabled="true" Class="btn btn-primary mt-3 btn-rounded waves-effect w-md waves-light">Friend Request Sent <i class="fas fa-check"></i></BSButton>
+                                                    <BSButton ButtonType="ButtonType.Button" OnClick="@(() => CancelFriendRequest(friend.UserId))" Class="btn mt-3 btn-rounded waves-effect w-md waves-light" Color="Color.Secondary">Cancel Friend Request <i class="fas fa-times"></i></BSButton>
+
+                                                }
+                                                else if (ActiveReceivedFriendRequestIds.Contains(friend.UserId))
+                                                {
+                                                    <BSButton ButtonType="ButtonType.Button" OnClick="@(() => AcceptFriendRequest(friend.UserId))" Class="btn btn-primary mt-3 btn-rounded waves-effect w-md waves-light">Accept Friend Request <i class="fas fa-check"></i></BSButton>
+                                                    <BSButton ButtonType="ButtonType.Button" OnClick="@(() => DeclineFriendRequest(friend.UserId))" Class="btn mt-3 btn-rounded waves-effect w-md waves-light" Color="Color.Secondary">Decline Friend Request <i class="fas fa-times"></i></BSButton>
+                                                }
+                                                else
+                                                {
+                                                    <BSButton ButtonType="ButtonType.Button" Class="btn btn-primary mt-3 btn-rounded waves-effect w-md waves-light" OnClick="@(() => SendFriendRequest(friend.UserId))">Send Friend Request</BSButton>
+                                                }
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            }
+                        }
+                        else
+                        {
+                            <p style="margin-top: 5px; margin-left: 15px;">They have no friends...yet!</p>
+                        }
+                    </BSRow>
+                </BSTabContent>
+            </BSTab>
+            <BSTab @ref="@TabMutualFriends">
+                <BSTabLabel>Mutual Friends</BSTabLabel>
+                <BSTabContent>
+                    <BSRow>
+                        @if (UsersFriends?.Count > 0)
+                        {
+                            @foreach (var friend in UsersFriends.Where(user => FriendUserIds.Contains(user.UserId)).OrderBy(friend => friend.UserName))
+                            {
+                                <div class="col-md-12">
+                                    <div class="row well well-white mini-profile-widget bootdey.com">
+                                        <div class="col-md-3">
+                                            <div class="image-container">
+                                                <img src="alt-image.png" class="avatar img-responsive">
+                                            </div>
+                                        </div>
+                                        <div class="col-md-9">
+                                            <div style="text-align: left;" class="details">
+                                                <h5><a href="profile/@friend.UserName">@friend.FirstName @friend.LastName</a></h5>
+                                                <p class="text-muted" style="margin-bottom: unset;">@friend.UserName</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            }
+                        }
+                        else
+                        {
+                            <p style="margin-top: 5px; margin-left: 15px;">You have no mutual friends...yet!</p>
+                        }
+                    </BSRow>
+                </BSTabContent>
+            </BSTab>
+        </BSTabList>
+        <BSTabSelectedContent />
+    </BSTabGroup>
+}
+else
+{
+    <div style="position: relative; flex: none;" class="loading-bar"></div>
+}
+
+<style>
+
+    .card-box {
+        padding: 20px;
+        border: 1px solid #dee2e6;
+        border-radius: 3px;
+        margin-bottom: 30px;
+        background-color: #fff;
+    }
+
+    .well {
+        overflow: hidden;
+        border: 1px solid #dee2e6;
+        border-radius: 3px;
+        padding: 15px;
+        margin: 15px;
+    }
+
+        .well .well-heading .controls {
+            position: absolute;
+            top: 10px;
+            right: 30px;
+        }
+
+        .well .well-body {
+            margin-top: 20px;
+            position: relative;
+            z-index: 3;
+        }
+
+        .well .well-image {
+            font-size: 90px;
+            line-height: 90px;
+            position: absolute;
+            top: 20px;
+            right: 30px;
+            z-index: 1;
+            color: rgba(0, 0, 0, 0.15);
+            -webkit-transition: all 0.2s ease-in;
+            -moz-transition: all 0.2s ease-in;
+            -o-transition: all 0.2s ease-in;
+            transition: all 0.2s ease-in;
+        }
+
+        .well.well-solid {
+            color: white;
+        }
+
+        .well:hover .well-image {
+            font-size: 60px;
+        }
+
+    .well-white {
+        background-color: white;
+        color: #454545;
+    }
+
+    .mini-profile-widget .image-container .avatar {
+        width: 90px;
+        height: 90px;
+        display: block;
+        margin: 0 auto;
+        border-radius: 50%;
+        background: white;
+        padding: 4px;
+        border: 1px solid #dddddd;
+    }
+
+    .thumb-lg {
+        height: 88px;
+        width: 88px;
+    }
+
+    .img-thumbnail {
+        padding: .25rem;
+        background-color: #fff;
+        border: 1px solid #dee2e6;
+        border-radius: .25rem;
+        max-width: 100%;
+        height: auto;
+    }
+
+    .btn-rounded {
+        border-radius: 2em;
+    }
+</style>

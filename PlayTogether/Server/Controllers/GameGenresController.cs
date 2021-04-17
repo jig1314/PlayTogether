@@ -40,6 +40,7 @@ namespace PlayTogether.Server.Controllers
                 var gameGenreDtos = gameGenres.Select(genre => new GameGenreDto()
                 {
                     Id = genre.Id,
+                    ApiId = genre.ApiId,
                     Name = genre.Name,
                     Slug = genre.Slug
                 });

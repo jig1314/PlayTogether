@@ -7,7 +7,7 @@
 {
     <BSCol Class="col-12">
         <BSRow class="col-12 row">
-            <CheckedListBox Data="@GameGenres" TextField="@((item) => item.Name)" ValueField="@((item) => item.Id)" SelectedValues="@UserGameGenreIds" />
+            <CheckedListBox Data="@GameGenres.OrderBy(x => x.Name)" TextField="@((item) => item.Name)" ValueField="@((item) => item.Id)" SelectedValues="@UserGameGenreIds" />
         </BSRow>
         <BSCol Class="col-sm-2" style="margin-top: 5px; padding: unset;">
             <BSButton ButtonType="ButtonType.Button" Class="btn btn-info btn-block btn-primary" @onclick="SaveGameGenresAsync">Save</BSButton>

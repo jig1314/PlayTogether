@@ -33,7 +33,17 @@ namespace PlayTogether.Client.Pages
 
         public List<long> UserGamesApiIds { get; set; }
 
+        public List<GamingPlatformDto> GamingPlatforms { get; set; }
+
+        public List<string> FilterGamingPlatformIds { get; set; } = new List<string>();
+
+        public List<GameGenreDto> GameGenres { get; set; }
+
+        public List<string> FilterGameGenreIds { get; set; } = new List<string>();
+
         public bool SubmittingData { get; set; } = false;
+
+        public bool IsFilterOpen { get; set; } = false;
 
         protected override async Task OnInitializedAsync()
         {
@@ -47,6 +57,8 @@ namespace PlayTogether.Client.Pages
             }
             else
             {
+                GamingPlatforms = await GameService.GetGamingPlatforms();
+                GameGenres = await GameService.GetGameGenres();
                 await RefreshUserGames();
             }
         }
@@ -65,16 +77,37 @@ namespace PlayTogether.Client.Pages
         {
             if (eventArgs.Value != null)
             {
-                var gameSearchDto = new GameSearchDto()
-                {
-                    SearchCriteria = GameSearchViewModel.SearchCriteria
-                };
-
-                SubmittingData = true;
-                Games = await GameService.SearchForGames(gameSearchDto);
-                SubmittingData = false;
-                StateHasChanged();
+                await SearchForGames();
             }
+        }
+
+        private async Task SearchForGames()
+        {
+            IsFilterOpen = false;
+            StateHasChanged();
+            var gameSearchDto = new GameSearchDto()
+            {
+                SearchCriteria = GameSearchViewModel.SearchCriteria,
+                GamingPlatformApiIds = FilterGamingPlatformIds.ConvertAll((item) => Convert.ToInt64(item)),
+                GameGenreApiIds = FilterGameGenreIds.ConvertAll((item) => Convert.ToInt64(item))
+            };
+
+            SubmittingData = true;
+            Games = await GameService.SearchForGames(gameSearchDto);
+            SubmittingData = false;
+            StateHasChanged();
+        }
+
+        protected async Task ApplyFilter()
+        {
+            await SearchForGames();
+        }
+
+        protected void ResetFilter()
+        {
+            FilterGameGenreIds = new List<string>();
+            FilterGamingPlatformIds = new List<string>();
+            StateHasChanged();
         }
 
         protected async Task Favorited(GameSearchResult game)
