@@ -51,6 +51,16 @@ namespace PlayTogether.Server.Data
 
         public DbSet<ApplicationUser_Friend> ApplicationUser_Friends { get; set; }
 
+        public DbSet<Message> Messages { get; set; }
+
+        public DbSet<MessageConnection> MessageConnections { get; set; }
+
+        public DbSet<ApplicationUser_MessageConnection> ApplicationUser_MessageConnections { get; set; }
+
+        public DbSet<Conversation> Conversations { get; set; }
+
+        public DbSet<ApplicationUser_Conversation> ApplicationUser_Conversations { get; set; }
+
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
@@ -185,13 +195,6 @@ namespace PlayTogether.Server.Data
                 .HasConstraintName("ForeignKey_FriendRequest_User_ToUserId")
                 .OnDelete(DeleteBehavior.NoAction);
 
-            //modelBuilder.Entity<FriendRequest>()
-            //    .HasOne(request => request.FriendRequestStatus)
-            //    .WithOne()
-            //    .HasForeignKey<FriendRequest>(request => request.FriendRequestStatusId)
-            //    .HasConstraintName("ForeignKey_FriendRequest_FriendRequestStatusId")
-            //    .OnDelete(DeleteBehavior.Restrict);
-
             modelBuilder.Entity<FriendRequest>()
                 .HasOne<FriendRequestStatusType>()
                 .WithMany()
@@ -212,7 +215,56 @@ namespace PlayTogether.Server.Data
                 .WithMany()
                 .HasForeignKey(mapping => mapping.FriendUserId)
                 .HasConstraintName("ForeignKey_User_Friend_FriendUserId")
-                .OnDelete(DeleteBehavior.NoAction); 
+                .OnDelete(DeleteBehavior.NoAction);
+
+            modelBuilder.Entity<Message>()
+                .HasOne(request => request.FromUser)
+                .WithMany(user => user.SentMessages)
+                .IsRequired()
+                .HasForeignKey(request => request.FromUserId)
+                .HasConstraintName("ForeignKey_Message_User_FromUserId")
+                .OnDelete(DeleteBehavior.NoAction);
+
+            modelBuilder.Entity<Message>()
+                .HasOne(message => message.Conversation)
+                .WithMany(conversation => conversation.Messages)
+                .IsRequired()
+                .HasForeignKey(message => message.ConversationId)
+                .HasConstraintName("ForeignKey_Message_Conversation_ConversationId")
+                .OnDelete(DeleteBehavior.NoAction);
+
+            modelBuilder.Entity<ApplicationUser_Conversation>()
+                .HasKey(mapping => new { mapping.ApplicationUserId, mapping.ConversationId })
+                .HasName("PrimaryKey_ApplicationUserId_ConversationId");
+
+            modelBuilder.Entity<ApplicationUser_Conversation>()
+                .HasOne(mapping => mapping.ApplicationUser)
+                .WithMany(user => user.Conversations)
+                .HasForeignKey(mapping => mapping.ApplicationUserId)
+                .HasConstraintName("ForeignKey_User_Conversation_ApplicationUserId");
+
+            modelBuilder.Entity<ApplicationUser_Conversation>()
+                .HasOne(mapping => mapping.Conversation)
+                .WithMany(conversation => conversation.Users)
+                .HasForeignKey(mapping => mapping.ConversationId)
+                .HasConstraintName("ForeignKey_User_Conversation_ConversationId");
+
+            modelBuilder.Entity<ApplicationUser_MessageConnection>()
+                .HasKey(mapping => new { mapping.ApplicationUserId, mapping.MessageConnectionId })
+                .HasName("PrimaryKey_ApplicationUserId_MessageConnectionId");
+
+            modelBuilder.Entity<ApplicationUser_MessageConnection>()
+                .HasOne(mapping => mapping.ApplicationUser)
+                .WithMany(user => user.MessageConnections)
+                .HasForeignKey(mapping => mapping.ApplicationUserId)
+                .HasConstraintName("ForeignKey_User_MessageConnection_ApplicationUserId");
+
+            modelBuilder.Entity<ApplicationUser_MessageConnection>()
+                .HasOne(mapping => mapping.MessageConnection)
+                .WithMany(conversation => conversation.Users)
+                .HasForeignKey(mapping => mapping.MessageConnectionId)
+                .HasConstraintName("ForeignKey_User_MessageConnection_MessageConnectionId");
+
         }
     }
 }
