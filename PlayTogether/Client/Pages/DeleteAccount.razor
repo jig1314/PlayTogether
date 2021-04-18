@@ -27,11 +27,11 @@
                 </BSFormGroup>
                 <BSFormGroup>
                     <BSLabel For="@DeleteAccountViewModel.Password">Password</BSLabel>
-                    <BSInput InputType="InputType.Password" @bind-Value="@DeleteAccountViewModel.Password"/>
+                    <BSInput id="deleteAccountPasswordText" InputType="InputType.Password" @bind-Value="@DeleteAccountViewModel.Password"/>
                     <BSFormFeedback For="@(() => DeleteAccountViewModel.Password)" />
                 </BSFormGroup>
                 <BSFormGroup>
-                    <BSButton ButtonType="ButtonType.Submit" Color="Color.Danger" Class="btn btn-info btn-block btn-primary">Permanently Delete Account</BSButton>
+                    <BSButton id="deleteAccountSubmitButton" ButtonType="ButtonType.Submit" Color="Color.Danger" Class="btn btn-info btn-block btn-primary">Permanently Delete Account</BSButton>
                 </BSFormGroup>
             </BSForm>
         </BSCol>

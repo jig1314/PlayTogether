@@ -20,23 +20,23 @@ namespace PlayTogether.Tests.Features
     [System.CodeDom.Compiler.GeneratedCodeAttribute("TechTalk.SpecFlow", "3.7.0.0")]
     [System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
     [NUnit.Framework.TestFixtureAttribute()]
-    [NUnit.Framework.DescriptionAttribute("Search For Gamers")]
-    public partial class SearchForGamersFeature
+    [NUnit.Framework.DescriptionAttribute("Delete Profile")]
+    public partial class DeleteProfileFeature
     {
         
         private TechTalk.SpecFlow.ITestRunner testRunner;
         
         private string[] _featureTags = ((string[])(null));
         
-#line 1 "SearchForGamers.feature"
+#line 1 "DeleteProfile.feature"
 #line hidden
         
         [NUnit.Framework.OneTimeSetUpAttribute()]
         public virtual void FeatureSetup()
         {
             testRunner = TechTalk.SpecFlow.TestRunnerManager.GetTestRunner();
-            TechTalk.SpecFlow.FeatureInfo featureInfo = new TechTalk.SpecFlow.FeatureInfo(new System.Globalization.CultureInfo("en-US"), "Features", "Search For Gamers", "\tAs an user, I want to have the ability to search for other users based on their " +
-                    "profile information so that I can view their profile.", ProgrammingLanguage.CSharp, ((string[])(null)));
+            TechTalk.SpecFlow.FeatureInfo featureInfo = new TechTalk.SpecFlow.FeatureInfo(new System.Globalization.CultureInfo("en-US"), "Features", "Delete Profile", "\tAs an user, I want to have the ability to delete my profile so that my informati" +
+                    "on is no longer in the application.", ProgrammingLanguage.CSharp, ((string[])(null)));
             testRunner.OnFeatureStart(featureInfo);
         }
         
@@ -75,14 +75,14 @@ namespace PlayTogether.Tests.Features
         }
         
         [NUnit.Framework.TestAttribute()]
-        [NUnit.Framework.DescriptionAttribute("An user with looking for other users")]
+        [NUnit.Framework.DescriptionAttribute("Existing user logged into the application and deletes profile")]
         [NUnit.Framework.CategoryAttribute("BDD")]
-        public virtual void AnUserWithLookingForOtherUsers()
+        public virtual void ExistingUserLoggedIntoTheApplicationAndDeletesProfile()
         {
             string[] tagsOfScenario = new string[] {
                     "BDD"};
             System.Collections.Specialized.OrderedDictionary argumentsOfScenario = new System.Collections.Specialized.OrderedDictionary();
-            TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("An user with looking for other users", null, tagsOfScenario, argumentsOfScenario, this._featureTags);
+            TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("Existing user logged into the application and deletes profile", null, tagsOfScenario, argumentsOfScenario, this._featureTags);
 #line 5
 this.ScenarioInitialize(scenarioInfo);
 #line hidden
@@ -103,7 +103,7 @@ this.ScenarioInitialize(scenarioInfo);
             else
             {
                 this.ScenarioStart();
-                TechTalk.SpecFlow.Table table5 = new TechTalk.SpecFlow.Table(new string[] {
+                TechTalk.SpecFlow.Table table2 = new TechTalk.SpecFlow.Table(new string[] {
                             "FirstName",
                             "LastName",
                             "Email",
@@ -113,7 +113,7 @@ this.ScenarioInitialize(scenarioInfo);
                             "Gender",
                             "CountryofResidence",
                             "DateofBirth"});
-                table5.AddRow(new string[] {
+                table2.AddRow(new string[] {
                             "Test",
                             "Name",
                             "testing@gmail.com",
@@ -124,23 +124,29 @@ this.ScenarioInitialize(scenarioInfo);
                             "United States",
                             "01/01/2000"});
 #line 6
- testRunner.Given("I have created a profile", ((string)(null)), table5, "Given ");
+ testRunner.Given("I have created a profile", ((string)(null)), table2, "Given ");
 #line hidden
 #line 9
  testRunner.And("I have logged in", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line hidden
 #line 10
- testRunner.When("I am on the gamer search page", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
+ testRunner.When("I access my user profile settings page", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
 #line hidden
-                TechTalk.SpecFlow.Table table6 = new TechTalk.SpecFlow.Table(new string[] {
-                            "SearchCriteria"});
-                table6.AddRow(new string[] {
-                            "gmail"});
+                TechTalk.SpecFlow.Table table3 = new TechTalk.SpecFlow.Table(new string[] {
+                            "Password"});
+                table3.AddRow(new string[] {
+                            "NotR3@Lpw"});
 #line 11
- testRunner.Then("I can filter for gamers by information based on their profile", ((string)(null)), table6, "Then ");
+ testRunner.And("Enter my password", ((string)(null)), table3, "And ");
 #line hidden
+                TechTalk.SpecFlow.Table table4 = new TechTalk.SpecFlow.Table(new string[] {
+                            "Username",
+                            "Password"});
+                table4.AddRow(new string[] {
+                            "testName",
+                            "NotR3@Lpw"});
 #line 14
- testRunner.And("I will receive feedback", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
+ testRunner.Then("I can delete my profile", ((string)(null)), table4, "Then ");
 #line hidden
             }
             this.ScenarioCleanup();
