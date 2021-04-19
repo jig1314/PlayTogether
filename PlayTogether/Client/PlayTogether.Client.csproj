@@ -6,18 +6,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Compile Remove="Pages\ChatBase.cs" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Content Remove="Pages\Chat.razor" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <None Remove="Pages\Chat.razor.css" />
-  </ItemGroup>
-
-  <ItemGroup>
     <PackageReference Include="BlazorStrap" Version="1.5.1" />
     <PackageReference Include="BlazorStrap.Extensions.FluentValidation" Version="1.5.0" />
     <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly" Version="5.0.4" />

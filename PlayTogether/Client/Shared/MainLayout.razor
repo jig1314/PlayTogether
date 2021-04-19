@@ -1,31 +1,20 @@
-﻿@inherits LayoutComponentBase
-@inject IBootstrapCss BootstrapCss
+﻿@inherits MainLayoutBase
 
-<div class="page">
-    <div class="sidebar">
-        <NavMenu />
-    </div>
-
-    <div class="main">
-        <div class="top-row px-4 auth">
-            <LoginDisplay />
-            <a href="">About</a>
+<CascadingValue Value="ChatClient">
+    <div class="page">
+        <div class="sidebar">
+            <NavMenu />
         </div>
 
-        <div class="content px-4">
-            @Body
-        </div>
+        <div class="main">
+            <div class="top-row px-4 auth">
+                <LoginDisplay />
+                <a href="">About</a>
+            </div>
 
-        @code
-        {
-            /// <summary> Implementing bootstrp for the Blazor Framework
-            /// See this link for more info: https://blazorstrap.io/
-            /// </summary>
-            /// <returns></returns>
-            protected override async Task OnInitializedAsync()
-            {
-                await BootstrapCss.SetBootstrapCss(Theme.Cosmo, "4.3.1");
-            }
-        }
+            <div class="content px-4">
+                @Body
+            </div>
+        </div>
     </div>
-</div>
+</CascadingValue>

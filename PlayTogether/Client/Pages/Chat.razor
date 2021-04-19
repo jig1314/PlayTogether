@@ -1,0 +1,80 @@
+﻿@page "/chat/{userName}"
+@inherits ChatBase
+
+@if (!RetrievingData)
+{
+    <!-- Content wrapper start -->
+    <div class="content-wrapper"  @onmousedown="(() => ReadMessages(Conversation))">
+
+        <!-- Row start -->
+        <div class="row gutters">
+
+            <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12">
+
+                <div class="card m-0">
+
+                    <!-- Row start -->
+                    <div class="row no-gutters">
+                        <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12">
+                            <div class="selected-user">
+                                <span>To: <span class="name">@UserProfileDto.FirstName</span></span>
+                            </div>
+                            <div id="chatContainer" class="chat-container">
+                                <ul class="chat-box chatContainerScroll">
+                                    @foreach (var message in Messages.OrderBy(message => message.DateSubmitted))
+                                    {
+                                        if (message.FromUserId == MyUserId)
+                                        {
+                                            <li class="chat-right">
+                                                <div class="chat-hour">@message.DateSubmitted.ToString("MM/dd/yy HH:mm")</div>
+                                                <div class="chat-text">
+                                                    @message.MessageText
+                                                </div>
+                                                <div class="chat-avatar">
+                                                    <img src="alt-image.png">
+                                                    <div class="chat-name">@MyUserProfileDto.FirstName</div>
+                                                </div>
+                                            </li>
+                                        }
+                                        else
+                                        {
+                                            <li class="chat-left">
+                                                <div class="chat-avatar">
+                                                    <img src="alt-image.png">
+                                                    <div class="chat-name">@UserProfileDto.FirstName</div>
+                                                </div>
+                                                <div class="chat-text">
+                                                    @message.MessageText
+                                                </div>
+                                                <div class="chat-hour">@message.DateSubmitted.ToString("MM/dd/yy HH:mm")</div>
+                                            </li>
+                                        }
+                                    }
+                                </ul>
+                            </div>
+                            <div style="margin:15px;" class="form-group mt-3">
+                                <input type="text" class="form-control" @bind="@Message" @bind:event="oninput" @onchange="@(async () => { if (!string.IsNullOrWhiteSpace(Message)) await SendMessageAsync(UserProfileDto.UserId); })" placeholder="Type your message here..." />
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Row end -->
+                </div>
+
+            </div>
+
+        </div>
+        <!-- Row end -->
+
+    </div>
+    <!-- Content wrapper end -->
+}
+else
+{
+    <div class="loading-bar"></div>
+}
+
+<style>
+    .btn-rounded {
+        border-radius: 2em;
+    }
+</style>

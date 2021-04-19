@@ -13,7 +13,6 @@ namespace PlayTogether.Client.Pages
 {
     public class UserProfileBase : ComponentBase
     {
-
         [CascadingParameter]
         public Task<AuthenticationState> AuthenticationStateTask { get; set; }
 
@@ -154,6 +153,11 @@ namespace PlayTogether.Client.Pages
         {
             if (UserFriendPopUp != null)
                 await UserFriendPopUp.RefreshData(UserName);
+        }
+
+        protected void GoToChatPage(string userName)
+        {
+            NavigationManager.NavigateTo($"/chat/{userName}");
         }
 
     }

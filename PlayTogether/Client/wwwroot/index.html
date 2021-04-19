@@ -28,6 +28,15 @@
     <script src="_content/Microsoft.AspNetCore.Components.WebAssembly.Authentication/AuthenticationService.js"></script>
     <script src="_framework/blazor.webassembly.js"></script>
     <script>navigator.serviceWorker.register('service-worker.js');</script>
+
+    <script>
+        window.scrollToBottom = (elementId) => {
+            var element = document.getElementById(elementId);
+            if (element === null) return false;
+            element.scrollTop = element.scrollHeight;
+            return true;
+        }
+    </script>
 </body>
 
 </html>

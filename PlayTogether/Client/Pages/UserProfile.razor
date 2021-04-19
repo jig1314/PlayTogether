@@ -17,13 +17,14 @@
                                 See All Friends
                                 <i style="cursor: pointer;" class="fas fa-users"></i>
                             </BSButton>
-                            @if (FriendUserIds.Contains(UserProfileDto.UserId))
-                            {
-                                <BSDropdownToggle @onclick="(() => { IsDropdownOpen = !IsDropdownOpen; })"><i style="cursor: pointer;" class="fas fa-ellipsis-v"></i></BSDropdownToggle>
-                                <BSDropdownMenu style="right: 0; left: unset;" @bind-IsOpen="@IsDropdownOpen">
+                            <BSDropdownToggle @onclick="(() => { IsDropdownOpen = !IsDropdownOpen; })"><i style="cursor: pointer;" class="fas fa-ellipsis-v"></i></BSDropdownToggle>
+                            <BSDropdownMenu style="right: 0; left: unset;" @bind-IsOpen="@IsDropdownOpen">
+                                <BSDropdownItem IsButton="true" @onclick="@(() => GoToChatPage(UserProfileDto.UserName))"><i class="fas fa-comments" style="margin-right: 5px;"></i>Chat with @UserProfileDto.UserName</BSDropdownItem>
+                                @if (FriendUserIds.Contains(UserProfileDto.UserId))
+                                {
                                     <BSDropdownItem style="color: red;" IsButton="true" @onclick="@(() => UnfriendUser(UserProfileDto.UserId))"><i class="fas fa-user-minus" style="margin-right: 5px;"></i>Unfriend @UserProfileDto.UserName</BSDropdownItem>
-                                </BSDropdownMenu>
-                            }
+                                }
+                            </BSDropdownMenu>
                         </BSDropdown>
                         <span style="text-align: center; display: block; width: 100%;">
                             <img src="alt-image.png" />
