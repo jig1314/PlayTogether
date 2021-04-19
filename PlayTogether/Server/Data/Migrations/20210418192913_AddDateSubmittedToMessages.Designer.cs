@@ -3,15 +3,17 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using PlayTogether.Server.Data;
 
 namespace PlayTogether.Server.Data.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20210418192913_AddDateSubmittedToMessages")]
+    partial class AddDateSubmittedToMessages
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -382,9 +384,6 @@ namespace PlayTogether.Server.Data.Migrations
 
                     b.Property<string>("ConversationId")
                         .HasColumnType("nvarchar(450)");
-
-                    b.Property<bool>("HasUnreadMessages")
-                        .HasColumnType("bit");
 
                     b.HasKey("ApplicationUserId", "ConversationId")
                         .HasName("PrimaryKey_ApplicationUserId_ConversationId");
