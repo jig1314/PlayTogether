@@ -23,5 +23,8 @@ namespace PlayTogether.Server.Models
 
         [Required]
         public string MessageText { get; set; }
+
+        [Required]
+        public DateTime DateSubmitted { get; set; }
     }
 }

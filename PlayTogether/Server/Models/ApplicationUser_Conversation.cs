@@ -15,5 +15,7 @@ namespace PlayTogether.Server.Models
         public string ConversationId { get; set; }
 
         public Conversation Conversation { get; set; }
+
+        public bool HasUnreadMessages { get; set; }
     }
 }
