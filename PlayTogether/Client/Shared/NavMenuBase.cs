@@ -62,11 +62,23 @@ namespace PlayTogether.Client.Shared
         }
 
         public List<DirectMessageConversation> DirectMessageConversations { get; set; }
+
         public string IdUser { get; set; }
+
+        protected override async Task OnInitializedAsync()
+        {
+            AuthenticationState = await AuthenticationStateTask;
+
+            if (AuthenticationState.User.Identity.IsAuthenticated)
+            {
+                IdUser = AuthenticationState.User.FindFirst("sub").Value;
+                await RefreshData();
+            }
+        }
 
         protected override async Task OnAfterRenderAsync(bool firstRender)
         {
-            if (firstRender)
+            if (DirectMessageConversations == null)
             {
                 AuthenticationState = await AuthenticationStateTask;
 
@@ -92,7 +104,7 @@ namespace PlayTogether.Client.Shared
         /// <param name="e"></param>
         public async void MessageReceived(object sender, MessageReceivedEventArgs e)
         {
-            if (!DirectMessageConversations.Select(c => c.Id).Contains(e.Conversation))
+            if (DirectMessageConversations == null || !DirectMessageConversations.Select(c => c.Id).Contains(e.Conversation))
             {
                 await RefreshData();
             }
@@ -111,7 +123,7 @@ namespace PlayTogether.Client.Shared
 
         private async void ConversationRead(object sender, ConversationReadEventArgs e)
         {
-            if (!DirectMessageConversations.Select(c => c.Id).Contains(e.Conversation))
+            if (DirectMessageConversations == null || !DirectMessageConversations.Select(c => c.Id).Contains(e.Conversation))
             {
                 await RefreshData();
             }
