@@ -12,9 +12,9 @@ namespace PlayTogether.Shared.StandardValues
         public const string RECEIVE = "ReceiveMessage";
 
         /// <summary>
-        /// Name of the Hub method to register a new user
+        /// Event name when a message is read
         /// </summary>
-        public const string REGISTER = "Register";
+        public const string READ = "ReadMessage";
 
         /// <summary>
         /// Name of the Hub method to send a message to an individual

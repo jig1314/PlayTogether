@@ -45,6 +45,14 @@ namespace PlayTogether.Server.Hubs
             }
             else
             {
+                user.MessageConnections.Where(connection => connection.MessageConnection.Connected)
+                    .Select(connection => connection.MessageConnection).ToList()
+                    .ForEach(connection =>
+                    {
+                        connection.Connected = false;
+                        _context.Entry(connection).State = EntityState.Modified;
+                    });
+
                 var newConnection = new MessageConnection()
                 {
                     ConnectionId = Context.ConnectionId,
@@ -129,16 +137,43 @@ namespace PlayTogether.Server.Hubs
         /// <returns></returns>
         private async Task SendMessage(string fromUser, string conversation, string message)
         {
-            await Clients.Group(conversation).SendAsync(Messages.RECEIVE, fromUser, conversation, message);
+            var date = DateTime.Now;
             
             var newMessage = new Message()
             {
                 FromUserId = fromUser,
                 ConversationId = conversation,
-                MessageText = message
+                MessageText = message,
+                DateSubmitted = date
             };
+
             _context.Messages.Add(newMessage);
+
+            await _context.ApplicationUser_Conversations
+                .Where(mapping => mapping.ConversationId == conversation && mapping.ApplicationUserId != fromUser)
+                .ForEachAsync(mapping => 
+                {
+                    mapping.HasUnreadMessages = true;
+                    _context.Entry(mapping).State = EntityState.Modified;
+                });
+
             await _context.SaveChangesAsync();
+
+            await Clients.Group(conversation).SendAsync(Messages.RECEIVE, fromUser, conversation, message, date);
+        }
+
+        public async Task ReadMessage(string conversation)
+        {
+            var idUser = Context.UserIdentifier;
+
+            var userConversation = await _context.ApplicationUser_Conversations
+                .SingleOrDefaultAsync(mapping => mapping.ApplicationUserId == idUser && mapping.ConversationId == conversation);
+
+            userConversation.HasUnreadMessages = false;
+            _context.Entry(userConversation).State = EntityState.Modified;
+            await _context.SaveChangesAsync();
+
+            await Clients.Group(conversation).SendAsync(Messages.READ, idUser, conversation);
         }
 
         /// <summary>

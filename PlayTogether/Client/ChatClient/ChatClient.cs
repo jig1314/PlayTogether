@@ -15,11 +15,6 @@ namespace PlayTogether.Client.ChatClient
 
         private HubConnection _hubConnection;
 
-        /// <summary>
-        /// Id of the chatter
-        /// </summary>
-        private readonly string _idUser;
-
         private readonly string _hubUrl;
 
         private readonly IAccessTokenProvider _accessTokenProvider;
@@ -36,17 +31,10 @@ namespace PlayTogether.Client.ChatClient
         /// <remarks>
         /// Changed client to accept just the base server URL so any client can use it, including ConsoleApp!
         /// </remarks>
-        public ChatClient(string idUser, string siteUrl, IAccessTokenProvider accessTokenProvider)
+        public ChatClient(string siteUrl, IAccessTokenProvider accessTokenProvider)
         {
-            // check inputs
-            if (string.IsNullOrWhiteSpace(idUser))
-                throw new ArgumentNullException(nameof(idUser));
-
             if (string.IsNullOrWhiteSpace(siteUrl))
                 throw new ArgumentNullException(nameof(siteUrl));
-
-            // save user id
-            _idUser = idUser;
 
             // set the hub URL
             _hubUrl = siteUrl.TrimEnd('/') + HUBURL;
@@ -75,9 +63,15 @@ namespace PlayTogether.Client.ChatClient
                     .Build();
 
                 // add handler for receiving messages
-                _hubConnection.On<string, string, string>(Messages.RECEIVE, (fromUser, conversation, message) =>
+                _hubConnection.On<string, string, string, DateTime>(Messages.RECEIVE, (fromUser, conversation, message, dateSubmitted) =>
                 {
-                    HandleReceiveMessage(fromUser, conversation, message);
+                    HandleReceiveMessage(fromUser, conversation, message, dateSubmitted);
+                });
+
+                // add handler for receiving read receipts
+                _hubConnection.On<string, string>(Messages.READ, (idUser, conversation) =>
+                {
+                    HandleReadConversation(idUser, conversation);
                 });
 
                 // start the connection
@@ -93,10 +87,22 @@ namespace PlayTogether.Client.ChatClient
         /// <param name="fromUser">user who sent the message</param>
         /// <param name="conversation">conversation the message was sent in</param>
         /// <param name="message">message content</param>
-        private void HandleReceiveMessage(string fromUser, string conversation, string message)
+        /// <param name="dateSubmitted">date the message was sent</param>
+        private void HandleReceiveMessage(string fromUser, string conversation, string message, DateTime dateSubmitted)
         {
             // raise an event to subscribers
-            MessageReceived?.Invoke(this, new MessageReceivedEventArgs(fromUser, conversation, message));
+            MessageReceived?.Invoke(this, new MessageReceivedEventArgs(fromUser, conversation, message, dateSubmitted));
+        }
+
+        /// <summary>
+        /// Handle an inbound message from a hub
+        /// </summary>
+        /// <param name="idUser">user who read the message</param>
+        /// <param name="conversation">conversation the message was read in</param>
+        private void HandleReadConversation(string idUser, string conversation)
+        {
+            // raise an event to subscribers
+            ConversationRead?.Invoke(this, new ConversationReadEventArgs(idUser, conversation));
         }
 
         /// <summary>
@@ -106,6 +112,14 @@ namespace PlayTogether.Client.ChatClient
         /// Instance classes should subscribe to this event
         /// </remarks>
         public event MessageReceivedEventHandler MessageReceived;
+
+        /// <summary>
+        /// Event raised when this client receives a notification that a conversation has been read by a user
+        /// </summary>
+        /// <remarks>
+        /// Instance classes should subscribe to this event
+        /// </remarks>
+        public event ConversationReadEventHandler ConversationRead;
 
         /// <summary>
         /// Send a message to a conversation
@@ -120,6 +134,16 @@ namespace PlayTogether.Client.ChatClient
 
             // send the message
             await _hubConnection.SendAsync(Messages.SEND_GROUP_MESSAGE, conversation, message);
+        }
+
+        public async Task ReadMessages(string conversation)
+        {
+            // check we are connected
+            if (!_started)
+                throw new InvalidOperationException("Client not started");
+
+            // send the message
+            await _hubConnection.SendAsync(Messages.READ, conversation);
         }
 
         /// <summary>
@@ -148,14 +172,14 @@ namespace PlayTogether.Client.ChatClient
             await StopAsync();
         }
 
-        public async Task SendDirectMessageAsync(string idUser)
+        public async Task SendDirectMessageAsync(string idUser, string message)
         {
             // check we are connected
             if (!_started)
                 throw new InvalidOperationException("Client not started");
 
             // send the message
-            await _hubConnection.SendAsync(Messages.SEND_DIRECT_MESSAGE, idUser, "Nice to meet you");
+            await _hubConnection.SendAsync(Messages.SEND_DIRECT_MESSAGE, idUser, message);
         }
     }
 
@@ -171,11 +195,12 @@ namespace PlayTogether.Client.ChatClient
     /// </summary>
     public class MessageReceivedEventArgs : EventArgs
     {
-        public MessageReceivedEventArgs(string fromUser, string conversation, string message)
+        public MessageReceivedEventArgs(string fromUser, string conversation, string message, DateTime dateSubmitted)
         {
             FromUser = fromUser;
             Conversation = conversation;
             Message = message;
+            DateSubmitted = dateSubmitted;
         }
 
         /// <summary>
@@ -193,5 +218,38 @@ namespace PlayTogether.Client.ChatClient
         /// </summary>
         public string Message { get; set; }
 
+        /// <summary> Date  the message was submitted
+        /// </summary>
+        public DateTime DateSubmitted { get; set; }
+
+    }
+
+    /// <summary>
+    /// Delegate for the message handler
+    /// </summary>
+    /// <param name="sender">the SignalRclient instance</param>
+    /// <param name="e">Event args</param>
+    public delegate void ConversationReadEventHandler(object sender, ConversationReadEventArgs e);
+
+    /// <summary>
+    /// Message received argument class
+    /// </summary>
+    public class ConversationReadEventArgs : EventArgs
+    {
+        public ConversationReadEventArgs(string idUser, string conversation)
+        {
+            IdUser = idUser;
+            Conversation = conversation;
+        }
+
+        /// <summary>
+        /// Id of the user who read the message
+        /// </summary>
+        public string IdUser { get; set; }
+
+        /// <summary>
+        /// Id of the conversation the message was read in
+        /// </summary>
+        public string Conversation { get; set; }
     }
 }
