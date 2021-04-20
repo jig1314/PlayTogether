@@ -265,6 +265,12 @@ namespace PlayTogether.Server.Data
                 .HasForeignKey(mapping => mapping.MessageConnectionId)
                 .HasConstraintName("ForeignKey_User_MessageConnection_MessageConnectionId");
 
+            modelBuilder.Entity<Conversation>()
+                .HasOne(c => c.CreatedByUser)
+                .WithMany(u => u.CreatedConversations)
+                .IsRequired(false)
+                .HasForeignKey(c => c.CreatedByUserId)
+                .HasConstraintName("ForeignKey_Conversation_User_CreatedByUserId");
         }
     }
 }

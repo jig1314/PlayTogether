@@ -27,5 +27,7 @@ namespace PlayTogether.Server.Models
         public List<ApplicationUser_MessageConnection> MessageConnections { get; set; }
 
         public List<ApplicationUser_Conversation> Conversations { get; set; }
+
+        public List<Conversation> CreatedConversations { get; set; }
     }
 }
