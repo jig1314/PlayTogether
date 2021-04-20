@@ -119,22 +119,31 @@ namespace PlayTogether.Client.Pages
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        public void MessageReceived(object sender, MessageReceivedEventArgs e)
+        public async void MessageReceived(object sender, MessageReceivedEventArgs e)
         {
-            if (Conversation == e.Conversation)
+            if (string.IsNullOrWhiteSpace(Conversation))
             {
-                var newMsg = new MessageDto()
+                Messages = await MessageService.GetMessages(UserProfileDto.UserId);
+
+                Conversation = Messages.Select(m => m.ConversationId).Distinct().SingleOrDefault();
+            }
+            else
+            {
+                if (Conversation == e.Conversation)
                 {
-                    FromUserId = e.FromUser,
-                    ConversationId = e.Conversation,
-                    MessageText = e.Message,
-                    DateSubmitted = e.DateSubmitted
-                };
+                    var newMsg = new MessageDto()
+                    {
+                        FromUserId = e.FromUser,
+                        ConversationId = e.Conversation,
+                        MessageText = e.Message,
+                        DateSubmitted = e.DateSubmitted
+                    };
 
-                Messages.Add(newMsg);
+                    Messages.Add(newMsg);
 
-                // Inform blazor the UI needs updating
-                StateHasChanged();
+                    // Inform blazor the UI needs updating
+                    StateHasChanged();
+                }
             }
         }
 

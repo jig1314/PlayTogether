@@ -197,7 +197,7 @@ namespace PlayTogether.Server.Hubs
         /// <returns></returns>
         private async Task SendMessage(string fromUser, string conversation, string message)
         {
-            var date = DateTime.Now;
+            var date = DateTime.UtcNow;
             
             var newMessage = new Message()
             {
@@ -221,6 +221,7 @@ namespace PlayTogether.Server.Hubs
 
             var fromUserFirstName = (await _context.ApplicationUserDetails.SingleOrDefaultAsync(u => u.ApplicationUserId == fromUser)).FirstName;
 
+            date = DateTime.SpecifyKind(date, DateTimeKind.Utc);
             await Clients.Group(conversation).SendAsync(Messages.RECEIVE, fromUser, fromUserFirstName, conversation, message, date);
         }
 
