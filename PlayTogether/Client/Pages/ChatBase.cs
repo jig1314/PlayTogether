@@ -96,7 +96,7 @@ namespace PlayTogether.Client.Pages
                 Messages = await MessageService.GetMessages(UserProfileDto.UserId);
 
                 Conversation = Messages.Select(m => m.ConversationId).Distinct().SingleOrDefault();
-                if (Conversation != null)
+                if (Conversation != null && ChatClient != null)
                     await ReadMessages(Conversation);
 
                 RetrievingData = false;
