@@ -116,7 +116,8 @@ namespace PlayTogether.Client.Pages
             MyUserProfileDto = await UserService.GetUserBasicInformation(myUserName);
 
             Conversation = await MessageService.GetChatGroupConversation(GroupName);
-            await ReadMessages(Conversation.Id);
+            if (ChatClient != null)
+                await ReadMessages(Conversation.Id);
 
             RetrievingData = false;
         }
