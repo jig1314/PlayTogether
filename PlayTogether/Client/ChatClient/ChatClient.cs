@@ -59,13 +59,12 @@ namespace PlayTogether.Client.ChatClient
                             accessTokenResult.TryGetToken(out var accessToken);
                             return accessToken.Value;
                         };
-                    })
-                    .Build();
+                    }).Build();
 
                 // add handler for receiving messages
-                _hubConnection.On<string, string, string, DateTime>(Messages.RECEIVE, (fromUser, conversation, message, dateSubmitted) =>
+                _hubConnection.On<string, string, string, string, DateTime>(Messages.RECEIVE, (fromUser, fromUserFirstName, conversation, message, dateSubmitted) =>
                 {
-                    HandleReceiveMessage(fromUser, conversation, message, dateSubmitted);
+                    HandleReceiveMessage(fromUser, fromUserFirstName, conversation, message, dateSubmitted);
                 });
 
                 // add handler for receiving read receipts
@@ -85,13 +84,14 @@ namespace PlayTogether.Client.ChatClient
         /// Handle an inbound message from a hub
         /// </summary>
         /// <param name="fromUser">user who sent the message</param>
+        /// <param name="fromUserFirstName">first name of user who sent the message</param>
         /// <param name="conversation">conversation the message was sent in</param>
         /// <param name="message">message content</param>
         /// <param name="dateSubmitted">date the message was sent</param>
-        private void HandleReceiveMessage(string fromUser, string conversation, string message, DateTime dateSubmitted)
+        private void HandleReceiveMessage(string fromUser, string fromUserFirstName, string conversation, string message, DateTime dateSubmitted)
         {
             // raise an event to subscribers
-            MessageReceived?.Invoke(this, new MessageReceivedEventArgs(fromUser, conversation, message, dateSubmitted));
+            MessageReceived?.Invoke(this, new MessageReceivedEventArgs(fromUser, fromUserFirstName, conversation, message, dateSubmitted));
         }
 
         /// <summary>
@@ -121,6 +121,16 @@ namespace PlayTogether.Client.ChatClient
         /// </remarks>
         public event ConversationReadEventHandler ConversationRead;
 
+        public async Task UpdateGroupMembers(string conversation, List<string> gamersInGroup)
+        {
+            // check we are connected
+            if (!_started)
+                await StartAsync();
+
+            // send the message
+            await _hubConnection.SendAsync(Messages.UPDATE_CHAT_GROUP, conversation, gamersInGroup);
+        }
+
         /// <summary>
         /// Send a message to a conversation
         /// </summary>
@@ -130,7 +140,7 @@ namespace PlayTogether.Client.ChatClient
         {
             // check we are connected
             if (!_started)
-                throw new InvalidOperationException("Client not started");
+                await StartAsync();
 
             // send the message
             await _hubConnection.SendAsync(Messages.SEND_GROUP_MESSAGE, conversation, message);
@@ -140,7 +150,7 @@ namespace PlayTogether.Client.ChatClient
         {
             // check we are connected
             if (!_started)
-                throw new InvalidOperationException("Client not started");
+                await StartAsync();
 
             // send the message
             await _hubConnection.SendAsync(Messages.READ, conversation);
@@ -176,7 +186,7 @@ namespace PlayTogether.Client.ChatClient
         {
             // check we are connected
             if (!_started)
-                throw new InvalidOperationException("Client not started");
+                await StartAsync();
 
             // send the message
             await _hubConnection.SendAsync(Messages.SEND_DIRECT_MESSAGE, idUser, message);
@@ -195,9 +205,10 @@ namespace PlayTogether.Client.ChatClient
     /// </summary>
     public class MessageReceivedEventArgs : EventArgs
     {
-        public MessageReceivedEventArgs(string fromUser, string conversation, string message, DateTime dateSubmitted)
+        public MessageReceivedEventArgs(string fromUserId, string fromUserFirstName, string conversation, string message, DateTime dateSubmitted)
         {
-            FromUser = fromUser;
+            FromUser = fromUserId;
+            FromUserFirstName = fromUserFirstName;
             Conversation = conversation;
             Message = message;
             DateSubmitted = dateSubmitted;
@@ -207,6 +218,11 @@ namespace PlayTogether.Client.ChatClient
         /// Id of the user who sent the message
         /// </summary>
         public string FromUser { get; set; }
+
+        /// <summary>
+        /// First Name of the user who sent the message
+        /// </summary>
+        public string FromUserFirstName { get; set; }
 
         /// <summary>
         /// Id of the conversation the message was sent in

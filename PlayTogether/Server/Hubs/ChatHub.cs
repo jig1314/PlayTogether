@@ -79,13 +79,73 @@ namespace PlayTogether.Server.Hubs
             await base.OnConnectedAsync();
         }
 
+        public async Task UpdateUsersToGroup(string conversation, List<string> gamersInGroup)
+        {
+            var existingConversation = await _context.Conversations
+                                        .Include(c => c.Users)
+                                        .Where(c => c.Id == conversation).SingleOrDefaultAsync();
+
+            var usersToRemoveFromGroup = new List<string>(existingConversation.Users.Select(m => m.ApplicationUserId).Where(u => !gamersInGroup.Contains(u)));
+            var usersToAddToGroup = new List<string>(gamersInGroup.Where(u => !existingConversation.Users.Select(m => m.ApplicationUserId).Contains(u)));
+
+            var newUserConversations = usersToAddToGroup
+                                        .Select(u => new ApplicationUser_Conversation()
+                                        {
+                                            ApplicationUserId = u,
+                                            ConversationId = conversation
+                                        });
+
+            var userConversationsToRemove = existingConversation.Users.Where(u => !gamersInGroup.Contains(u.ApplicationUserId));
+
+            _context.ApplicationUser_Conversations.AddRange(newUserConversations);
+            _context.ApplicationUser_Conversations.RemoveRange(userConversationsToRemove);
+            await _context.SaveChangesAsync();
+
+            var newUserConnections = await _context.ApplicationUser_MessageConnections
+                                            .Include(m => m.MessageConnection)
+                                            .Where(u => usersToAddToGroup.Contains(u.ApplicationUserId) && u.MessageConnection.Connected).ToListAsync();
+
+            var userConnectionsToRemove = await _context.ApplicationUser_MessageConnections
+                                            .Include(m => m.MessageConnection)
+                                            .Where(u => usersToRemoveFromGroup.Contains(u.ApplicationUserId) && u.MessageConnection.Connected).ToListAsync();
+
+            if (newUserConnections?.Count > 0)
+            {
+                foreach (var conn in newUserConnections)
+                {
+                    await Groups.AddToGroupAsync(conn.MessageConnectionId, conversation);
+                }
+            }
+            if (userConnectionsToRemove?.Count > 0)
+            {
+                foreach (var conn in userConnectionsToRemove)
+                {
+                    await Groups.RemoveFromGroupAsync(conn.MessageConnectionId, conversation);
+                }
+            }
+
+            var addedUsers = await _context.Users.Include(u => u.ApplicationUserDetails).Where(u => usersToAddToGroup.Contains(u.Id)).ToListAsync();
+
+            foreach (var user in addedUsers)
+            {
+                await SendGroupMessage(conversation, $"{user.ApplicationUserDetails.FirstName} has been added to the chat!");
+            }
+
+            var removedUsers = await _context.Users.Include(u => u.ApplicationUserDetails).Where(u => usersToRemoveFromGroup.Contains(u.Id)).ToListAsync();
+
+            foreach (var user in removedUsers)
+            {
+                await SendGroupMessage(conversation, $"{user.ApplicationUserDetails.FirstName} has been removed from the chat!");
+            }
+        }
+
         public async Task SendDirectMessage(string toUserId, string message)
         {
             var idUser = Context.UserIdentifier;
 
             var existingConversation = await _context.Conversations
                                         .Include(c => c.Users)
-                                        .Where(c => c.Users.Count == 2 
+                                        .Where(c => c.Users.Count == 2 && string.IsNullOrWhiteSpace(c.Name)
                                             && c.Users.Select(c => c.ApplicationUserId).Contains(idUser) 
                                             && c.Users.Select(c => c.ApplicationUserId).Contains(toUserId)).SingleOrDefaultAsync();
 
@@ -159,7 +219,9 @@ namespace PlayTogether.Server.Hubs
 
             await _context.SaveChangesAsync();
 
-            await Clients.Group(conversation).SendAsync(Messages.RECEIVE, fromUser, conversation, message, date);
+            var fromUserFirstName = (await _context.ApplicationUserDetails.SingleOrDefaultAsync(u => u.ApplicationUserId == fromUser)).FirstName;
+
+            await Clients.Group(conversation).SendAsync(Messages.RECEIVE, fromUser, fromUserFirstName, conversation, message, date);
         }
 
         public async Task ReadMessage(string conversation)
