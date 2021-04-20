@@ -46,7 +46,7 @@ namespace PlayTogether.Server.Controllers
                                             .Include(c => c.Messages)
                                             .ThenInclude(m => m.FromUser)
                                             .ThenInclude(u => u.ApplicationUserDetails)
-                                            .Where(c => c.Users.Count == 2
+                                            .Where(c => c.Users.Count == 2 && string.IsNullOrWhiteSpace(c.Name)
                                                 && c.Users.Select(c => c.ApplicationUserId).Contains(idUser)
                                                 && c.Users.Select(c => c.ApplicationUserId).Contains(withWhoId)).SingleOrDefaultAsync();
 
@@ -79,8 +79,55 @@ namespace PlayTogether.Server.Controllers
             }
         }
 
+        [HttpGet("groupMessages/{conversationName}")]
+        public async Task<ActionResult<IEnumerable<MessageDto>>> GetGroupMessages(string conversationName)
+        {
+            try
+            {
+                if (!HttpContext.User.Identity.IsAuthenticated)
+                {
+                    return StatusCode(StatusCodes.Status401Unauthorized, "Error retrieving messages");
+                }
+
+                var idUser = GetUserId();
+                var existingConversation = await _context.Conversations
+                                            .Include(c => c.Users)
+                                            .Include(c => c.Messages)
+                                            .ThenInclude(m => m.FromUser)
+                                            .ThenInclude(u => u.ApplicationUserDetails)
+                                            .Where(c => c.Name == conversationName).SingleOrDefaultAsync();
+
+                if (!existingConversation.Users.Any(u => u.ApplicationUserId == idUser))
+                {
+                    return StatusCode(StatusCodes.Status401Unauthorized, "Sorry but you are not in the group!");
+                }
+
+                var messages = existingConversation.Messages.Select(m => new MessageDto()
+                {
+                    ConversationId = m.ConversationId,
+                    MessageText = m.MessageText,
+                    DateSubmitted = m.DateSubmitted,
+                    FromUserId = m.FromUserId,
+                    FromUser = new UserBasicInfo()
+                    {
+                        UserId = m.FromUserId,
+                        FirstName = m.FromUser.ApplicationUserDetails.FirstName,
+                        LastName = m.FromUser.ApplicationUserDetails.LastName,
+                        Email = m.FromUser.Email,
+                        UserName = m.FromUser.UserName
+                    }
+                });
+
+                return Ok(messages);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, (ex.InnerException != null) ? ex.InnerException.Message : ex.Message);
+            }
+        }
+
         [HttpGet("directMessageConversations")]
-        public async Task<ActionResult<IEnumerable<DirectMessageConversation>>> GetDirectMessageConversations(string withWhoId)
+        public async Task<ActionResult<IEnumerable<DirectMessageConversation>>> GetDirectMessageConversations()
         {
             try
             {
@@ -94,7 +141,7 @@ namespace PlayTogether.Server.Controllers
                                             .Include(c => c.Users)
                                             .ThenInclude(u => u.ApplicationUser)
                                             .ThenInclude(u => u.ApplicationUserDetails)
-                                            .Where(c => c.Users.Count == 2 && c.Users.Select(c => c.ApplicationUserId).Contains(idUser))
+                                            .Where(c => c.Users.Count == 2 && string.IsNullOrWhiteSpace(c.Name) && c.Users.Select(c => c.ApplicationUserId).Contains(idUser))
                                             .ToListAsync();
 
                 var directMessageConversations = conversations.Select(c =>
@@ -121,6 +168,127 @@ namespace PlayTogether.Server.Controllers
             catch (Exception)
             {
                 return StatusCode(StatusCodes.Status500InternalServerError, "Error retrieving conversations");
+            }
+        }
+
+        [HttpGet("chatGroupConversation/{conversationName}")]
+        public async Task<ActionResult<ChatGroupConversation>> GetChatGroupConversations(string conversationName)
+        {
+            try
+            {
+                if (!HttpContext.User.Identity.IsAuthenticated)
+                {
+                    return StatusCode(StatusCodes.Status401Unauthorized, "Error retrieving conversations");
+                }
+
+                var idUser = GetUserId();
+                var conversation = await _context.Conversations
+                                            .Include(c => c.Users)
+                                            .ThenInclude(u => u.ApplicationUser)
+                                            .ThenInclude(u => u.ApplicationUserDetails)
+                                            .SingleOrDefaultAsync(c => c.Name == conversationName);
+
+                var chatGroupConversation = new ChatGroupConversation()
+                {
+                    Id = conversation.Id,
+                    Name = conversation.Name,
+                    CreatedByUserId = conversation.CreatedByUserId,
+                    WithUsers = conversation.Users.Select(u => new UserBasicInfo()
+                    {
+                        UserId = u.ApplicationUserId,
+                        FirstName = u.ApplicationUser.ApplicationUserDetails.FirstName,
+                        LastName = u.ApplicationUser.ApplicationUserDetails.LastName,
+                        Email = u.ApplicationUser.Email,
+                        UserName = u.ApplicationUser.UserName
+                    }).ToList(),
+                    HasUnreadMessages = conversation.Users.SingleOrDefault(user => user.ApplicationUserId == idUser).HasUnreadMessages
+                };
+
+                return Ok(chatGroupConversation);
+            }
+            catch (Exception)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, "Error retrieving conversations");
+            }
+        }
+
+        [HttpGet("chatGroupConversations")]
+        public async Task<ActionResult<IEnumerable<ChatGroupConversation>>> GetChatGroupConversations()
+        {
+            try
+            {
+                if (!HttpContext.User.Identity.IsAuthenticated)
+                {
+                    return StatusCode(StatusCodes.Status401Unauthorized, "Error retrieving conversations");
+                }
+
+                var idUser = GetUserId();
+                var conversations = await _context.Conversations
+                                            .Include(c => c.Users)
+                                            .Where(c => !string.IsNullOrWhiteSpace(c.Name) && c.Users.Select(c => c.ApplicationUserId).Contains(idUser))
+                                            .ToListAsync();
+
+                var chatGroupConversations = conversations.Select(c =>
+                {
+                    var user = c.Users.SingleOrDefault(user => user.ApplicationUserId == idUser);
+                    return new ChatGroupConversation()
+                    {
+                        Id = c.Id,
+                        Name = c.Name,
+                        CreatedByUserId = c.CreatedByUserId,
+                        HasUnreadMessages = user.HasUnreadMessages
+                    };
+                });
+
+                return Ok(chatGroupConversations);
+            }
+            catch (Exception)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, "Error retrieving conversations");
+            }
+        }
+        [HttpPost("createChatGroup")]
+        public async Task<ActionResult> PostChatGroup(ChatGroupDto chatGroupDto)
+        {
+            try
+            {
+                if (!HttpContext.User.Identity.IsAuthenticated)
+                {
+                    return StatusCode(StatusCodes.Status401Unauthorized, "You are not authorized to create a chat group!");
+                }
+
+                if (_context.Conversations.Any(c => c.Name == chatGroupDto.GroupName))
+                {
+                    throw new Exception("There already exists a chat group with this name!");
+                }
+
+                var idUser = GetUserId();
+                var groupGuid = Guid.NewGuid().ToString();
+
+                var chatGroup = new Conversation()
+                {
+                    Id = groupGuid,
+                    Name = chatGroupDto.GroupName,
+                    CreatedByUserId = idUser
+                };
+
+                _context.Conversations.Add(chatGroup);
+                await _context.SaveChangesAsync();
+
+                var userConversation = new ApplicationUser_Conversation()
+                {
+                    ApplicationUserId = idUser,
+                    ConversationId = groupGuid
+                };
+
+                _context.ApplicationUser_Conversations.Add(userConversation);
+                await _context.SaveChangesAsync();
+
+                return StatusCode(StatusCodes.Status202Accepted);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, (ex.InnerException != null) ? ex.InnerException.Message : ex.Message);
             }
         }
 
