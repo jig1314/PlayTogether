@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Components;
+﻿using BlazorStrap;
+using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Authorization;
 using PlayTogether.Client.ChatClient;
 using PlayTogether.Client.Services;
@@ -6,6 +7,7 @@ using PlayTogether.Shared.DTOs;
 using PlayTogether.Shared.Models;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -27,6 +29,8 @@ namespace PlayTogether.Client.Shared
         public bool collapseNavMenu { get; set; } = true;
 
         public bool expandDirectMessages { get; set; } = false;
+
+        public bool expandGroupMessages { get; set; } = false;
 
         public string NavMenuCssClass => collapseNavMenu ? "collapse" : null;
 
@@ -63,7 +67,15 @@ namespace PlayTogether.Client.Shared
 
         public List<DirectMessageConversation> DirectMessageConversations { get; set; }
 
+        public List<ChatGroupConversation> ChatGroupConversations { get; set; }
+
         public string IdUser { get; set; }
+
+        public BSModal CreateChatGroupModal { get; set; }
+
+        public ChatGroupViewModel ChatGroupViewModel { get; set; } = new ChatGroupViewModel();
+
+        public string AddGroupErrorMessage { get; set; }
 
         protected override async Task OnInitializedAsync()
         {
@@ -78,7 +90,7 @@ namespace PlayTogether.Client.Shared
 
         protected override async Task OnAfterRenderAsync(bool firstRender)
         {
-            if (DirectMessageConversations == null)
+            if (DirectMessageConversations == null || ChatGroupConversations == null)
             {
                 AuthenticationState = await AuthenticationStateTask;
 
@@ -93,6 +105,7 @@ namespace PlayTogether.Client.Shared
         private async Task RefreshData()
         {
             DirectMessageConversations = await MessageService.GetDirectMessageConversations();
+            ChatGroupConversations = await MessageService.GetChatGroupConversations();
 
             StateHasChanged();
         }
@@ -104,7 +117,8 @@ namespace PlayTogether.Client.Shared
         /// <param name="e"></param>
         public async void MessageReceived(object sender, MessageReceivedEventArgs e)
         {
-            if (DirectMessageConversations == null || !DirectMessageConversations.Select(c => c.Id).Contains(e.Conversation))
+            if (DirectMessageConversations == null || ChatGroupConversations == null ||
+                (!DirectMessageConversations.Select(c => c.Id).Contains(e.Conversation) && !ChatGroupConversations.Select(c => c.Id).Contains(e.Conversation)))
             {
                 await RefreshData();
             }
@@ -112,8 +126,16 @@ namespace PlayTogether.Client.Shared
             {
                 if (e.FromUser != IdUser)
                 {
-                    var convo = DirectMessageConversations.FirstOrDefault(c => c.Id == e.Conversation);
-                    convo.HasUnreadMessages = true;
+                    if (DirectMessageConversations.Select(c => c.Id).Contains(e.Conversation))
+                    {
+                        var convo = DirectMessageConversations.FirstOrDefault(c => c.Id == e.Conversation);
+                        convo.HasUnreadMessages = true;
+                    }
+                    else
+                    {
+                        var convo = ChatGroupConversations.FirstOrDefault(c => c.Id == e.Conversation);
+                        convo.HasUnreadMessages = true;
+                    }
                 }
             }
 
@@ -123,7 +145,8 @@ namespace PlayTogether.Client.Shared
 
         private async void ConversationRead(object sender, ConversationReadEventArgs e)
         {
-            if (DirectMessageConversations == null || !DirectMessageConversations.Select(c => c.Id).Contains(e.Conversation))
+            if (DirectMessageConversations == null || ChatGroupConversations == null ||
+                (!DirectMessageConversations.Select(c => c.Id).Contains(e.Conversation) && !ChatGroupConversations.Select(c => c.Id).Contains(e.Conversation)))
             {
                 await RefreshData();
             }
@@ -131,8 +154,16 @@ namespace PlayTogether.Client.Shared
             {
                 if (e.IdUser == IdUser)
                 {
-                    var convo = DirectMessageConversations.FirstOrDefault(c => c.Id == e.Conversation);
-                    convo.HasUnreadMessages = false;
+                    if (DirectMessageConversations.Select(c => c.Id).Contains(e.Conversation))
+                    {
+                        var convo = DirectMessageConversations.FirstOrDefault(c => c.Id == e.Conversation);
+                        convo.HasUnreadMessages = false;
+                    }
+                    else
+                    {
+                        var convo = ChatGroupConversations.FirstOrDefault(c => c.Id == e.Conversation);
+                        convo.HasUnreadMessages = false;
+                    }
                 }
             }
 
@@ -149,5 +180,39 @@ namespace PlayTogether.Client.Shared
         {
             NavigationManager.NavigateTo($"/chat/{userName}", true);
         }
+
+        public void OpenModal()
+        {
+            NavigationManager.NavigateTo("");
+            CreateChatGroupModal.Show();
+        }
+
+        protected async Task CreateChatGroup()
+        {
+            AddGroupErrorMessage = null;
+
+            try
+            {
+                var chatGroup = new ChatGroupDto() { GroupName = ChatGroupViewModel.GroupName };
+                await MessageService.CreateNewChatGroup(chatGroup);
+                NavigationManager.NavigateTo($"/chatGroup/{ChatGroupViewModel.GroupName}", true);
+            }
+            catch (Exception ex)
+            {
+                AddGroupErrorMessage = $"{ex.Message}";
+            }
+        }
+
+        public void NavigateToChatGroup(string groupName)
+        {
+            NavigationManager.NavigateTo($"/chatGroup/{groupName}", true);
+        }
+
     }
+}
+
+public class ChatGroupViewModel
+{
+    [Required(AllowEmptyStrings = false, ErrorMessage = "A Group Name is required!")]
+    public string GroupName { get; set; }
 }

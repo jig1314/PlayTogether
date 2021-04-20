@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Components;
+﻿using BlazorStrap;
+using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.JSInterop;
 using PlayTogether.Client.ChatClient;
@@ -12,7 +13,7 @@ using System.Threading.Tasks;
 
 namespace PlayTogether.Client.Pages
 {
-    public class ChatBase : ComponentBase
+    public class ChatGroupBase : ComponentBase
     {
         [CascadingParameter]
         public Task<AuthenticationState> AuthenticationStateTask { get; set; }
@@ -60,7 +61,7 @@ namespace PlayTogether.Client.Pages
         }
 
         [Parameter]
-        public string UserName { get; set; }
+        public string GroupName { get; set; }
 
         public string MyUserId { get; set; }
 
@@ -68,13 +69,17 @@ namespace PlayTogether.Client.Pages
 
         public UserBasicInfo MyUserProfileDto { get; set; }
 
-        public UserBasicInfo UserProfileDto { get; set; }
-
         public List<MessageDto> Messages { get; set; }
 
-        public string Conversation { get; set; }
+        public ChatGroupConversation Conversation { get; set; }
 
         public bool RetrievingData { get; set; } = false;
+
+        public string ErrorMessage { get; set; }
+
+        public BSModal AddGamerPopUpModal { get; set; }
+
+        public AddGamerPopUp AddGamerPageForModal { get; set; }
 
         protected override async Task OnInitializedAsync()
         {
@@ -86,21 +91,34 @@ namespace PlayTogether.Client.Pages
             }
             else
             {
-                RetrievingData = true;
-
-                MyUserId = AuthenticationState.User.FindFirst("sub").Value;
-                var myUserName = AuthenticationState.User.Identity.Name;
-
-                UserProfileDto = await UserService.GetUserBasicInformation(UserName);
-                MyUserProfileDto = await UserService.GetUserBasicInformation(myUserName);
-                Messages = await MessageService.GetMessages(UserProfileDto.UserId);
-
-                Conversation = Messages.Select(m => m.ConversationId).Distinct().SingleOrDefault();
-                if (Conversation != null)
-                    await ReadMessages(Conversation);
-
-                RetrievingData = false;
+                await RefreshData();
             }
+        }
+
+        private async Task RefreshData(int? delayInMilliseconds = null)
+        {
+            RetrievingData = true;
+
+            if (delayInMilliseconds.HasValue)
+                await Task.Delay(delayInMilliseconds.Value);
+
+            try
+            {
+                Messages = await MessageService.GetGroupMessages(GroupName);
+            }
+            catch (Exception ex)
+            {
+                ErrorMessage = ex.Message;
+            }
+
+            MyUserId = AuthenticationState.User.FindFirst("sub").Value;
+            var myUserName = AuthenticationState.User.Identity.Name;
+            MyUserProfileDto = await UserService.GetUserBasicInformation(myUserName);
+
+            Conversation = await MessageService.GetChatGroupConversation(GroupName);
+            await ReadMessages(Conversation.Id);
+
+            RetrievingData = false;
         }
 
         protected override async Task OnAfterRenderAsync(bool firstRender)
@@ -108,9 +126,9 @@ namespace PlayTogether.Client.Pages
             await JSRuntime.InvokeAsync<bool>("scrollToBottom", "chatContainer");
         }
 
-        protected async Task SendMessageAsync(string idUser)
+        protected async Task SendGroupMessageAsync()
         {
-            await ChatClient.SendDirectMessageAsync(idUser, Message);
+            await ChatClient.SendGroupMessageAsync(Conversation.Id, Message);
             Message = null;
         }
 
@@ -121,11 +139,12 @@ namespace PlayTogether.Client.Pages
         /// <param name="e"></param>
         public void MessageReceived(object sender, MessageReceivedEventArgs e)
         {
-            if (Conversation == e.Conversation)
+            if (Conversation.Id == e.Conversation)
             {
                 var newMsg = new MessageDto()
                 {
                     FromUserId = e.FromUser,
+                    FromUser = new UserBasicInfo() { FirstName = e.FromUserFirstName },
                     ConversationId = e.Conversation,
                     MessageText = e.Message,
                     DateSubmitted = e.DateSubmitted
@@ -141,6 +160,24 @@ namespace PlayTogether.Client.Pages
         public async Task ReadMessages(string conversation)
         {
             await ChatClient.ReadMessages(conversation);
+        }
+
+        protected void RefreshModalData()
+        {
+            if (AddGamerPageForModal != null)
+            {
+                AddGamerPageForModal.ResetPopUp(Conversation);
+            }
+        }
+
+        public async Task AddGamersToChatGroup()
+        {
+            if (AddGamerPageForModal != null && AddGamerPageForModal.GamersInGroup?.Count > 0)
+            {
+                await ChatClient.UpdateGroupMembers(Conversation.Id, AddGamerPageForModal.GamersInGroup);
+                AddGamerPopUpModal.Hide();
+                await RefreshData(1000);
+            }
         }
     }
 }
