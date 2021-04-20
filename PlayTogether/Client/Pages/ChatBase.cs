@@ -123,9 +123,13 @@ namespace PlayTogether.Client.Pages
         {
             if (string.IsNullOrWhiteSpace(Conversation))
             {
+                RetrievingData = true;
+
                 Messages = await MessageService.GetMessages(UserProfileDto.UserId);
 
                 Conversation = Messages.Select(m => m.ConversationId).Distinct().SingleOrDefault();
+
+                RetrievingData = false;
             }
             else
             {
