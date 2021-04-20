@@ -3,15 +3,17 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using PlayTogether.Server.Data;
 
 namespace PlayTogether.Server.Data.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20210419035821_AddHasUnreadMessagesToUserConversations")]
+    partial class AddHasUnreadMessagesToUserConversations
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -494,15 +496,10 @@ namespace PlayTogether.Server.Data.Migrations
                     b.Property<string>("Id")
                         .HasColumnType("nvarchar(450)");
 
-                    b.Property<string>("CreatedByUserId")
-                        .HasColumnType("nvarchar(450)");
-
                     b.Property<string>("Name")
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("CreatedByUserId");
 
                     b.ToTable("Conversations");
                 });
@@ -986,16 +983,6 @@ namespace PlayTogether.Server.Data.Migrations
                     b.Navigation("MessageConnection");
                 });
 
-            modelBuilder.Entity("PlayTogether.Server.Models.Conversation", b =>
-                {
-                    b.HasOne("PlayTogether.Server.Models.ApplicationUser", "CreatedByUser")
-                        .WithMany("CreatedConversations")
-                        .HasForeignKey("CreatedByUserId")
-                        .HasConstraintName("ForeignKey_Conversation_User_CreatedByUserId");
-
-                    b.Navigation("CreatedByUser");
-                });
-
             modelBuilder.Entity("PlayTogether.Server.Models.FriendRequest", b =>
                 {
                     b.HasOne("PlayTogether.Shared.Models.FriendRequestStatusType", null)
@@ -1092,8 +1079,6 @@ namespace PlayTogether.Server.Data.Migrations
                     b.Navigation("ApplicationUserDetails");
 
                     b.Navigation("Conversations");
-
-                    b.Navigation("CreatedConversations");
 
                     b.Navigation("Friends");
 

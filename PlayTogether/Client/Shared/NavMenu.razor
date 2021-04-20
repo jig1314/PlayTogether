@@ -1,4 +1,6 @@
-﻿<div class="top-row pl-4 navbar navbar-dark">
+﻿@inherits NavMenuBase
+
+<div class="top-row pl-4 navbar navbar-dark">
     <a class="navbar-brand" href="">PlayTogether</a>
     <button class="navbar-toggler" @onclick="ToggleNavMenu">
         <span class="navbar-toggler-icon"></span>
@@ -23,17 +25,113 @@
                     <span class="oi oi-magnifying-glass" aria-hidden="true"></span> Search For Gamers
                 </NavLink>
             </li>
+            <li class="nav-item pl-3" style="cursor: pointer">
+                <NavLink class="nav-link" @onclick="()=> expandDirectMessages = !expandDirectMessages">
+                    <span class="fas fa-comments" aria-hidden="true"></span> Direct Messages
+                    @if (DirectMessageConversations?.Count > 0)
+                    {
+                        @if (DirectMessageConversations.Any(c => c.HasUnreadMessages))
+                        {
+                            <span aria-hidden="true" style="text-align: right;"><i class="fas fa-circle" style="font-size: .75rem;"></i><i class="fas @(expandDirectMessages ? "fa-caret-up" : "fa-caret-down")"></i></span>
+                        }
+                        else
+                        {
+                            <span aria-hidden="true" style="text-align: right;"><i class="fas @(expandDirectMessages ? "fa-caret-up" : "fa-caret-down")"></i></span>
+
+                        }
+                    }
+                </NavLink>
+                @if (DirectMessageConversations?.Count > 0 && expandDirectMessages)
+                {
+                    <ul class="nav flex-column">
+                        @foreach (var convo in DirectMessageConversations.OrderBy(c => c.WithUser.UserName))
+                        {
+                            <li class="nav-item px-3" style="cursor: pointer">
+                                <NavLink class="nav-link" @onclick="()=> NavigateToChat(convo.WithUser.UserName)">
+                                    <span class="fas fa-comment" aria-hidden="true"></span> @convo.WithUser.UserName
+                                    @if (convo.HasUnreadMessages)
+                                    {
+                                        <span aria-hidden="true" style="text-align: right;"><i class="fas fa-circle" style="font-size: .75rem;"></i></span>
+                                    }
+                                </NavLink>
+                            </li>
+                        }
+                    </ul>
+                }
+            </li>
+            <li class="nav-item pl-3" style="cursor: pointer">
+                <NavLink class="nav-link" @onclick="()=> expandGroupMessages = !expandGroupMessages">
+                    <span class="fas fa-users" aria-hidden="true"></span> Chat Groups
+                    @if (ChatGroupConversations != null && ChatGroupConversations.Any(c => c.HasUnreadMessages))
+                    {
+                        <span aria-hidden="true" style="text-align: right;"><i class="fas fa-circle" style="font-size: .75rem;"></i><i class="fas @(expandGroupMessages ? "fa-caret-up" : "fa-caret-down")"></i></span>
+                    }
+                    else
+                    {
+                        <span aria-hidden="true" style="text-align: right;"><i class="fas @(expandGroupMessages ? "fa-caret-up" : "fa-caret-down")"></i></span>
+
+                    }
+                </NavLink>
+                @if (expandGroupMessages)
+                {
+                    <ul class="nav flex-column">
+                        <li class="nav-item px-3" style="cursor: pointer">
+                            <NavLink class="nav-link" @onclick="() => OpenModal()">
+                                <span class="fas fa-plus" aria-hidden="true"></span> Create Chat Group
+                            </NavLink>
+                        </li>
+                        @if (ChatGroupConversations?.Count > 0 && expandGroupMessages)
+                        {
+                            @foreach (var convo in ChatGroupConversations.OrderBy(c => c.Name))
+                            {
+                                <li class="nav-item px-3" style="cursor: pointer">
+                                    <NavLink class="nav-link" @onclick="() => NavigateToChatGroup(convo.Name)">
+                                        <span class="fas fa-comment" aria-hidden="true"></span> @convo.Name
+                                        @if (convo.HasUnreadMessages)
+                                        {
+                                            <span aria-hidden="true" style="text-align: right;"><i class="fas fa-circle" style="font-size: .75rem;"></i></span>
+                                        }
+                                    </NavLink>
+                                </li>
+                            }
+                        }
+                    </ul>
+                }
+            </li>
         </AuthorizeView>
     </ul>
 </div>
 
-@code {
-    private bool collapseNavMenu = true;
-
-    private string NavMenuCssClass => collapseNavMenu ? "collapse" : null;
-
-    private void ToggleNavMenu()
-    {
-        collapseNavMenu = !collapseNavMenu;
-    }
-}
+<BSModal @ref="CreateChatGroupModal" IgnoreEscape="true" IgnoreClickOnBackdrop="true" IsCentered="true">
+    <BSForm style="margin: 0px 10px;" Model="@ChatGroupViewModel" OnValidSubmit="CreateChatGroup">
+        <BSModalHeader OnClick="@(() => CreateChatGroupModal.Hide())">Create New Chat Group</BSModalHeader>
+        <BSModalBody>
+            <BSContainer style="max-width: 450px;">
+                <BSRow>
+                    <div style="width: 100%;" class="panel panel-primary">
+                        <div class="panel-body">
+                            @if (!string.IsNullOrWhiteSpace(AddGroupErrorMessage))
+                            {
+                                <BSFormGroup>
+                                    <BSAlert Color="Color.Danger">
+                                        @AddGroupErrorMessage
+                                    </BSAlert>
+                                </BSFormGroup>
+                            }
+                            <DataAnnotationsValidator />
+                            <BSFormGroup>
+                                <BSLabel For="@ChatGroupViewModel.GroupName">Group Name</BSLabel>
+                                <BSInput InputType="InputType.Text" @bind-Value="@ChatGroupViewModel.GroupName" />
+                                <BSFormFeedback For="@(() => ChatGroupViewModel.GroupName)" />
+                            </BSFormGroup>
+                        </div>
+                    </div>
+                </BSRow>
+            </BSContainer>
+        </BSModalBody>
+        <BSModalFooter>
+            <BSButton ButtonType="ButtonType.Submit" Color="Color.Primary"><i class="fas fa-plus"></i>Create Group</BSButton>
+            <BSButton Color="Color.Secondary" @onclick="@(() => CreateChatGroupModal.Hide())">Close</BSButton>
+        </BSModalFooter>
+    </BSForm>
+</BSModal>
