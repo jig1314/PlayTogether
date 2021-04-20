@@ -41,6 +41,9 @@ namespace PlayTogether.Client.Services
         public async Task<List<ChatGroupConversation>> GetChatGroupConversations() =>
             await httpClient.GetFromJsonAsync<List<ChatGroupConversation>>($"api/messages/chatGroupConversations");
 
+        public async Task<DirectMessageConversation> GetDirectMessageConversation(string idUser) =>
+            await httpClient.GetFromJsonAsync<DirectMessageConversation>($"api/messages/directMessageConversation/{idUser}");
+
         public async Task<List<DirectMessageConversation>> GetDirectMessageConversations() =>
             await httpClient.GetFromJsonAsync<List<DirectMessageConversation>>($"api/messages/directMessageConversations");
 

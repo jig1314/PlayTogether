@@ -125,29 +125,25 @@ namespace PlayTogether.Client.Pages
             {
                 RetrievingData = true;
 
-                Messages = await MessageService.GetMessages(UserProfileDto.UserId);
-
-                Conversation = Messages.Select(m => m.ConversationId).Distinct().SingleOrDefault();
+                Conversation = (await MessageService.GetDirectMessageConversation(UserProfileDto.UserId)).Id;
 
                 RetrievingData = false;
             }
-            else
+
+            if (Conversation == e.Conversation)
             {
-                if (Conversation == e.Conversation)
+                var newMsg = new MessageDto()
                 {
-                    var newMsg = new MessageDto()
-                    {
-                        FromUserId = e.FromUser,
-                        ConversationId = e.Conversation,
-                        MessageText = e.Message,
-                        DateSubmitted = e.DateSubmitted
-                    };
+                    FromUserId = e.FromUser,
+                    ConversationId = e.Conversation,
+                    MessageText = e.Message,
+                    DateSubmitted = e.DateSubmitted
+                };
 
-                    Messages.Add(newMsg);
+                Messages.Add(newMsg);
 
-                    // Inform blazor the UI needs updating
-                    StateHasChanged();
-                }
+                // Inform blazor the UI needs updating
+                StateHasChanged();
             }
         }
 

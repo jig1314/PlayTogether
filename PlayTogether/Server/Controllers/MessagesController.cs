@@ -171,6 +171,50 @@ namespace PlayTogether.Server.Controllers
             }
         }
 
+        [HttpGet("directMessageConversation/{withWhoId}")]
+        public async Task<ActionResult<DirectMessageConversation>> GetDirectMessageConversation(string withWhoId)
+        {
+            try
+            {
+                if (!HttpContext.User.Identity.IsAuthenticated)
+                {
+                    return StatusCode(StatusCodes.Status401Unauthorized, "Error retrieving conversations");
+                }
+
+                var idUser = GetUserId();
+                var conversation = await _context.Conversations
+                                            .Include(c => c.Users)
+                                            .ThenInclude(u => u.ApplicationUser)
+                                            .ThenInclude(u => u.ApplicationUserDetails)
+                                            .Where(c => c.Users.Count == 2 
+                                                && string.IsNullOrWhiteSpace(c.Name) 
+                                                && c.Users.Select(c => c.ApplicationUserId).Contains(idUser) 
+                                                && c.Users.Select(c => c.ApplicationUserId).Contains(withWhoId))
+                                            .SingleOrDefaultAsync();
+
+                var user = conversation.Users.SingleOrDefault(user => user.ApplicationUserId == idUser);
+                var otherUser = conversation.Users.SingleOrDefault(user => user.ApplicationUserId == withWhoId);
+                var directMessageConversation = new DirectMessageConversation()
+                {
+                    Id = conversation.Id,
+                    WithUser = new UserBasicInfo()
+                    {
+                        UserId = otherUser.ApplicationUserId,
+                        FirstName = otherUser.ApplicationUser.ApplicationUserDetails.FirstName,
+                        LastName = otherUser.ApplicationUser.ApplicationUserDetails.LastName,
+                        Email = otherUser.ApplicationUser.Email,
+                        UserName = otherUser.ApplicationUser.UserName
+                    },
+                    HasUnreadMessages = user.HasUnreadMessages
+                };
+                return Ok(directMessageConversation);
+            }
+            catch (Exception)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, "Error retrieving conversations");
+            }
+        }
+
         [HttpGet("chatGroupConversation/{conversationName}")]
         public async Task<ActionResult<ChatGroupConversation>> GetChatGroupConversations(string conversationName)
         {

@@ -15,5 +15,6 @@ namespace PlayTogether.Client.Services
         Task<List<ChatGroupConversation>> GetChatGroupConversations();
         Task<List<MessageDto>> GetGroupMessages(string groupName);
         Task<ChatGroupConversation> GetChatGroupConversation(string groupName);
+        Task<DirectMessageConversation> GetDirectMessageConversation(string idUser);
     }
 }
