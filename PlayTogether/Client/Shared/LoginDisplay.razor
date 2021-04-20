@@ -6,12 +6,12 @@
 
 <AuthorizeView>
     <Authorized>
-        <a href="manageProfile/myAccount">@context.User.Identity.Name</a>
-        <button id="logOutButton" class="nav-link btn btn-link" @onclick="BeginSignOut">Log out</button>
+        <a href="manageProfile/myAccount" style="color: #EDFFEC;">@context.User.Identity.Name</a>
+        <button id="logOutButton" class="nav-link btn btn-link" @onclick="BeginSignOut" style="color: #EDFFEC;">Log out</button>
     </Authorized>
     <NotAuthorized>
-        <a id="registerLink" href="register">Register</a>
-        <a href="login">Log in</a>
+        <a id="registerLink" href="register" style="color: #EDFFEC;">Register</a>
+        <a href="login" style="color: #EDFFEC;">Log in</a>
     </NotAuthorized>
 </AuthorizeView>
 

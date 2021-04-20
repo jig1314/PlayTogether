@@ -1,84 +1,86 @@
 ﻿@page "/manageProfile/{pageId}/"
 @page "/manageProfile/{pageId}/{subPageId}"
 
-<div>
-    <div class="row">
-        <div class="col-md-3">
-            <BSNav IsList="true" IsVertical="true" IsPills="true">
-                <BSNavItem>
-                    <BSNavLink IsActive="@IsNavActive("myAccount")" Href="manageProfile/myAccount">My Account</BSNavLink>
-                </BSNavItem>
-                <BSNavItem>
-                    <BSNavLink IsActive="@IsNavActive("changePassword")" Href="manageProfile/changePassword">Change Password</BSNavLink>
-                </BSNavItem>
-                <BSNavItem>
-                    <BSNavLink IsActive="@IsNavActive("preferences")" Href="manageProfile/preferences">Set User Preferences</BSNavLink>
-                </BSNavItem>
-            </BSNav>
+    <body>
+        <div class="container-fluid">
+            <div class="row">
+                <div class="col-md-3" style="background-color: #12684E; color: #EDFFEC; border-right: 1px black;">
+                    <BSNav IsList="true" IsVertical="true" IsPills="true">
+                        <BSNavItem>
+                            <BSNavLink IsActive="@IsNavActive("myAccount")" Href="manageProfile/myAccount">Edit Your Account Information</BSNavLink>
+                        </BSNavItem>
+                        <BSNavItem>
+                            <BSNavLink IsActive="@IsNavActive("changePassword")" Href="manageProfile/changePassword">Change Password</BSNavLink>
+                        </BSNavItem>
+                        <BSNavItem>
+                            <BSNavLink IsActive="@IsNavActive("preferences")" Href="manageProfile/preferences">Set Your Preferences</BSNavLink>
+                        </BSNavItem>
+                    </BSNav>
+                </div>
+                <div class="col-md-9" style="background-color: #12684E; color: #EDFFEC; border: 1px black;">
+                    @ChildContent
+                </div>
+            </div>
         </div>
-        <div class="col-md-9">
-            @ChildContent
-        </div>
-    </div>
-</div>
+    </body>
 
-@code {
+    @code {
 
-    private string _pageId;
+        private string _pageId;
 
-    [Parameter]
-    public string PageId
-    {
-        get
+        [Parameter]
+        public string PageId
         {
-            return _pageId;
-        }
-        set
-        {
-            _pageId = value;
-            UpdatePage();
-        }
-    }
-
-    private string _subPageId;
-
-    [Parameter]
-    public string SubPageId
-    {
-        get
-        {
-            return _subPageId;
-        }
-        set
-        {
-            _subPageId = value;
-            UpdatePage();
-        }
-    }
-
-    public RenderFragment ChildContent { get; set; }
-
-    void UpdatePage()
-    {
-        switch (PageId)
-        {
-            case "myAccount":
-                ChildContent =@<MyAccount />;
-                break;
-            case "changePassword":
-                ChildContent = @<ChangePassword />;
-                break;
-            case "preferences":
-                ChildContent = @<UserPreferences PageId="@SubPageId" />;
-                break;
-            default:
-                break;
+            get
+            {
+                return _pageId;
             }
-    }
+            set
+            {
+                _pageId = value;
+                UpdatePage();
+            }
+        }
 
-    bool IsNavActive(string nav)
-    {
-        return PageId == nav;
-    }
+        private string _subPageId;
 
+        [Parameter]
+        public string SubPageId
+        {
+            get
+            {
+                return _subPageId;
+            }
+            set
+            {
+                _subPageId = value;
+                UpdatePage();
+            }
+        }
+
+        public RenderFragment ChildContent { get; set; }
+
+        void UpdatePage()
+        {
+            switch (PageId)
+            {
+                case "myAccount":
+                    ChildContent =@<MyAccount />;
+break;
+case "changePassword":
+ChildContent = @<ChangePassword />;
+break;
+case "preferences":
+ChildContent = @<UserPreferences PageId="@SubPageId" />;
+break;
+default:
+break;
 }
+}
+
+bool IsNavActive(string nav)
+{
+return PageId == nav;
+}
+
+    }

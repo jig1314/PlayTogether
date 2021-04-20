@@ -20,43 +20,43 @@
                             </BSFormGroup>
                         }
                         <BSFormGroup>
-                            <h2>Create Account</h2>
+                            <h2 style="color: #EDFFEC;">Create Account</h2>
                         </BSFormGroup>
                         <FluentValidator TValidator="RegisterValidator" />
                         <BSFormGroup>
-                            <BSLabel For="@RegisterViewModel.FirstName">First Name</BSLabel>
+                            <BSLabel For="@RegisterViewModel.FirstName"><h6 style="color: #EDFFEC;">First Name</h6></BSLabel>
                             <BSInput id="firstNameText" InputType="InputType.Text" @bind-Value="@RegisterViewModel.FirstName" />
                             <BSFormFeedback For="@(() => RegisterViewModel.FirstName)" />
                         </BSFormGroup>
                         <BSFormGroup>
-                            <BSLabel For="@RegisterViewModel.LastName">Last Name</BSLabel>
+                            <BSLabel For="@RegisterViewModel.LastName"><h6 style="color: #EDFFEC;">Last Name</h6></BSLabel>
                             <BSInput id="lastNameText" InputType="InputType.Text" @bind-Value="@RegisterViewModel.LastName" />
                             <BSFormFeedback For="@(() => RegisterViewModel.LastName)" />
                         </BSFormGroup>
                         <BSFormGroup>
-                            <BSLabel For="@RegisterViewModel.Email">Email Address</BSLabel>
+                            <BSLabel For="@RegisterViewModel.Email"><h6 style="color: #EDFFEC;">Email Address</h6></BSLabel>
                             <BSInput id="emailText" InputType="InputType.Email" @bind-Value="@RegisterViewModel.Email" />
                             <BSFormFeedback For="@(() => RegisterViewModel.Email)" />
                         </BSFormGroup>
                         <BSFormGroup>
-                            <BSLabel For="@RegisterViewModel.UserName">Username</BSLabel>
+                            <BSLabel For="@RegisterViewModel.UserName"><h6 style="color: #EDFFEC;">Username</h6></BSLabel>
                             <BSInput id="userNameText" InputType="InputType.Text" @bind-Value="@RegisterViewModel.UserName" />
                             <BSFormFeedback For="@(() => RegisterViewModel.UserName)" />
                         </BSFormGroup>
                         <BSFormGroup>
-                            <BSLabel For="@RegisterViewModel.Password">Password</BSLabel>
+                            <BSLabel For="@RegisterViewModel.Password"><h6 style="color: #EDFFEC;">Password</h6></BSLabel>
                             <BSInput id="passwordText" InputType="InputType.Password" @bind-Value="@RegisterViewModel.Password" />
                             <BSFormFeedback For="@(() => RegisterViewModel.Password)" />
                             <small class="form-text text-muted">Password must be between 6 and 100 characters long.</small>
                             <small class="form-text text-muted">Password must contain an uppercase and lowercase letter, a number and a special character.</small>
                         </BSFormGroup>
                         <BSFormGroup>
-                            <BSLabel For="@RegisterViewModel.ConfirmPassword">Confirm password</BSLabel>
+                            <BSLabel For="@RegisterViewModel.ConfirmPassword"><h6 style="color: #EDFFEC;">Confirm password</h6></BSLabel>
                             <BSInput id="confirmPasswordText" InputType="InputType.Password" @bind-Value="@RegisterViewModel.ConfirmPassword" />
                             <BSFormFeedback For="@(() => RegisterViewModel.ConfirmPassword)" />
                         </BSFormGroup>
                         <BSFormGroup>
-                            <BSLabel For="@RegisterViewModel.GenderId">Gender</BSLabel>
+                            <BSLabel For="@RegisterViewModel.GenderId"><h6 style="color: #EDFFEC;">Gender</h6></BSLabel>
                             <BSInput id="genderDropdown" InputType="InputType.Select" @bind-Value="@RegisterViewModel.GenderId">
                                 <option value="">Please select a Gender...</option>
                                 @if (Genders != null)
@@ -70,7 +70,7 @@
                             <BSFormFeedback For="@(() => RegisterViewModel.GenderId)" />
                         </BSFormGroup>
                         <BSFormGroup>
-                            <BSLabel For="@RegisterViewModel.CountryOfResidenceId">Country of Residence</BSLabel>
+                            <BSLabel For="@RegisterViewModel.CountryOfResidenceId"><h6 style="color: #EDFFEC;">Country of Residence</h6></BSLabel>
                             <BSInput id="countryOfResidenceDropdown" InputType="InputType.Select" @bind-Value="@RegisterViewModel.CountryOfResidenceId">
                                 <option value="">Select a Country...</option>
                                 @if (Countries != null)
@@ -84,7 +84,7 @@
                             <BSFormFeedback For="@(() => RegisterViewModel.CountryOfResidenceId)" />
                         </BSFormGroup>
                         <BSFormGroup>
-                            <BSLabel For="@RegisterViewModel.DateOfBirth">Date of Birth</BSLabel>
+                            <BSLabel For="@RegisterViewModel.DateOfBirth"><h6 style="color: #EDFFEC;">Date of Birth</h6></BSLabel>
                             <BSInput id="dateOfBirthDatePicker" InputType="InputType.Date" @bind-Value="@RegisterViewModel.DateOfBirth" />
                             <BSFormFeedback For="@(() => RegisterViewModel.DateOfBirth)" />
                         </BSFormGroup>
