@@ -21,9 +21,21 @@
                                         </div>
                                         <div class="col-md-9">
                                             <div style="text-align: center;" class="details">
-                                                <h5><a href="profile/@friend.UserName">@friend.FirstName @friend.LastName (@friend.UserName)</a></h5>
-                                                <hr style="margin-bottom: unset;" />
-                                                @if (FriendUserIds.Contains(friend.UserId))
+                                                @if (friend.UserId == IdUser)
+                                                {
+                                                    <BSButton Color="Color.Link" OnClick="() => NavigateToMyProfile()">@friend.FirstName @friend.LastName (@friend.UserName)</BSButton>
+                                                    <hr style="margin-bottom: unset;" />
+                                                }
+                                                else
+                                                {
+                                                    <BSButton Color="Color.Link" OnClick="@(() => NavigateToUserProfile(friend.UserName))">@friend.FirstName @friend.LastName (@friend.UserName)</BSButton>
+                                                    <hr style="margin-bottom: unset;" />
+                                                }
+                                                @if (friend.UserId == IdUser)
+                                                {
+                                                    <BSButton ButtonType="ButtonType.Button" Color="Color.Light" IsDisabled="true" Class="btn mt-3 btn-rounded">It's me! <i class="fas fa-smile-beam"></i></BSButton>
+                                                }
+                                                else if (FriendUserIds.Contains(friend.UserId))
                                                 {
                                                     <BSButton ButtonType="ButtonType.Button" Color="Color.Light" IsDisabled="true" Class="btn mt-3 btn-rounded">Friend <i class="fas fa-smile-beam"></i></BSButton>
                                                 }
@@ -59,7 +71,7 @@
                 <BSTabLabel>Mutual Friends</BSTabLabel>
                 <BSTabContent>
                     <BSRow>
-                        @if (UsersFriends?.Count > 0)
+                        @if (UsersFriends?.Count > 0 && UsersFriends.Where(user => FriendUserIds.Contains(user.UserId)).Count() > 0)
                         {
                             @foreach (var friend in UsersFriends.Where(user => FriendUserIds.Contains(user.UserId)).OrderBy(friend => friend.UserName))
                             {
@@ -72,8 +84,8 @@
                                         </div>
                                         <div class="col-md-9">
                                             <div style="text-align: left;" class="details">
-                                                <h5><a href="profile/@friend.UserName">@friend.FirstName @friend.LastName</a></h5>
-                                                <p class="text-muted" style="margin-bottom: unset;">@friend.UserName</p>
+                                                <BSButton style="padding-left: unset;" Color="Color.Link" OnClick="@(() => NavigateToUserProfile(friend.UserName))">@friend.FirstName @friend.LastName (@friend.UserName)</BSButton>
+                                                <p class="text-muted" style="margin-bottom: unset; padding-left: 5px;">@friend.UserName</p>
                                             </div>
                                         </div>
                                     </div>
