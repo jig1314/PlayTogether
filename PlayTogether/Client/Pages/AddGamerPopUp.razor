@@ -107,28 +107,31 @@
                                         <h5 style="width: 100%; margin-top: 15px;">@gamer.FirstName @gamer.LastName</h5>
                                         <p style="margin-bottom: 5px;" class="form-text text-muted">@gamer.UserName</p>
                                         <BSFormGroup IsCheck="true">
-                                            @if (GamersInGroup.Contains(gamer.UserId))
+                                            @if (Conversation.CreatedByUserId == IdUser)
                                             {
-                                                @if (Conversation.CreatedByUserId == IdUser)
+                                                @if (GamersInGroup.Contains(gamer.UserId))
                                                 {
                                                     <BSBasicInput InputType="InputType.Checkbox" Value="true" ValueChanged="@((bool v) => CheckBoxValueChanged(v, gamer.UserId))" />
                                                     <BSLabel Color="Color.Danger">Remove gamer from group chat</BSLabel>
                                                 }
                                                 else
                                                 {
-                                                    <BSBasicInput InputType="InputType.Checkbox" IsDisabled="true" Value="true" />
-                                                    <BSLabel>Gamer already in group chat</BSLabel>
+                                                    <BSBasicInput InputType="InputType.Checkbox" Value="false" ValueChanged="@((bool v) => CheckBoxValueChanged(v, gamer.UserId))" />
+                                                    <BSLabel>Add gamer to group chat</BSLabel>
                                                 }
-                                            }
-                                            else if (GamersInGroup.Contains(gamer.UserId))
-                                            {
-                                                <BSBasicInput InputType="InputType.Checkbox" Value="true" ValueChanged="@((bool v) => CheckBoxValueChanged(v, gamer.UserId))" />
-                                                <BSLabel>Add gamer to group chat</BSLabel>
                                             }
                                             else
                                             {
-                                                <BSBasicInput InputType="InputType.Checkbox" Value="false" ValueChanged="@((bool v) => CheckBoxValueChanged(v, gamer.UserId))" />
-                                                <BSLabel>Add gamer to group chat</BSLabel>
+                                                @if (GamersInGroup.Contains(gamer.UserId))
+                                                {
+                                                    <BSBasicInput InputType="InputType.Checkbox" IsDisabled="true" Value="true" />
+                                                    <BSLabel>Gamer is already in the group chat</BSLabel>
+                                                }
+                                                else
+                                                {
+                                                    <BSBasicInput InputType="InputType.Checkbox" IsDisabled="true"  Value="false" />
+                                                    <BSLabel>Gamer is not in the group chat</BSLabel>
+                                                }
                                             }
                                         </BSFormGroup>
                                     </div>

@@ -20,9 +20,12 @@
                                 <div class="col">
                                     <span>To: <span class="name">@GroupName</span></span>
                                 </div>
-                                <div class="col" style="text-align:end;">
-                                    <span><i @onclick="(() => AddGamerPopUpModal.Show())" style="cursor: pointer; font-size: 1.25rem;" class="fas fa-user-plus"></i></span>
-                                </div>
+                                @if (Conversation.CreatedByUserId == MyUserId)
+                                {
+                                    <div class="col" style="text-align:end;">
+                                        <span><i @onclick="(() => AddGamerPopUpModal.Show())" style="cursor: pointer; font-size: 1.25rem;" class="fas fa-user-plus"></i></span>
+                                    </div>
+                                }
                             </div>
                             <div id="chatContainer" class="chat-container">
                                 <ul class="chat-box chatContainerScroll">
