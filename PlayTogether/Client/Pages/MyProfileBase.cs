@@ -94,5 +94,20 @@ namespace PlayTogether.Client.Pages
         {
             NavigationManager.NavigateTo("/manageProfile/myAccount");
         }
+
+        protected void NavigateToEditGamerPlatformsPage()
+        {
+            NavigationManager.NavigateTo("/manageProfile/preferences/gamingPlatforms");
+        }
+
+        protected void NavigateToEditGameGenresPage()
+        {
+            NavigationManager.NavigateTo("/manageProfile/preferences/gameGenres");
+        }
+
+        protected void NavigateToEditGamesPage()
+        {
+            NavigationManager.NavigateTo("/manageProfile/preferences/games");
+        }
     }
 }
