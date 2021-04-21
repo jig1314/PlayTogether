@@ -73,10 +73,35 @@ namespace PlayTogether.Client.ChatClient
                     HandleReadConversation(idUser, conversation);
                 });
 
+                _hubConnection.Closed += async (error) =>
+                {
+                    _started = false;
+                    await Task.Delay(new Random().Next(0, 3) * 1000);
+                    await ConnectWithRetryAsync(_hubConnection);
+                };
+
                 // start the connection
-                await _hubConnection.StartAsync();
+                await ConnectWithRetryAsync(_hubConnection);
 
                 _started = true;
+            }
+        }
+
+        public async Task ConnectWithRetryAsync(HubConnection connection)
+        {
+            // Keep trying to until we can start or the token is canceled.
+            while (true)
+            {
+                try
+                {
+                    await connection.StartAsync();
+                    return;
+                }
+                catch
+                {
+                    // Failed to connect, trying in between 0-3 seconds.
+                    await Task.Delay(new Random().Next(0, 3) * 1000);
+                }
             }
         }
 
