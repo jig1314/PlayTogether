@@ -150,6 +150,39 @@ namespace PlayTogether.Server.Controllers
             }
         }
 
+        [HttpGet("{userName}")]
+        public async Task<ActionResult<UserBasicInfo>> GetUserBasicInformation(string userName)
+        {
+            try
+            {
+                if (!HttpContext.User.Identity.IsAuthenticated)
+                {
+                    return StatusCode(StatusCodes.Status401Unauthorized, "Error retrieving user basic information");
+                }
+
+                var idUser = (await _context.Users.Where(d => d.UserName == userName).FirstOrDefaultAsync()).Id;
+
+                var user = await _context.Users.Where(d => d.UserName == userName)
+                    .Include(user => user.ApplicationUserDetails)
+                    .FirstOrDefaultAsync();
+
+                var userBasicInfo = new UserBasicInfo()
+                {
+                    UserId = user.Id,
+                    FirstName = user.ApplicationUserDetails.FirstName,
+                    LastName = user.ApplicationUserDetails.LastName,
+                    Email = user.Email,
+                    UserName = user.UserName
+                };
+
+                return Ok(userBasicInfo);
+            }
+            catch (Exception)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, "Error retrieving user basic information");
+            }
+        }
+
         [HttpGet("getFriends")]
         public async Task<ActionResult<IEnumerable<UserBasicInfo>>> GetFriends()
         {
