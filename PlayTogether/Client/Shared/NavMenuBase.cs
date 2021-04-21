@@ -1,4 +1,5 @@
 ﻿using BlazorStrap;
+using FluentValidation;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Authorization;
 using PlayTogether.Client.ChatClient;
@@ -9,6 +10,7 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
 namespace PlayTogether.Client.Shared
@@ -205,7 +207,7 @@ namespace PlayTogether.Client.Shared
 
         public void NavigateToChatGroup(string groupName)
         {
-            NavigationManager.NavigateTo($"/chatGroup/{groupName}", true);
+            NavigationManager.NavigateTo($"/chatGroup/{ChatGroupViewModel.GroupName}", true);
         }
 
     }
@@ -215,4 +217,24 @@ public class ChatGroupViewModel
 {
     [Required(AllowEmptyStrings = false, ErrorMessage = "A Group Name is required!")]
     public string GroupName { get; set; }
+}
+
+public class ChatGroupValidator : AbstractValidator<ChatGroupViewModel>
+{
+    public ChatGroupValidator()
+    {
+        CascadeMode = CascadeMode.StopOnFirstFailure;
+
+        RuleFor(x => x.GroupName)
+                .NotEmpty().WithMessage("Please enter name for the chat group.")
+                .Custom((groupName, context) =>
+                {
+                    var hasSymbols = new Regex(@"[<>#+%|-]");
+
+                    if (hasSymbols.IsMatch(groupName) || groupName.Contains("\"") || groupName.Contains(@"\") || groupName.Contains(@"/"))
+                    {
+                        context.AddFailure("Invalid symbol in group name. Please remove and try again!");
+                    }
+                });
+    }
 }

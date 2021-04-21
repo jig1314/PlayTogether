@@ -123,10 +123,10 @@
                                     </BSAlert>
                                 </BSFormGroup>
                             }
-                            <DataAnnotationsValidator />
+                            <BlazorStrap.Extensions.FluentValidation.FluentValidator TValidator="ChatGroupValidator" />
                             <BSFormGroup>
                                 <BSLabel For="@ChatGroupViewModel.GroupName">Group Name</BSLabel>
-                                <BSInput InputType="InputType.Text" @bind-Value="@ChatGroupViewModel.GroupName" />
+                                <BSInput InputType="InputType.Text" @bind-Value="@ChatGroupViewModel.GroupName" ValidateOnChange="true" />
                                 <BSFormFeedback For="@(() => ChatGroupViewModel.GroupName)" />
                             </BSFormGroup>
                         </div>
