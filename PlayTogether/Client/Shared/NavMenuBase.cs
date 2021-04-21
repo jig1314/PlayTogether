@@ -207,7 +207,7 @@ namespace PlayTogether.Client.Shared
 
         public void NavigateToChatGroup(string groupName)
         {
-            NavigationManager.NavigateTo($"/chatGroup/{ChatGroupViewModel.GroupName}", true);
+            NavigationManager.NavigateTo($"/chatGroup/{groupName}", true);
         }
 
     }
