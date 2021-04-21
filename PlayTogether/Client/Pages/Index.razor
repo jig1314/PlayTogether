@@ -1,11 +1,14 @@
 ﻿@page "/"
+@inherits IndexBase
 
 <div class="container pt-3">
 
     <h1>Welcome to Play Together!</h1>
     <p>This site is meant to act as a social connection platform for any who may be looking for people to play games with.</p>
-    <p>If that sounds like something you would be interested in, create an account now and get started!</p>
-
+    @if (!IsAuthenticated)
+    {
+        <p>If that sounds like something you would be interested in, create an account now and get started!</p>
+    }
 
 </div>
 
