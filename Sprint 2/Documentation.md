@@ -24,7 +24,7 @@ Video: https://youtu.be/xjq7E0hKdEA
 ## BDD Test Cases
 A BDD test was developed for Work Item/Test Case 61 which tests the Search For Gamers user story. The Test has been automated, integrated into the CI/CD pipeline and successfully run against each environment.  
 More information at: https://dev.azure.com/SWE6733-Team3/PlayTogether/_workitems/edit/61/  
-More tests will be developed in future iterations,
+More tests will be developed in future iterations.
 
 ## Unit tests
 The development team has developed unit tests centered around the vaidation functionality of the Razor Pages using FluentValidation and its testing functionality.  
