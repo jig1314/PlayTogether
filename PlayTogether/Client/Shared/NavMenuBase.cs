@@ -53,6 +53,7 @@ namespace PlayTogether.Client.Shared
                     {
                         _chatClient.MessageReceived -= MessageReceived;
                         _chatClient.ConversationRead -= ConversationRead;
+                        _chatClient.UpdateGroupNameEvent -= UpdateGroupName;
                     }
 
                     _chatClient = value;
@@ -60,6 +61,7 @@ namespace PlayTogether.Client.Shared
                     {
                         _chatClient.MessageReceived += MessageReceived;
                         _chatClient.ConversationRead += ConversationRead;
+                        _chatClient.UpdateGroupNameEvent += UpdateGroupName;
                     }
 
                     StateHasChanged();
@@ -167,6 +169,22 @@ namespace PlayTogether.Client.Shared
                         convo.HasUnreadMessages = false;
                     }
                 }
+            }
+
+            // Inform blazor the UI needs updating
+            StateHasChanged();
+        }
+
+        private async void UpdateGroupName(object sender, UpdateGroupNameEventArgs e)
+        {
+            if (ChatGroupConversations == null || !ChatGroupConversations.Select(c => c.Id).Contains(e.Conversation))
+            {
+                await RefreshData();
+            }
+            else
+            {
+                var convo = ChatGroupConversations.FirstOrDefault(c => c.Id == e.Conversation);
+                convo.Name = e.GroupName;
             }
 
             // Inform blazor the UI needs updating

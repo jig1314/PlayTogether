@@ -75,6 +75,8 @@ namespace PlayTogether.Client.Pages
 
         public bool RetrievingData { get; set; } = false;
 
+        public bool EditingGroupName { get; set; } = false;
+
         public string ErrorMessage { get; set; }
 
         public BSModal AddGamerPopUpModal { get; set; }
@@ -178,6 +180,20 @@ namespace PlayTogether.Client.Pages
                 await ChatClient.UpdateGroupMembers(Conversation.Id, AddGamerPageForModal.GamersInGroup);
                 AddGamerPopUpModal.Hide();
                 await RefreshData(1000);
+            }
+        }
+
+        protected async Task UpdateGroupNameAsync()
+        {
+            try
+            {
+                EditingGroupName = false;
+                await MessageService.UpdateGroupNameAsync(new ChatGroupDto() { ConversationId = Conversation.Id, GroupName = this.GroupName });
+                await ChatClient.UpdateGroupName(Conversation.Id, this.GroupName);
+            }
+            catch (Exception ex)
+            {
+                ErrorMessage = ex.Message;
             }
         }
     }

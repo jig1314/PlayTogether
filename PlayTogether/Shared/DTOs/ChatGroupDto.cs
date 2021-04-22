@@ -6,6 +6,8 @@ namespace PlayTogether.Shared.DTOs
 {
     public class ChatGroupDto
     {
+        public string ConversationId { get; set; }
+
         public string GroupName { get; set; }
     }
 }

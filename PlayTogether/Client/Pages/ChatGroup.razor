@@ -1,7 +1,14 @@
 ﻿@page "/chatGroup/{groupName}"
 @inherits ChatGroupBase
 
-@if (!RetrievingData && string.IsNullOrWhiteSpace(ErrorMessage))
+@if (!string.IsNullOrWhiteSpace(ErrorMessage))
+{
+    <BSAlert Color="Color.Danger">
+        @ErrorMessage
+    </BSAlert>
+}
+
+@if (!RetrievingData)
 {
     <!-- Content wrapper start -->
     <div class="content-wrapper" @onmousedown="(() => ReadMessages(Conversation.Id))">
@@ -18,7 +25,14 @@
                         <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12">
                             <div class="row selected-user">
                                 <div class="col">
-                                    <span>To: <span class="name">@GroupName</span></span>
+                                    @if (EditingGroupName)
+                                    {
+                                        <span><span><input type="text" class="form-control" style="display:unset; width:unset; margin: 15px 15px 15px 0px;" @bind="@GroupName" @bind:event="oninput" /></span><i  @onclick="@(async () => { if (!string.IsNullOrWhiteSpace(GroupName)) await UpdateGroupNameAsync(); })" style="cursor:pointer;" class="fas fa-check"></i></span>
+                                    }
+                                    else
+                                    {
+                                        <span>To: <span class="name">@GroupName</span><i @onclick="(() => EditingGroupName = !EditingGroupName)" style="margin-left: 5px; cursor:pointer;" class="fas fa-pencil-alt"></i></span>
+                                    }
                                 </div>
                                 @if (Conversation.CreatedByUserId == MyUserId)
                                 {
@@ -76,13 +90,7 @@
     </div>
     <!-- Content wrapper end -->
 }
-else if (!string.IsNullOrWhiteSpace(ErrorMessage))
-{
-    <BSAlert Color="Color.Danger">
-        @ErrorMessage
-    </BSAlert>
-}
-else
+else 
 {
     <div class="loading-bar"></div>
 }

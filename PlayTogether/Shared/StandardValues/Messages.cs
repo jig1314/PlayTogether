@@ -29,6 +29,11 @@ namespace PlayTogether.Shared.StandardValues
         /// <summary>
         /// Name of the Hub method to update users in Group
         /// </summary>
-        public const string UPDATE_CHAT_GROUP = "UpdateUsersToGroup";
+        public const string UPDATE_CHAT_GROUP_USERS = "UpdateUsersToGroup";
+
+        /// <summary>
+        /// Name of the Hub method to update name of Group
+        /// </summary>
+        public const string UPDATE_CHAT_GROUP_NAME = "UpdateGroupName";
     }
 }

@@ -61,5 +61,22 @@ namespace PlayTogether.Client.Services
 
         public async Task<List<MessageDto>> GetMessages(string idUser) =>
             await httpClient.GetFromJsonAsync<List<MessageDto>>($"api/messages/{idUser}");
+
+        public async Task UpdateGroupNameAsync(ChatGroupDto chatGroup)
+        {
+            try
+            {
+                var response = await httpClient.PutAsJsonAsync("api/messages/updateChatGroup", chatGroup);
+                var content = await response.Content.ReadAsStringAsync();
+                if (!response.IsSuccessStatusCode)
+                {
+                    throw new ApplicationException(content);
+                }
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+        }
     }
 }

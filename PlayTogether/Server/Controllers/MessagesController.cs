@@ -291,6 +291,7 @@ namespace PlayTogether.Server.Controllers
                 return StatusCode(StatusCodes.Status500InternalServerError, "Error retrieving conversations");
             }
         }
+
         [HttpPost("createChatGroup")]
         public async Task<ActionResult> PostChatGroup(ChatGroupDto chatGroupDto)
         {
@@ -326,6 +327,36 @@ namespace PlayTogether.Server.Controllers
                 };
 
                 _context.ApplicationUser_Conversations.Add(userConversation);
+                await _context.SaveChangesAsync();
+
+                return StatusCode(StatusCodes.Status202Accepted);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, (ex.InnerException != null) ? ex.InnerException.Message : ex.Message);
+            }
+        }
+
+        [HttpPut("updateChatGroup")]
+        public async Task<ActionResult> PutChatGroup(ChatGroupDto chatGroupDto)
+        {
+            try
+            {
+                if (!HttpContext.User.Identity.IsAuthenticated)
+                {
+                    return StatusCode(StatusCodes.Status401Unauthorized, "You are not authorized to create a chat group!");
+                }
+
+                if (_context.Conversations.Any(c => c.Name == chatGroupDto.GroupName))
+                {
+                    throw new Exception("There already exists a chat group with this name!");
+                }
+
+                var idUser = GetUserId();
+                var existingGroup = await _context.Conversations.SingleOrDefaultAsync(c => c.Id == chatGroupDto.ConversationId);
+
+                existingGroup.Name = chatGroupDto.GroupName;
+                _context.Entry(existingGroup).State = EntityState.Modified;
                 await _context.SaveChangesAsync();
 
                 return StatusCode(StatusCodes.Status202Accepted);

@@ -139,6 +139,11 @@ namespace PlayTogether.Server.Hubs
             }
         }
 
+        public async Task UpdateGroupName(string conversation, string groupName)
+        {
+            await Clients.Group(conversation).SendAsync(Messages.UPDATE_CHAT_GROUP_NAME, conversation, groupName);
+        }
+
         public async Task SendDirectMessage(string toUserId, string message)
         {
             var idUser = Context.UserIdentifier;

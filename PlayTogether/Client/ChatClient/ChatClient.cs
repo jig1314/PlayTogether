@@ -73,6 +73,11 @@ namespace PlayTogether.Client.ChatClient
                     HandleReadConversation(idUser, conversation);
                 });
 
+                _hubConnection.On<string, string>(Messages.UPDATE_CHAT_GROUP_NAME, (conversation, groupName) =>
+                {
+                    HandleUpdateGroupName(conversation, groupName);
+                });
+
                 _hubConnection.Closed += async (error) =>
                 {
                     _started = false;
@@ -130,6 +135,13 @@ namespace PlayTogether.Client.ChatClient
             ConversationRead?.Invoke(this, new ConversationReadEventArgs(idUser, conversation));
         }
 
+        private void HandleUpdateGroupName(string conversation, string groupName)
+        {
+            // raise an event to subscribers
+            UpdateGroupNameEvent?.Invoke(this, new UpdateGroupNameEventArgs(conversation, groupName));
+        }
+
+
         /// <summary>
         /// Event raised when this client receives a message
         /// </summary>
@@ -146,6 +158,8 @@ namespace PlayTogether.Client.ChatClient
         /// </remarks>
         public event ConversationReadEventHandler ConversationRead;
 
+        public event UpdateGroupNameEventHandler UpdateGroupNameEvent;
+
         public async Task UpdateGroupMembers(string conversation, List<string> gamersInGroup)
         {
             // check we are connected
@@ -153,7 +167,17 @@ namespace PlayTogether.Client.ChatClient
                 await StartAsync();
 
             // send the message
-            await _hubConnection.SendAsync(Messages.UPDATE_CHAT_GROUP, conversation, gamersInGroup);
+            await _hubConnection.SendAsync(Messages.UPDATE_CHAT_GROUP_USERS, conversation, gamersInGroup);
+        }
+
+        public async Task UpdateGroupName(string conversation, string groupName)
+        {
+            // check we are connected
+            if (!_started)
+                await StartAsync();
+
+            // send the message
+            await _hubConnection.SendAsync(Messages.UPDATE_CHAT_GROUP_NAME, conversation, groupName);
         }
 
         /// <summary>
@@ -291,6 +315,29 @@ namespace PlayTogether.Client.ChatClient
         /// <summary>
         /// Id of the conversation the message was read in
         /// </summary>
+        public string Conversation { get; set; }
+    }
+
+    /// <summary>
+    /// Delegate for the message handler
+    /// </summary>
+    /// <param name="sender">the SignalRclient instance</param>
+    /// <param name="e">Event args</param>
+    public delegate void UpdateGroupNameEventHandler(object sender, UpdateGroupNameEventArgs e);
+
+    /// <summary>
+    /// Message received argument class
+    /// </summary>
+    public class UpdateGroupNameEventArgs : EventArgs
+    {
+        public UpdateGroupNameEventArgs(string conversation, string groupName)
+        {
+            Conversation = conversation;
+            GroupName = groupName;
+        }
+
+        public string GroupName { get; set; }
+
         public string Conversation { get; set; }
     }
 }
