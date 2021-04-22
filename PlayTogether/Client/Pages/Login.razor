@@ -12,7 +12,7 @@
                         @if (!string.IsNullOrWhiteSpace(ErrorMessage))
                         {
                             <BSFormGroup>
-                                <BSAlert Color="Color.Danger">
+                                <BSAlert id="loginErrorAlert" Color="Color.Danger">
                                     @ErrorMessage
                                 </BSAlert>
                             </BSFormGroup>
@@ -23,12 +23,12 @@
                         <DataAnnotationsValidator />
                         <BSFormGroup>
                             <BSLabel For="@LoginViewModel.UserName">Username</BSLabel>
-                            <BSInput InputType="InputType.Text" @bind-Value="@LoginViewModel.UserName" />
+                            <BSInput id="userNameText" InputType="InputType.Text" @bind-Value="@LoginViewModel.UserName" />
                             <BSFormFeedback For="@(() => LoginViewModel.UserName)" />
                         </BSFormGroup>
                         <BSFormGroup>
                             <BSLabel For="@LoginViewModel.Password">Password</BSLabel>
-                            <BSInput InputType="InputType.Password" @bind-Value="@LoginViewModel.Password" />
+                            <BSInput id="passwordText" InputType="InputType.Password" @bind-Value="@LoginViewModel.Password" />
                             <BSFormFeedback For="@(() => LoginViewModel.Password)" />
                         </BSFormGroup>
                         <BSFormGroup>
@@ -42,7 +42,7 @@
                                 </BSFormGroup>
                             </BSCol>
                             <BSCol Class="col-xs-12 col-sm-6">
-                                <BSButton ButtonType="ButtonType.Submit" Class="btn btn-info btn-block btn-primary">Log in</BSButton>
+                                <BSButton id="loginSubmitButton" ButtonType="ButtonType.Submit" Class="btn btn-info btn-block btn-primary">Log in</BSButton>
                             </BSCol>
                         </BSRow>
                         <hr />

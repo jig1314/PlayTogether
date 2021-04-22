@@ -15,7 +15,7 @@ https://dev.azure.com/SWE6733-Team3/PlayTogether/_dashboards/dashboard/b8e2ecb6-
 
 ## Daily Scrum Reports
 Our team recorded our reports from our scrum meetings in an excel workbook. Each worksheet represents each meeting.  
-Link to scrum reports for this sprint: https://dev.azure.com/SWE6733-Team3/PlayTogether/_git/PlayTogether?path=%2FSprint2%2FScrum%20Reports%20(Sprint%202).xlsx&version=GBsprint2Documentation
+Link to scrum reports for this sprint: https://dev.azure.com/SWE6733-Team3/PlayTogether/_git/PlayTogether?path=%2FSprint%202%2FScrum%20Reports%20(Sprint%202).xlsx
 
 ## Sprint 2 Mob Programming Session
 The developers worked together to develop the initial BDD test for searching for gamers.  
@@ -24,7 +24,7 @@ Video: https://youtu.be/xjq7E0hKdEA
 ## BDD Test Cases
 A BDD test was developed for Work Item/Test Case 61 which tests the Search For Gamers user story. The Test has been automated, integrated into the CI/CD pipeline and successfully run against each environment.  
 More information at: https://dev.azure.com/SWE6733-Team3/PlayTogether/_workitems/edit/61/  
-More tests will be developed in future iterations,
+More tests will be developed in future iterations.
 
 ## Unit tests
 The development team has developed unit tests centered around the vaidation functionality of the Razor Pages using FluentValidation and its testing functionality.  
@@ -33,10 +33,10 @@ See example here: https://dev.azure.com/SWE6733-Team3/PlayTogether/_build/result
 
 ## Sprint Review/Retrospective
 Our team recorded our sprint review in a Word document.  
-Here is the link to the document: https://dev.azure.com/SWE6733-Team3/PlayTogether/_git/PlayTogether?path=%2FSprint2%2FSprint%202%20Review.docx&version=GBsprint2Documentation 
+Here is the link to the document: https://dev.azure.com/SWE6733-Team3/PlayTogether/_git/PlayTogether?path=%2FSprint%202%2FSprint%202%20Review.docx
   
 Our team recorded our retrospective of Sprint 2 reports in an excel workbook.  
-Link to scrum reports for this sprint: https://dev.azure.com/SWE6733-Team3/PlayTogether/_git/PlayTogether?path=%2FSprint2%2FSprint%202%20Retrospective.xlsx&version=GBsprint2Documentation
+Link to retrospective for this sprint: https://dev.azure.com/SWE6733-Team3/PlayTogether/_git/PlayTogether?path=%2FSprint%202%2FSprint%202%20Retrospective.xlsx
 
 ## CI/CD Information
 Our team's CI/CD process is managed using Azure pipelines and releases housed in our Azure DevOps Project. Unit Tests are run during every build and BDD Tests are run during every release.

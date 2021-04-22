@@ -1,0 +1,43 @@
+﻿@inherits DeleteAccountBase
+@using BlazorStrap.Extensions.FluentValidation
+@using PlayTogether.Client.ViewModels
+
+@if (!SubmittingData)
+{
+    <BSRow>
+        <BSCol Class="col-md-6">
+            <BSForm Model="@DeleteAccountViewModel" OnValidSubmit="DeleteAccount">
+                @if (!string.IsNullOrWhiteSpace(ErrorMessage))
+                {
+                    <BSFormGroup>
+                        <BSAlert Color="Color.Danger">
+                            @ErrorMessage
+                        </BSAlert>
+                    </BSFormGroup>
+                }
+                <BSFormGroup>
+                    <h2>Delete Account</h2>
+                    <hr />
+                </BSFormGroup>
+                <FluentValidator TValidator="DeleteAccountValidator" />
+                <BSFormGroup>
+                    <BSAlert Color="Color.Warning">
+                        Entering your password will permanently delete your account, and this cannot be recovered.
+                    </BSAlert>
+                </BSFormGroup>
+                <BSFormGroup>
+                    <BSLabel For="@DeleteAccountViewModel.Password">Password</BSLabel>
+                    <BSInput id="deleteAccountPasswordText" InputType="InputType.Password" @bind-Value="@DeleteAccountViewModel.Password"/>
+                    <BSFormFeedback For="@(() => DeleteAccountViewModel.Password)" />
+                </BSFormGroup>
+                <BSFormGroup>
+                    <BSButton id="deleteAccountSubmitButton" ButtonType="ButtonType.Submit" Color="Color.Danger" Class="btn btn-info btn-block btn-primary">Permanently Delete Account</BSButton>
+                </BSFormGroup>
+            </BSForm>
+        </BSCol>
+    </BSRow>
+}
+else
+{
+    <div class="loading-bar"></div>
+}

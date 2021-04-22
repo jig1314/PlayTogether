@@ -96,13 +96,19 @@ namespace PlayTogether.Server.Controllers
         }
 
         [HttpGet("gameSkillLevels")]
-        public async Task<ActionResult<IEnumerable<GameSkillLevel>>> GetGameSkillLevels()
+        public async Task<ActionResult<IEnumerable<GameSkillLevelDto>>> GetGameSkillLevels()
         {
             try
             {
                 var gameSkillLevels = await _context.GameSkillLevels.ToListAsync();
+                var gameSkillLevelDtos = gameSkillLevels.Select(g => new GameSkillLevelDto()
+                {
+                    Id = g.Id,
+                    Name = g.Name,
+                    Description = g.Description
+                });
 
-                return Ok(gameSkillLevels);
+                return Ok(gameSkillLevelDtos);
             }
             catch (Exception)
             {

@@ -13,7 +13,6 @@ namespace PlayTogether.Client.Pages
 {
     public class UserProfileBase : ComponentBase
     {
-
         [CascadingParameter]
         public Task<AuthenticationState> AuthenticationStateTask { get; set; }
 
@@ -46,11 +45,17 @@ namespace PlayTogether.Client.Pages
 
         public List<string> ActiveSentFriendRequestIds { get; set; }
 
+        public List<FriendRequestDto> ActiveReceivedFriendRequests { get; set; }
+
         public List<string> ActiveReceivedFriendRequestIds { get; set; }
 
         public string IdUser { get; set; }
 
-        public bool SubmittingData { get; set; } = false;
+        public BSModal UserFriendPopUpModal { get; set; }
+
+        public UserFriendPopUp UserFriendPopUp { get; set; }
+
+        public bool RetrievingData { get; set; } = false;
 
         protected override async Task OnInitializedAsync()
         {
@@ -62,20 +67,27 @@ namespace PlayTogether.Client.Pages
             }
             else
             {
-                SubmittingData = true;
-                IdUser = AuthenticationState.User.FindFirst("sub").Value;
-
-                UserProfileDto = await UserService.GetUserProfileInformation(UserName);
-
-                FriendUserIds = await UserService.GetFriendUserIds();
-                var activeFriendRequests = await UserService.GetActiveFriendRequests();
-
-                ActiveSentFriendRequests = activeFriendRequests.Where(request => request.FromUserId == IdUser).ToList();
-                ActiveSentFriendRequestIds = ActiveSentFriendRequests.Select(request => request.ToUserId).ToList();
-                ActiveReceivedFriendRequestIds = activeFriendRequests.Where(request => request.ToUserId == IdUser).Select(request => request.FromUserId).ToList();
-
-                SubmittingData = false;
+                await RefreshData();
             }
+        }
+
+        private async Task RefreshData()
+        {
+            RetrievingData = true;
+            IdUser = AuthenticationState.User.FindFirst("sub").Value;
+
+            UserProfileDto = await UserService.GetUserProfileInformation(UserName);
+
+            FriendUserIds = (await UserService.GetFriends()).Select(user => user.UserId).ToList();
+            var activeFriendRequests = await UserService.GetActiveFriendRequests();
+
+            ActiveSentFriendRequests = activeFriendRequests.Where(request => request.FromUserId == IdUser).ToList();
+            ActiveSentFriendRequestIds = ActiveSentFriendRequests.Select(request => request.ToUserId).ToList();
+
+            ActiveReceivedFriendRequests = activeFriendRequests.Where(request => request.ToUserId == IdUser).ToList();
+            ActiveReceivedFriendRequestIds = ActiveReceivedFriendRequests.Select(request => request.FromUserId).ToList();
+
+            RetrievingData = false;
         }
 
         protected async Task SendFriendRequest(string toUserId)
@@ -101,5 +113,52 @@ namespace PlayTogether.Client.Pages
 
             await UserService.CancelFriendRequest(cancelledFriendRequest);
         }
+
+        protected async Task AcceptFriendRequest(string fromUserId)
+        {
+            var acceptedFriendRequest = ActiveReceivedFriendRequests.FirstOrDefault(request => request.FromUserId == fromUserId);
+            FriendUserIds.Add(fromUserId);
+
+            await UserService.AcceptFriendRequest(acceptedFriendRequest);
+        }
+
+        protected async Task DeclineFriendRequest(string fromUserId)
+        {
+            var declinedFriendRequest = ActiveReceivedFriendRequests.FirstOrDefault(request => request.FromUserId == fromUserId);
+
+            ActiveReceivedFriendRequestIds.Remove(fromUserId);
+            ActiveReceivedFriendRequests.Remove(declinedFriendRequest);
+
+            await UserService.DeclineFriendRequest(declinedFriendRequest);
+        }
+
+        protected async Task UnfriendUser(string idUser)
+        {
+            FriendUserIds.Remove(idUser);
+
+            await UserService.UnfriendUser(idUser);
+        }
+
+        protected async Task OnHideModal()
+        {
+            UserProfileDto = null;
+            ActiveReceivedFriendRequests = null;
+
+            RetrievingData = true;
+            await Task.Delay(2000);
+            await RefreshData();
+        }
+
+        protected async Task RefreshDataModal()
+        {
+            if (UserFriendPopUp != null)
+                await UserFriendPopUp.RefreshData(UserName);
+        }
+
+        protected void GoToChatPage(string userName)
+        {
+            NavigationManager.NavigateTo($"/chat/{userName}");
+        }
+
     }
 }

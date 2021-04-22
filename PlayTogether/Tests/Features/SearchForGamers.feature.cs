@@ -103,7 +103,7 @@ this.ScenarioInitialize(scenarioInfo);
             else
             {
                 this.ScenarioStart();
-                TechTalk.SpecFlow.Table table2 = new TechTalk.SpecFlow.Table(new string[] {
+                TechTalk.SpecFlow.Table table5 = new TechTalk.SpecFlow.Table(new string[] {
                             "FirstName",
                             "LastName",
                             "Email",
@@ -113,7 +113,7 @@ this.ScenarioInitialize(scenarioInfo);
                             "Gender",
                             "CountryofResidence",
                             "DateofBirth"});
-                table2.AddRow(new string[] {
+                table5.AddRow(new string[] {
                             "Test",
                             "Name",
                             "testing@gmail.com",
@@ -124,7 +124,7 @@ this.ScenarioInitialize(scenarioInfo);
                             "United States",
                             "01/01/2000"});
 #line 6
- testRunner.Given("I have created a profile", ((string)(null)), table2, "Given ");
+ testRunner.Given("I have created a profile", ((string)(null)), table5, "Given ");
 #line hidden
 #line 9
  testRunner.And("I have logged in", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
@@ -132,12 +132,12 @@ this.ScenarioInitialize(scenarioInfo);
 #line 10
  testRunner.When("I am on the gamer search page", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
 #line hidden
-                TechTalk.SpecFlow.Table table3 = new TechTalk.SpecFlow.Table(new string[] {
+                TechTalk.SpecFlow.Table table6 = new TechTalk.SpecFlow.Table(new string[] {
                             "SearchCriteria"});
-                table3.AddRow(new string[] {
+                table6.AddRow(new string[] {
                             "gmail"});
 #line 11
- testRunner.Then("I can filter for gamers by information based on their profile", ((string)(null)), table3, "Then ");
+ testRunner.Then("I can filter for gamers by information based on their profile", ((string)(null)), table6, "Then ");
 #line hidden
 #line 14
  testRunner.And("I will receive feedback", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");

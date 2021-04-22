@@ -106,7 +106,7 @@
 
                                 <div class="text-center card-box">
                                     <div class="member-card pt-2 pb-2">
-                                        <div class="thumb-lg member-thumb mx-auto"><img src="alt-image.png" class="rounded-circle img-thumbnail"></div>
+                                        <div class="thumb-lg member-thumb mx-auto"><img src="user-icon-256.png" class="rounded-circle img-thumbnail"></div>
                                         <div class="">
                                             <h4><a href="profile/@gamer.UserName">@gamer.FirstName @gamer.LastName</a></h4>
                                             <p class="text-muted" style="margin-bottom: unset;">@gamer.UserName</p>
@@ -118,12 +118,13 @@
                                             else if (ActiveSentFriendRequestIds.Contains(gamer.UserId))
                                             {
                                                 <BSButton ButtonType="ButtonType.Button" IsDisabled="true" Class="btn btn-primary mt-3 btn-rounded waves-effect w-md waves-light">Friend Request Sent <i class="fas fa-check"></i></BSButton>
-                                                <BSButton ButtonType="ButtonType.Button" Color="Color.Link" OnClick="@(() => CancelFriendRequest(gamer.UserId))">Cancel Friend Request</BSButton>
+                                                <BSButton ButtonType="ButtonType.Button" OnClick="@(() => CancelFriendRequest(gamer.UserId))"  Class="btn mt-3 btn-rounded waves-effect w-md waves-light" Color="Color.Secondary">Cancel Friend Request <i class="fas fa-times"></i></BSButton>
 
                                             }
                                             else if (ActiveReceivedFriendRequestIds.Contains(gamer.UserId))
                                             {
-                                                <BSButton ButtonType="ButtonType.Button" Color="Color.Light" IsDisabled="true" Class="btn mt-3 btn-rounded">Accept/Reject Friend Request - Coming Soon <i class="far fa-clock"></i></BSButton>
+                                                <BSButton ButtonType="ButtonType.Button" OnClick="@(() => AcceptFriendRequest(gamer.UserId))" Class="btn btn-primary mt-3 btn-rounded waves-effect w-md waves-light">Accept Friend Request <i class="fas fa-check"></i></BSButton>
+                                                <BSButton ButtonType="ButtonType.Button" OnClick="@(() => DeclineFriendRequest(gamer.UserId))"  Class="btn mt-3 btn-rounded waves-effect w-md waves-light" Color="Color.Secondary">Decline Friend Request <i class="fas fa-times"></i></BSButton>
                                             }
                                             else
                                             {

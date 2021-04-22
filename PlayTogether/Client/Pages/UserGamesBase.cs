@@ -29,7 +29,7 @@ namespace PlayTogether.Client.Pages
 
         public List<UserGameDto> Games { get; set; }
 
-        public List<GameSkillLevel> GameSkillLevels { get; set; }
+        public List<GameSkillLevelDto> GameSkillLevels { get; set; }
 
         public BSModal GameSearchModal { get; set; }
 

@@ -1,0 +1,183 @@
+﻿@inherits AddGamerPopUpBase
+@using PlayTogether.Client.ViewModels
+@using PlayTogether.Client.CustomControls;
+
+@if (GamingPlatforms != null && GameGenres != null && Games != null)
+{
+    <BSContainer>
+        <BSRow>
+            <BSCol>
+                <BSRow>
+                    <BSCol style="width: 100%; padding-right: unset;">
+                        <input id="gamerSearchBar" type="search" class="form-control" @bind="@GamerSearchViewModel.SearchCriteria" @bind:event="oninput" @onchange="OnSearchCriteriaChanged" placeholder="Enter Gamer Search Criteria..." />
+                    </BSCol>
+                    <BSCol style="max-width: 50px; padding: unset; margin-right: 15px;">
+                        <span style="text-align: right; display: block; width: 100%;">
+                            <BSButton ButtonType="ButtonType.Button" Color="Color.Light" Class="btn-rounded" OnClick="(() => { IsFilterOpen = !IsFilterOpen; StateHasChanged(); })"><i class="fas fa-filter"></i></BSButton>
+                        </span>
+                    </BSCol>
+                </BSRow>
+                <BSCollapse IsOpen="@IsFilterOpen">
+                    <div class="accordion" style="margin-top: 15px;">
+                        <BSCollapseItem>
+                            <BSCard CardType="CardType.Card">
+                                <BSCard CardType="CardType.Body" style="padding: 0.75rem 1.25rem;">
+                                    <BSCollapseToggle style="width: 100%; border: none; outline: none; box-shadow: none;">
+                                        <BSRow>
+                                            <BSCol style="width: 100%;"><span style="text-align: left; display: block; width: 100%;">Favorite Gaming Platforms</span></BSCol>
+                                            <BSCol style="max-width: 10px; padding: unset; margin-right: 15px;">
+                                                <span style="text-align: right; display: block; width: 100%;"><i class="fas @(context ?  "fa-caret-up" : "fa-caret-down") "></i></span>
+                                            </BSCol>
+                                        </BSRow>
+                                    </BSCollapseToggle>
+                                </BSCard>
+                                <BSCollapse>
+                                    <BSCard CardType="CardType.Body" style="padding: 0rem 1.25rem 0.75rem;">
+                                        <BSCol Class="col-12">
+                                            <BSRow class="col-12 row">
+                                                <CheckedListBox Data="@GamingPlatforms.OrderBy(x => x.Name)" TextField="@((item) => item.Name)" ValueField="@((item) => item.Id)" SelectedValues="@FilterGamingPlatformIds" />
+                                            </BSRow>
+                                        </BSCol>
+                                    </BSCard>
+                                </BSCollapse>
+                            </BSCard>
+                        </BSCollapseItem>
+                        <BSCollapseItem>
+                            <BSCard CardType="CardType.Card">
+                                <BSCard CardType="CardType.Body" style="padding: 0.75rem 1.25rem;">
+                                    <BSCollapseToggle style="width: 100%; border: none; outline: none; box-shadow: none;">
+                                        <BSRow>
+                                            <BSCol style="width: 100%;"><span style="text-align: left; display: block; width: 100%;">Favorite Game Genres</span></BSCol>
+                                            <BSCol style="max-width: 10px; padding: unset; margin-right: 15px;">
+                                                <span style="text-align: right; display: block; width: 100%;"><i class="fas @(context ?  "fa-caret-up" : "fa-caret-down") "></i></span>
+                                            </BSCol>
+                                        </BSRow>
+                                    </BSCollapseToggle>
+                                </BSCard>
+                                <BSCollapse>
+                                    <BSCard CardType="CardType.Body" style="padding: 0rem 1.25rem 0.75rem;">
+                                        <BSCol Class="col-12">
+                                            <BSRow class="col-12 row">
+                                                <CheckedListBox Data="@GameGenres.OrderBy(x => x.Name)" TextField="@((item) => item.Name)" ValueField="@((item) => item.Id)" SelectedValues="@FilterGameGenreIds" />
+                                            </BSRow>
+                                        </BSCol>
+                                    </BSCard>
+                                </BSCollapse>
+                            </BSCard>
+                        </BSCollapseItem>
+                        <BSCollapseItem>
+                            <BSCard CardType="CardType.Card">
+                                <BSCard CardType="CardType.Body" style="padding: 0.75rem 1.25rem;">
+                                    <BSCollapseToggle style="width: 100%; border: none; outline: none; box-shadow: none;">
+                                        <BSRow>
+                                            <BSCol style="width: 100%;"><span style="text-align: left; display: block; width: 100%;">Favorite Games</span></BSCol>
+                                            <BSCol style="max-width: 10px; padding: unset; margin-right: 15px;">
+                                                <span style="text-align: right; display: block; width: 100%;"><i class="fas @(context ?  "fa-caret-up" : "fa-caret-down") "></i></span>
+                                            </BSCol>
+                                        </BSRow>
+                                    </BSCollapseToggle>
+                                </BSCard>
+                                <BSCollapse>
+                                    <BSCard CardType="CardType.Body" style="padding: 0rem 1.25rem 0.75rem;">
+                                        <BSCol Class="col-12">
+                                            <BSRow class="col-12 row">
+                                                <CheckedListBox Data="@Games.OrderBy(x => x.Name)" TextField="@((item) => item.Name)" ValueField="@((item) => item.Id)" SelectedValues="@FilterGameIds" />
+                                            </BSRow>
+                                        </BSCol>
+                                    </BSCard>
+                                </BSCollapse>
+                            </BSCard>
+                        </BSCollapseItem>
+                    </div>
+                    <span style="text-align: right; display: block; width: 100%;">
+                        <BSButton ButtonType="ButtonType.Button" Color="Color.Light" Class="btn btn-secondary mt-3 btn-rounded waves-effect w-md waves-light" style="margin-right: 5px;" OnClick="@(() =>  ResetFilter())"><i class="fas fa-redo" style="margin-right: 5px;"></i>Reset Filter(s)</BSButton>
+                        <BSButton ButtonType="ButtonType.Button" Class="btn btn-primary mt-3 btn-rounded waves-effect w-md waves-light" OnClick="@(() =>  ApplyFilter())">Apply Filter(s)</BSButton>
+                    </span>
+                </BSCollapse>
+                <hr />
+                <BSRow>
+                    @if (Gamers?.Count > 0 && !SubmittingData)
+                    {
+                        @foreach (var gamer in Gamers.OrderBy(gamer => gamer.UserName))
+                        {
+                            <BSCol style="padding-left: 10px; padding-right: 10px; margin-bottom: 15px; min-width: 350px; max-width: 50%;">
+                                <BSMedia MediaType="MediaType.Media" style="margin-bottom: 15px;">
+                                    <BSMedia MediaType="MediaType.Image" VerticalAlignment="VerticalAlignment.Center" src="user-icon-256.png" style="width: 90px; height: 90px;" />
+                                    <div class="media-body" style="width: 100%;">
+                                        <h5 style="width: 100%; margin-top: 15px;">@gamer.FirstName @gamer.LastName</h5>
+                                        <p style="margin-bottom: 5px;" class="form-text text-muted">@gamer.UserName</p>
+                                        <BSFormGroup IsCheck="true">
+                                            @if (Conversation.CreatedByUserId == IdUser)
+                                            {
+                                                @if (GamersInGroup.Contains(gamer.UserId))
+                                                {
+                                                    <BSBasicInput InputType="InputType.Checkbox" Value="true" ValueChanged="@((bool v) => CheckBoxValueChanged(v, gamer.UserId))" />
+                                                    <BSLabel Color="Color.Danger">Remove gamer from group chat</BSLabel>
+                                                }
+                                                else
+                                                {
+                                                    <BSBasicInput InputType="InputType.Checkbox" Value="false" ValueChanged="@((bool v) => CheckBoxValueChanged(v, gamer.UserId))" />
+                                                    <BSLabel>Add gamer to group chat</BSLabel>
+                                                }
+                                            }
+                                            else
+                                            {
+                                                @if (GamersInGroup.Contains(gamer.UserId))
+                                                {
+                                                    <BSBasicInput InputType="InputType.Checkbox" IsDisabled="true" Value="true" />
+                                                    <BSLabel>Gamer is already in the group chat</BSLabel>
+                                                }
+                                                else
+                                                {
+                                                    <BSBasicInput InputType="InputType.Checkbox" IsDisabled="true"  Value="false" />
+                                                    <BSLabel>Gamer is not in the group chat</BSLabel>
+                                                }
+                                            }
+                                        </BSFormGroup>
+                                    </div>
+                                </BSMedia>
+                            </BSCol>
+                        }
+                    }
+                    else if (Gamers?.Count == 0 && !SubmittingData)
+                    {
+                        <p id="noResultsNotice" style="margin-left: 15px;">No results found.</p>
+                    }
+                    else if (SubmittingData)
+                    {
+                        <div style="position: relative; flex: none;" class="loading-bar"></div>
+                    }
+                </BSRow>
+            </BSCol>
+        </BSRow>
+    </BSContainer>
+}
+
+<style>
+
+    .card-box {
+        padding: 20px;
+        border: 1px solid #dee2e6;
+        border-radius: 3px;
+        margin-bottom: 30px;
+        background-color: #fff;
+    }
+
+    .thumb-lg {
+        height: 88px;
+        width: 88px;
+    }
+
+    .img-thumbnail {
+        padding: .25rem;
+        background-color: #fff;
+        border: 1px solid #dee2e6;
+        border-radius: .25rem;
+        max-width: 100%;
+        height: auto;
+    }
+
+    .btn-rounded {
+        border-radius: 2em;
+    }
+</style>

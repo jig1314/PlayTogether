@@ -27,11 +27,17 @@ namespace PlayTogether.Client.Services
         Task AddUserGame(UserGameDto game);
         Task RemoveUserGame(long apiId);
         Task UpdateUserGameSkillLevel(UserGameDto game);
-        Task<List<GamerSearchResult>> SearchForGamers(GamerSearchDto gamerSearchDto);
+        Task<List<UserBasicInfo>> SearchForGamers(GamerSearchDto gamerSearchDto);
+        Task<UserBasicInfo> GetUserBasicInformation(string userName);
         Task<UserProfileDto> GetUserProfileInformation(string userName);
-        Task<List<string>> GetFriendUserIds();
+        Task<List<UserBasicInfo>> GetFriends();
         Task<List<FriendRequestDto>> GetActiveFriendRequests();
         Task SendFriendRequest(FriendRequestDto friendRequest);
         Task CancelFriendRequest(FriendRequestDto cancelledFriendRequest);
+        Task DeclineFriendRequest(FriendRequestDto declinedFriendRequest);
+        Task AcceptFriendRequest(FriendRequestDto acceptedFriendRequest);
+        Task<List<UserBasicInfo>> GetUsersFriends(string userName);
+        Task UnfriendUser(string idUser);
+        Task DeleteAccount(DeleteAccountDto deleteAccountDto);
     }
 }

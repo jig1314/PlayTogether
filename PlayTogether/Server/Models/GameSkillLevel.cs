@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Text;
 
-namespace PlayTogether.Shared.Models
+namespace PlayTogether.Server.Models
 {
     public class GameSkillLevel
     {
@@ -15,5 +15,7 @@ namespace PlayTogether.Shared.Models
 
         [Required]
         public string Description { get; set; }
+
+        public List<ApplicationUser_Game> UserGames { get; set; }
     }
 }

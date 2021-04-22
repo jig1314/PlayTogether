@@ -106,18 +106,21 @@ namespace PlayTogether.Client.Services
             response.EnsureSuccessStatusCode();
         }
 
-        public async Task<List<GamerSearchResult>> SearchForGamers(GamerSearchDto gamerSearchDto)
+        public async Task<List<UserBasicInfo>> SearchForGamers(GamerSearchDto gamerSearchDto)
         {
             var response = await httpClient.PutAsJsonAsync("api/user/search", gamerSearchDto);
             response.EnsureSuccessStatusCode();
-            return await response.Content.ReadFromJsonAsync<List<GamerSearchResult>>();
+            return await response.Content.ReadFromJsonAsync<List<UserBasicInfo>>();
         }
 
         public async Task<UserProfileDto> GetUserProfileInformation(string userName) =>
             await httpClient.GetFromJsonAsync<UserProfileDto>($"api/user/profile/{userName}");
 
-        public async Task<List<string>> GetFriendUserIds() =>
-            await httpClient.GetFromJsonAsync<List<string>>($"api/user/friendUserIds");
+        public async Task<UserBasicInfo> GetUserBasicInformation(string userName) =>
+            await httpClient.GetFromJsonAsync<UserBasicInfo>($"api/user/{userName}");
+
+        public async Task<List<UserBasicInfo>> GetFriends() =>
+            await httpClient.GetFromJsonAsync<List<UserBasicInfo>>($"api/user/getFriends");
 
         public async Task<List<FriendRequestDto>> GetActiveFriendRequests() =>
             await httpClient.GetFromJsonAsync<List<FriendRequestDto>>($"api/user/activeFriendRequests");
@@ -132,6 +135,44 @@ namespace PlayTogether.Client.Services
         {
             var response = await httpClient.PutAsJsonAsync("api/user/cancelFriendRequest", cancelledFriendRequest);
             response.EnsureSuccessStatusCode();
+        }
+
+        public async Task DeclineFriendRequest(FriendRequestDto declinedFriendRequest)
+        {
+            var response = await httpClient.PutAsJsonAsync("api/user/declineFriendRequest", declinedFriendRequest);
+            response.EnsureSuccessStatusCode();
+        }
+
+        public async Task AcceptFriendRequest(FriendRequestDto acceptedFriendRequest)
+        {
+            var response = await httpClient.PutAsJsonAsync("api/user/acceptFriendRequest", acceptedFriendRequest);
+            response.EnsureSuccessStatusCode();
+        }
+
+        public async Task<List<UserBasicInfo>> GetUsersFriends(string userName) =>
+            await httpClient.GetFromJsonAsync<List<UserBasicInfo>>($"api/user/getFriends/{userName}");
+
+        public async Task UnfriendUser(string idUser)
+        {
+            var response = await httpClient.DeleteAsync($"api/user/unfriendUser/{idUser}");
+            response.EnsureSuccessStatusCode();
+        }
+
+        public async Task DeleteAccount(DeleteAccountDto deleteAccountDto)
+        {
+            try
+            {
+                var response = await httpClient.PutAsJsonAsync("api/user/deleteAccount", deleteAccountDto);
+                var content = await response.Content.ReadAsStringAsync();
+                if (!response.IsSuccessStatusCode)
+                {
+                    throw new ApplicationException(content);
+                }
+            }
+            catch (Exception)
+            {
+                throw;
+            }
         }
     }
 }
