@@ -21,6 +21,6 @@ namespace PlayTogether.Shared.DTOs
 
         public int? GameSkillLevelId { get; set; }
 
-        public GameSkillLevel GameSkillLevel { get; set; }
+        public GameSkillLevelDto GameSkillLevel { get; set; }
     }
 }

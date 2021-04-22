@@ -138,7 +138,13 @@ namespace PlayTogether.Server.Controllers
                         ReleaseDate = mapping.Game.ReleaseDate,
                         ImageUrl = mapping.Game.ImageUrl,
                         GameSkillLevelId = mapping.GameSkillLevelId,
-                        GameSkillLevel = mapping.GameSkillLevel
+                        GameSkillLevel = !mapping.GameSkillLevelId.HasValue ? null : 
+                        new GameSkillLevelDto() 
+                        { 
+                            Id = mapping.GameSkillLevel.Id, 
+                            Name = mapping.GameSkillLevel.Name, 
+                            Description = mapping.GameSkillLevel.Description 
+                        }
                     }).ToList()
                 };
 

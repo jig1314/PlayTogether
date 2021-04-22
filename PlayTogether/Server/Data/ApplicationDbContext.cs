@@ -174,10 +174,9 @@ namespace PlayTogether.Server.Data
 
             modelBuilder.Entity<ApplicationUser_Game>()
                 .HasOne(mapping => mapping.GameSkillLevel)
-                .WithOne()
-                .HasForeignKey<ApplicationUser_Game>(mapping => mapping.GameSkillLevelId)
-                .HasConstraintName("ForeignKey_User_Game_GameSkillLevelId")
-                .OnDelete(DeleteBehavior.NoAction);
+                .WithMany(level => level.UserGames)
+                .HasForeignKey(mapping => mapping.GameSkillLevelId)
+                .HasConstraintName("ForeignKey_User_Game_GameSkillLevelId");
 
             modelBuilder.Entity<FriendRequest>()
                 .HasOne(request => request.FromUser)
