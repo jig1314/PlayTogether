@@ -215,7 +215,6 @@ namespace PlayTogether.Client.Shared
 
 public class ChatGroupViewModel
 {
-    [Required(AllowEmptyStrings = false, ErrorMessage = "A Group Name is required!")]
     public string GroupName { get; set; }
 }
 
@@ -229,9 +228,9 @@ public class ChatGroupValidator : AbstractValidator<ChatGroupViewModel>
                 .NotEmpty().WithMessage("Please enter name for the chat group.")
                 .Custom((groupName, context) =>
                 {
-                    var hasSymbols = new Regex(@"[<>#+%|-]");
+                    var hasSymbols = new Regex(@"[<>#+%|]");
 
-                    if (hasSymbols.IsMatch(groupName) || groupName.Contains("\"") || groupName.Contains(@"\") || groupName.Contains(@"/"))
+                    if (hasSymbols.IsMatch(groupName) || groupName.Contains(@"\") || groupName.Contains(@"/"))
                     {
                         context.AddFailure("Invalid symbol in group name. Please remove and try again!");
                     }
