@@ -36,7 +36,7 @@ Our team recorded our sprint review in a Word document.
 Here is the link to the document: https://dev.azure.com/SWE6733-Team3/PlayTogether/_git/PlayTogether?path=%2FSprint%202%2FSprint%202%20Review.docx
   
 Our team recorded our retrospective of Sprint 2 reports in an excel workbook.  
-Link to scrum reports for this sprint: https://dev.azure.com/SWE6733-Team3/PlayTogether/_git/PlayTogether?path=%2FSprint%202%2FSprint%202%20Retrospective.xlsx
+Link to retrospective for this sprint: https://dev.azure.com/SWE6733-Team3/PlayTogether/_git/PlayTogether?path=%2FSprint%202%2FSprint%202%20Retrospective.xlsx
 
 ## CI/CD Information
 Our team's CI/CD process is managed using Azure pipelines and releases housed in our Azure DevOps Project. Unit Tests are run during every build and BDD Tests are run during every release.
