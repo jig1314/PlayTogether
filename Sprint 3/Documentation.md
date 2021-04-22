@@ -1,5 +1,12 @@
 # Sprint 3 Documentation
 
+## Sprint 3 Forecast & Rationale
+In sprint 2, our team was able to complete 9.7 story points of work while each developer was still working through their learning curve with time to spare. The developer found that they were able to spend more time than anticpated on project activities which accounted for the increase in velocity.  
+Based on that forecast for sprint 2 and the increase in skill and lessons learned from sprint 2, the team felt comfortable increasing the estimated velocity to 11.5 story points.  
+Our rationale is that for the 2 week sprint each developer can dedicate at least 19 hours of work to this project. This is an increase from sprint 2 but is based on actuals from sprint 2 and the commitment from the development team.  
+We have 3 developers, working an average of 19 hours over 2 weeks equates to about 115 hours of work. We represent those 115 hours as 11.5 story points.  
+We are going to reassess at the end of the sprint if this velocity needs to be decreased, increased or kept the same based on actuals.
+
 ## Kanban Board URL
 https://dev.azure.com/SWE6733-Team3/PlayTogether/_sprints/taskboard/PlayTogether%20Team/PlayTogether/Sprint%203
 
