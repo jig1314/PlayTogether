@@ -21,5 +21,13 @@ namespace PlayTogether.Server.Models
         public List<FriendRequest> ReceivedFriendRequests { get; set; }
 
         public List<ApplicationUser_Friend> Friends { get; set; }
+
+        public List<Message> SentMessages { get; set; }
+
+        public List<ApplicationUser_MessageConnection> MessageConnections { get; set; }
+
+        public List<ApplicationUser_Conversation> Conversations { get; set; }
+
+        public List<Conversation> CreatedConversations { get; set; }
     }
 }

@@ -60,7 +60,7 @@ namespace PlayTogether.Client.Pages
 
         public async Task RefreshData(string userName)
         {
-            UsersFriends = (await UserService.GetUsersFriends(userName)).Where(user => user.UserId != IdUser).ToList();
+            UsersFriends = await UserService.GetUsersFriends(userName);
 
             FriendUserIds = (await UserService.GetFriends()).Select(user => user.UserId).ToList();
             var activeFriendRequests = await UserService.GetActiveFriendRequests();
@@ -114,6 +114,17 @@ namespace PlayTogether.Client.Pages
             ActiveReceivedFriendRequests.Remove(declinedFriendRequest);
 
             await UserService.DeclineFriendRequest(declinedFriendRequest);
+        }
+
+
+        public void NavigateToMyProfile()
+        {
+            NavigationManager.NavigateTo($"/myProfile", true);
+        }
+
+        public void NavigateToUserProfile(string userName)
+        {
+            NavigationManager.NavigateTo($"/profile/{userName}", true);
         }
     }
 }

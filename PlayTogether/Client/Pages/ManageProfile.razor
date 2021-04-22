@@ -1,5 +1,4 @@
 ﻿@page "/manageProfile/{pageId}/"
-@page "/manageProfile/{pageId}/{subPageId}"
 
 <div>
     <div class="row">
@@ -10,9 +9,6 @@
                 </BSNavItem>
                 <BSNavItem>
                     <BSNavLink IsActive="@IsNavActive("changePassword")" Href="manageProfile/changePassword">Change Password</BSNavLink>
-                </BSNavItem>
-                <BSNavItem>
-                    <BSNavLink IsActive="@IsNavActive("preferences")" Href="manageProfile/preferences">Set User Preferences</BSNavLink>
                 </BSNavItem>
                 <BSNavItem>
                     <BSNavLink id="deleteAccountLink" IsActive="@IsNavActive("deleteAccount")" Href="manageProfile/deleteAccount">Delete Account</BSNavLink>
@@ -43,22 +39,6 @@
         }
     }
 
-    private string _subPageId;
-
-    [Parameter]
-    public string SubPageId
-    {
-        get
-        {
-            return _subPageId;
-        }
-        set
-        {
-            _subPageId = value;
-            UpdatePage();
-        }
-    }
-
     public RenderFragment ChildContent { get; set; }
 
     void UpdatePage()
@@ -70,9 +50,6 @@
                 break;
             case "changePassword":
                 ChildContent = @<ChangePassword />;
-                break;
-            case "preferences":
-                ChildContent = @<UserPreferences PageId="@SubPageId" />;
                 break;
             case "deleteAccount":
                 ChildContent = @<DeleteAccount />;

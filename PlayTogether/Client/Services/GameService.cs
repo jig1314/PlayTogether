@@ -21,8 +21,8 @@ namespace PlayTogether.Client.Services
         public async Task<List<GameGenreDto>> GetGameGenres() =>
             await httpClient.GetFromJsonAsync<List<GameGenreDto>>($"api/gameGenres/gameGenres");
 
-        public async Task<List<GameSkillLevel>> GetGameSkillLevels() =>
-            await httpClient.GetFromJsonAsync<List<GameSkillLevel>>($"api/games/gameSkillLevels");
+        public async Task<List<GameSkillLevelDto>> GetGameSkillLevels() =>
+            await httpClient.GetFromJsonAsync<List<GameSkillLevelDto>>($"api/games/gameSkillLevels");
 
         public async Task<List<GamingPlatformDto>> GetGamingPlatforms() =>
             await httpClient.GetFromJsonAsync<List<GamingPlatformDto>>($"api/gamingPlatforms/gamingPlatforms");
