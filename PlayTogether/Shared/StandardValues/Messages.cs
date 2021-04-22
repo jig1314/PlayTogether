@@ -35,5 +35,10 @@ namespace PlayTogether.Shared.StandardValues
         /// Name of the Hub method to update name of Group
         /// </summary>
         public const string UPDATE_CHAT_GROUP_NAME = "UpdateGroupName";
+
+        /// <summary>
+        /// Name of the Hub method to Delete chat Group
+        /// </summary>
+        public const string DELETE_CHAT_GROUP = "DeleteGroup";
     }
 }

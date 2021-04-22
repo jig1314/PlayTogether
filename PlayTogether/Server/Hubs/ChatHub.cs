@@ -116,6 +116,7 @@ namespace PlayTogether.Server.Hubs
                     await Groups.AddToGroupAsync(conn.MessageConnectionId, conversation);
                 }
             }
+
             if (userConnectionsToRemove?.Count > 0)
             {
                 foreach (var conn in userConnectionsToRemove)
@@ -142,6 +143,38 @@ namespace PlayTogether.Server.Hubs
         public async Task UpdateGroupName(string conversation, string groupName)
         {
             await Clients.Group(conversation).SendAsync(Messages.UPDATE_CHAT_GROUP_NAME, conversation, groupName);
+        }
+
+        public async Task DeleteGroup(string conversation)
+        {
+            var existingConversation = await _context.Conversations
+                                    .Include(c => c.Users)
+                                    .Include(c => c.Messages)
+                                    .Where(c => c.Id == conversation).SingleOrDefaultAsync();
+
+
+            var userConnectionsToRemove = await _context.ApplicationUser_MessageConnections
+                                            .Include(m => m.MessageConnection)
+                                            .Where(u => existingConversation.Users.Select(u => u.ApplicationUserId).Contains(u.ApplicationUserId) && u.MessageConnection.Connected).ToListAsync();
+
+            _context.Messages.RemoveRange(existingConversation.Messages);
+            await _context.SaveChangesAsync();
+
+            _context.ApplicationUser_Conversations.RemoveRange(existingConversation.Users);
+            await _context.SaveChangesAsync();
+
+            _context.Conversations.Remove(existingConversation);
+            await _context.SaveChangesAsync();
+
+            await Clients.Group(conversation).SendAsync(Messages.DELETE_CHAT_GROUP, conversation);
+
+            if (userConnectionsToRemove?.Count > 0)
+            {
+                foreach (var conn in userConnectionsToRemove)
+                {
+                    await Groups.RemoveFromGroupAsync(conn.MessageConnectionId, conversation);
+                }
+            }
         }
 
         public async Task SendDirectMessage(string toUserId, string message)

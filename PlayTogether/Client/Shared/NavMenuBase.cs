@@ -54,6 +54,7 @@ namespace PlayTogether.Client.Shared
                         _chatClient.MessageReceived -= MessageReceived;
                         _chatClient.ConversationRead -= ConversationRead;
                         _chatClient.UpdateGroupNameEvent -= UpdateGroupName;
+                        _chatClient.DeleteGroupEvent -= DeleteGroup;
                     }
 
                     _chatClient = value;
@@ -62,6 +63,7 @@ namespace PlayTogether.Client.Shared
                         _chatClient.MessageReceived += MessageReceived;
                         _chatClient.ConversationRead += ConversationRead;
                         _chatClient.UpdateGroupNameEvent += UpdateGroupName;
+                        _chatClient.DeleteGroupEvent += DeleteGroup;
                     }
 
                     StateHasChanged();
@@ -189,6 +191,18 @@ namespace PlayTogether.Client.Shared
 
             // Inform blazor the UI needs updating
             StateHasChanged();
+        }
+
+        private void DeleteGroup(object sender, DeleteGroupEventArgs e)
+        {
+            if (ChatGroupConversations != null && ChatGroupConversations.Select(c => c.Id).Contains(e.Conversation))
+            {
+                var convo = ChatGroupConversations.FirstOrDefault(c => c.Id == e.Conversation);
+                ChatGroupConversations.Remove(convo);
+
+                // Inform blazor the UI needs updating
+                StateHasChanged();
+            }
         }
 
         public void ToggleNavMenu()

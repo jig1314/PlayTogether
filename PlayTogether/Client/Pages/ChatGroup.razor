@@ -1,6 +1,10 @@
 ﻿@page "/chatGroup/{groupName}"
 @inherits ChatGroupBase
 
+@code{
+    bool IsDropdownOpen { get; set; } = false;
+}
+
 @if (!string.IsNullOrWhiteSpace(ErrorMessage))
 {
     <BSAlert Color="Color.Danger">
@@ -27,18 +31,32 @@
                                 <div class="col">
                                     @if (EditingGroupName)
                                     {
-                                        <span><span><input type="text" class="form-control" style="display:unset; width:unset; margin: 15px 15px 15px 0px;" @bind="@GroupName" @bind:event="oninput" /></span><i  @onclick="@(async () => { if (!string.IsNullOrWhiteSpace(GroupName)) await UpdateGroupNameAsync(); })" style="cursor:pointer;" class="fas fa-check"></i></span>
+                                        <span><span><input type="text" class="form-control" style="display:unset; width:unset; margin: 15px 15px 15px 0px;" @bind="@GroupName" @bind:event="oninput" /></span><i @onclick="@(async () => { if (!string.IsNullOrWhiteSpace(GroupName)) await UpdateGroupNameAsync(); })" style="cursor:pointer;" class="fas fa-check"></i></span>
                                     }
                                     else
                                     {
-                                        <span>To: <span class="name">@GroupName</span><i @onclick="(() => EditingGroupName = !EditingGroupName)" style="margin-left: 5px; cursor:pointer;" class="fas fa-pencil-alt"></i></span>
+                                        <span>
+                                            To: <span class="name">@GroupName</span>
+                                            @if (Conversation.CreatedByUserId == MyUserId)
+                                            {
+                                                <i @onclick="(() => EditingGroupName = !EditingGroupName)" style="margin-left: 5px; cursor:pointer;" class="fas fa-pencil-alt"></i>
+                                            }
+                                        </span>
                                     }
                                 </div>
                                 @if (Conversation.CreatedByUserId == MyUserId)
                                 {
-                                    <div class="col" style="text-align:end;">
-                                        <span><i @onclick="(() => AddGamerPopUpModal.Show())" style="cursor: pointer; font-size: 1.25rem;" class="fas fa-user-plus"></i></span>
-                                    </div>
+                                    <BSDropdown Class="col" style="padding: unset; text-align: end;" IsOpen="@IsDropdownOpen">
+                                        <span>
+                                            <span>
+                                                <i @onclick="(() => AddGamerPopUpModal.Show())" style="cursor: pointer; font-size: 1.25rem;" class="fas fa-user-plus"></i>
+                                            </span>
+                                            <BSDropdownToggle style="padding-bottom: 8px;" @onclick="(() => { IsDropdownOpen = !IsDropdownOpen; })"><i style="cursor: pointer;" class="fas fa-ellipsis-v"></i></BSDropdownToggle>
+                                            <BSDropdownMenu style="right: 0; left: unset;" @bind-IsOpen="@IsDropdownOpen">
+                                                <BSDropdownItem style="color: red;" IsButton="true" @onclick="(() => DeleteChatGroup())"><i class="fas fa-comments" style="margin-right: 5px;"></i>Delete @Conversation.Name</BSDropdownItem>
+                                            </BSDropdownMenu>
+                                        </span>
+                                    </BSDropdown>
                                 }
                             </div>
                             <div id="chatContainer" class="chat-container">
@@ -90,7 +108,7 @@
     </div>
     <!-- Content wrapper end -->
 }
-else 
+else
 {
     <div class="loading-bar"></div>
 }

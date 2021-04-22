@@ -48,12 +48,14 @@ namespace PlayTogether.Client.Pages
                     if (_chatClient != null)
                     {
                         _chatClient.MessageReceived -= MessageReceived;
+                        _chatClient.DeleteGroupEvent -= DeleteGroup;
                     }
 
                     _chatClient = value;
                     if (_chatClient != null)
                     {
                         _chatClient.MessageReceived += MessageReceived;
+                        _chatClient.DeleteGroupEvent += DeleteGroup;
                     }
                     StateHasChanged();
                 }
@@ -194,6 +196,34 @@ namespace PlayTogether.Client.Pages
             catch (Exception ex)
             {
                 ErrorMessage = ex.Message;
+            }
+        }
+
+        protected async Task DeleteChatGroup()
+        {
+            try
+            {
+                RetrievingData = true;
+                await ChatClient.DeleteGroupAsync(Conversation.Id);
+            }
+            catch (Exception ex)
+            {
+                ErrorMessage = ex.Message;
+                RetrievingData = false;
+            }
+        }
+
+        private async void DeleteGroup(object sender, DeleteGroupEventArgs e)
+        {
+            if (Conversation.Id == e.Conversation)
+            {
+                ErrorMessage = "Chat Group has been deleted!";
+                RetrievingData = true;
+
+                StateHasChanged();
+
+                await Task.Delay(2000);
+                NavigationManager.NavigateTo("");
             }
         }
     }

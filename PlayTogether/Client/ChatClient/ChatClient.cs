@@ -78,6 +78,11 @@ namespace PlayTogether.Client.ChatClient
                     HandleUpdateGroupName(conversation, groupName);
                 });
 
+                _hubConnection.On<string>(Messages.DELETE_CHAT_GROUP, (conversation) =>
+                {
+                    HandleDeleteGroup(conversation);
+                });
+
                 _hubConnection.Closed += async (error) =>
                 {
                     _started = false;
@@ -140,7 +145,11 @@ namespace PlayTogether.Client.ChatClient
             // raise an event to subscribers
             UpdateGroupNameEvent?.Invoke(this, new UpdateGroupNameEventArgs(conversation, groupName));
         }
-
+        private void HandleDeleteGroup(string conversation)
+        {
+            // raise an event to subscribers
+            DeleteGroupEvent?.Invoke(this, new DeleteGroupEventArgs(conversation));
+        }
 
         /// <summary>
         /// Event raised when this client receives a message
@@ -159,6 +168,18 @@ namespace PlayTogether.Client.ChatClient
         public event ConversationReadEventHandler ConversationRead;
 
         public event UpdateGroupNameEventHandler UpdateGroupNameEvent;
+
+        public event DeleteGroupEventHandler DeleteGroupEvent;
+
+        public async Task DeleteGroupAsync(string conversation)
+        {
+            // check we are connected
+            if (!_started)
+                await StartAsync();
+
+            // send the message
+            await _hubConnection.SendAsync(Messages.DELETE_CHAT_GROUP, conversation);
+        }
 
         public async Task UpdateGroupMembers(string conversation, List<string> gamersInGroup)
         {
@@ -337,6 +358,18 @@ namespace PlayTogether.Client.ChatClient
         }
 
         public string GroupName { get; set; }
+
+        public string Conversation { get; set; }
+    }
+
+    public delegate void DeleteGroupEventHandler(object sender, DeleteGroupEventArgs e);
+
+    public class DeleteGroupEventArgs : EventArgs
+    {
+        public DeleteGroupEventArgs(string conversation)
+        {
+            Conversation = conversation;
+        }
 
         public string Conversation { get; set; }
     }
