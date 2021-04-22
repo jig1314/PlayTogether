@@ -107,7 +107,7 @@
     </ul>
 </div>
 
-<BSModal @ref="CreateChatGroupModal" IgnoreEscape="true" IgnoreClickOnBackdrop="true" IsCentered="true">
+<BSModal Style="margin-top: 100px;" @ref="CreateChatGroupModal" IgnoreEscape="true" IgnoreClickOnBackdrop="true" >
     <BSForm style="margin: 0px 10px;" Model="@ChatGroupViewModel" OnValidSubmit="CreateChatGroup">
         <BSModalHeader OnClick="@(() => CreateChatGroupModal.Hide())">Create New Chat Group</BSModalHeader>
         <BSModalBody>
